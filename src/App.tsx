@@ -1,10 +1,15 @@
 import './App.css'
-import InputFeild from './components/common/InputFeild'
+import Button from './components/common/Button'
 
 function App() {
+
+  const test = () => {
+    alert("Done")
+  }
+
   return (
     <div className='flex justify-center items-center h-screen'>
-      <InputFeild title="Name" placeholder='ok' />
+      <Button title='Click' onClick={test} />
     </div>
   )
 }
