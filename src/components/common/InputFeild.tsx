@@ -1,10 +1,11 @@
 interface InputFeildProps {
   title: string;
+  type?: string;
   placeholder?: string;
   maxLength?: number;
 }
 
-function InputFeild({ title, placeholder, maxLength }: InputFeildProps) {
+function InputFeild({ title, type = 'text', placeholder, maxLength }: InputFeildProps) {
   return (
     <div className="flex flex-col">
       <label
@@ -13,7 +14,7 @@ function InputFeild({ title, placeholder, maxLength }: InputFeildProps) {
         {title}
       </label>
       <input
-        type="text"
+        type={type}
         className="mt-1 p-2 border-b border-gray-300 focus:outline-none focus:border-blue-500"
         placeholder={placeholder}
         maxLength={maxLength}

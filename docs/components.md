@@ -3,8 +3,11 @@
 ## InputFeild
 
 - title: string
+- type?: string
 - placeholder?: string
 - maxLength?: number
+- default values
+    - type: text
 
 ## Button
 
