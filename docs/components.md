@@ -18,3 +18,10 @@
 - default values
     - bgColor: bg-blue-500
     - textColor: text-white
+
+## Checkbox
+
+- title: string
+- checked: boolean
+- default values
+    - checked: false
