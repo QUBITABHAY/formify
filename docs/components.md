@@ -25,3 +25,11 @@
 - checked: boolean
 - default values
     - checked: false
+
+## RadioButton
+
+- title: string
+- name: string
+- value: string
+- checked?: boolean
+- onChange?: (value: string) => void
