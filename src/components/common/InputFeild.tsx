@@ -10,9 +10,9 @@ interface InputFeildProps {
 
 function InputFeild({ title, type = 'text', placeholder, maxLength, name, value, onChange }: InputFeildProps) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full">
       <label
-        className="text-sm font-medium text-gray-900"
+        className="text-sm font-normal text-gray-700 mb-2"
       >
         {title}
       </label>
@@ -21,7 +21,7 @@ function InputFeild({ title, type = 'text', placeholder, maxLength, name, value,
         name={name}
         value={value}
         onChange={onChange}
-        className="mt-1 p-2 border-b border-gray-300 focus:outline-none focus:border-blue-500"
+        className="p-3 border-b border-gray-300 focus:outline-none focus:border-blue-600 bg-transparent"
         placeholder={placeholder}
         maxLength={maxLength}
       />

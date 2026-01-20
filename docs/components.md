@@ -2,34 +2,32 @@
 
 ## InputFeild
 
-- title: string
-- type?: string
+- title: string (required)
+- type?: string — default: text
 - placeholder?: string
 - maxLength?: number
-- default values
-    - type: text
+- name?: string
+- value?: string | number
+- onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
 
 ## Button
 
-- title: string
-- onClick: function
-- bgColor?: string
-- textColor?: string
-- default values
-    - bgColor: bg-blue-500
-    - textColor: text-white
+- title: string (required)
+- onClick: () => void (required)
+- bgColor?: string — default: bg-blue-500
+- textColor?: string — default: text-white
 
 ## Checkbox
 
-- title: string
-- checked: boolean
-- default values
-    - checked: false
+- title: string (required)
+- checked?: boolean — default: false
+- name?: string
+- onChange?: (checked: boolean) => void
 
 ## RadioButton
 
-- title: string
-- name: string
-- value: string
+- title: string (required)
+- name: string (required)
+- value: string (required)
 - checked?: boolean
 - onChange?: (value: string) => void
