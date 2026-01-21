@@ -1,6 +1,6 @@
 # Components
 
-## InputFeild
+## InputField
 
 - title: string (required)
 - type?: string — default: text

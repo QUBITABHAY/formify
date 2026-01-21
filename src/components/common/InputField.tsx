@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 
-interface InputFeildProps {
+interface InputFieldProps {
   title: string;
   type?: string;
   placeholder?: string;
@@ -11,7 +11,7 @@ interface InputFeildProps {
   autoFocus?: boolean;
 }
 
-const InputFeild = forwardRef<HTMLInputElement, InputFeildProps>(
+const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
   (
     {
       title,
@@ -46,4 +46,4 @@ const InputFeild = forwardRef<HTMLInputElement, InputFeildProps>(
   },
 );
 
-export default InputFeild;
+export default InputField;

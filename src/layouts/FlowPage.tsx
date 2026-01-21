@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type KeyboardEvent } from "react";
-import InputFeild from "../components/common/InputFeild";
+import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
@@ -258,7 +258,7 @@ function FlowPage({
       case "number":
         return (
           <div className="w-full max-w-lg">
-            <InputFeild
+            <InputField
               ref={inputRef}
               title=""
               type={field.type}
