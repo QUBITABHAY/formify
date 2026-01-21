@@ -1,10 +1,10 @@
 import './App.css'
-import SinglePage from './layouts/SinglePage'
+import FlowPage from './layouts/FlowPage'
 
 function App() {
 
   return (
-    <SinglePage />
+    <FlowPage />
   )
 }
 

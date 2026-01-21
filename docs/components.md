@@ -9,6 +9,8 @@
 - name?: string
 - value?: string | number
 - onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+- autoFocus?: boolean
+- ref?: React.Ref<HTMLInputElement> — supports forwardRef for programmatic focus
 
 ## Button
 
