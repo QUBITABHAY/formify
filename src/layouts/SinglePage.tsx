@@ -1,5 +1,5 @@
 import { useState } from "react";
-import InputFeild from "../components/common/InputFeild";
+import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
@@ -105,7 +105,7 @@ function SinglePage() {
       case "tel":
       case "number":
         return (
-          <InputFeild
+          <InputField
             title={field.title}
             type={field.type}
             placeholder={field.placeholder}

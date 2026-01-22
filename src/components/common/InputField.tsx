@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 
-interface InputFeildProps {
+interface InputFieldProps {
   title: string;
   type?: string;
   placeholder?: string;
@@ -9,9 +9,10 @@ interface InputFeildProps {
   value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   autoFocus?: boolean;
+  disabled?: boolean;
 }
 
-const InputFeild = forwardRef<HTMLInputElement, InputFeildProps>(
+const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
   (
     {
       title,
@@ -22,6 +23,7 @@ const InputFeild = forwardRef<HTMLInputElement, InputFeildProps>(
       value,
       onChange,
       autoFocus,
+      disabled,
     },
     ref,
   ) => {
@@ -40,10 +42,11 @@ const InputFeild = forwardRef<HTMLInputElement, InputFeildProps>(
           placeholder={placeholder}
           maxLength={maxLength}
           autoFocus={autoFocus}
+          disabled={disabled}
         />
       </div>
     );
   },
 );
 
-export default InputFeild;
+export default InputField;
