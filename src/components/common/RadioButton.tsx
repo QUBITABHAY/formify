@@ -4,9 +4,10 @@ interface RadioButtonProps {
     value: string;
     checked?: boolean;
     onChange?: (value: string) => void;
+    disabled?: boolean;
 }
 
-function RadioButton({ title, name, value, checked, onChange }: RadioButtonProps) {
+function RadioButton({ title, name, value, checked, onChange, disabled }: RadioButtonProps) {
     return (
         <label className="flex items-center gap-3 cursor-pointer">
             <input
@@ -15,6 +16,7 @@ function RadioButton({ title, name, value, checked, onChange }: RadioButtonProps
                 value={value}
                 checked={checked}
                 onChange={() => onChange && onChange(value)}
+                disabled={disabled}
                 className="cursor-pointer w-5 h-5 text-blue-600"
             />
             <span className="text-sm font-normal text-gray-700">{title}</span>

@@ -9,6 +9,7 @@ interface InputFieldProps {
   value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   autoFocus?: boolean;
+  disabled?: boolean;
 }
 
 const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
@@ -22,6 +23,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       value,
       onChange,
       autoFocus,
+      disabled,
     },
     ref,
   ) => {
@@ -40,6 +42,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
           placeholder={placeholder}
           maxLength={maxLength}
           autoFocus={autoFocus}
+          disabled={disabled}
         />
       </div>
     );
