@@ -1,4 +1,4 @@
-import FormBuilder from "../components/SinglePageBuilder/FormBuilder";
+import FormBuilder from "../components/BuilderCore/FormBuilder";
 
 export default function BuilderPage() {
   return <FormBuilder />;

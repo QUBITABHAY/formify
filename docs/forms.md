@@ -14,6 +14,7 @@ Traditional single-page form layout where all fields are displayed at once.
 | --------------- | ----------------------------------- | ------------------------------- |
 | formTitle       | string                              | Form title displayed at the top |
 | formDescription | string                              | Form description/subtitle       |
+| formBanner      | string                              | URL for the banner image        |
 | fields          | FormField[]                         | Array of form fields to render  |
 | onSubmit        | (data: Record<string, any>) => void | Callback when form is submitted |
 
@@ -89,6 +90,7 @@ import SinglePage from "./layouts/SinglePage";
 <SinglePage
   formTitle="Contact Us"
   formDescription="Fill out the form below"
+  formBanner="https://example.com/banner.jpg"
   fields={fields}
   onSubmit={(data) => console.log(data)}
 />;
@@ -100,6 +102,8 @@ import SinglePage from "./layouts/SinglePage";
 import FlowPage from "./layouts/FlowPage";
 
 <FlowPage
+  formTitle="Quick Survey"
+  formDescription="We would love to hear your thoughts."
   fields={fields}
   onSubmit={(data) => console.log(data)}
   welcomeScreen={{

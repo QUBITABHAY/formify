@@ -6,7 +6,7 @@ import {
 import DraggableField from "./DraggableField";
 import type { FormFieldConfig } from "./types";
 
-interface FormCanvasProps {
+interface SinglePageCanvasProps {
   fields: FormFieldConfig[];
   selectedFieldId: string | null;
   onSelectField: (id: string | null) => void;
@@ -17,7 +17,7 @@ interface FormCanvasProps {
   onSelectHeader?: () => void;
 }
 
-export default function FormCanvas({
+export default function SinglePageCanvas({
   fields,
   selectedFieldId,
   onSelectField,
@@ -26,7 +26,7 @@ export default function FormCanvas({
   formDescription = "Please fill out the details below.",
   formBanner = "https://picsum.photos/800/200",
   onSelectHeader,
-}: FormCanvasProps) {
+}: SinglePageCanvasProps) {
   const { setNodeRef } = useDroppable({
     id: "form-canvas",
   });
@@ -44,7 +44,7 @@ export default function FormCanvas({
             onSelectHeader?.();
           }}
           className={`bg-white shadow-xl rounded-lg overflow-hidden border transition-all cursor-pointer group
-            ${selectedFieldId === "HEADER" ? "ring-2 ring-blue-500 border-blue-500" : "border-gray-100 hover:border-blue-300"}
+            ${selectedFieldId === "HEADER" ? "ring-2 ring-indigo-500 border-indigo-500" : "border-gray-100 hover:border-indigo-300"}
           `}
         >
           <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-100 relative group-hover:opacity-95 transition-opacity">

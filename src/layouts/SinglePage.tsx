@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
 
-type FieldType = "text" | "number" | "email" | "tel" | "radio" | "checkbox";
+type FieldType =
+  | "text"
+  | "number"
+  | "email"
+  | "tel"
+  | "radio"
+  | "checkbox"
+  | "textarea"
+  | "select";
 
 interface FieldOption {
   label: string;
@@ -20,72 +28,82 @@ interface FormField {
   options?: FieldOption[];
   defaultValue?: string | boolean;
   name?: string;
-  formBanner?: string;
-  formTitle?: string;
-  formDescription?: string;
+  required?: boolean;
 }
 
-function SinglePage() {
-  const formTitle = "Registration Form";
-  const formDescription = "Please fill out the details below.";
-  const formBanner = "https://picsum.photos/800/200";
+interface SinglePageProps {
+  formTitle?: string;
+  formDescription?: string;
+  formBanner?: string;
+  fields?: FormField[];
+  onSubmit?: (data: Record<string, any>) => void;
+}
 
-  const initialFields: FormField[] = [
-    {
-      id: "fullName",
-      type: "text",
-      title: "Full Name",
-      placeholder: "Enter your full name",
-      defaultValue: "",
-    },
-    {
-      id: "email",
-      type: "email",
-      title: "Email Address",
-      placeholder: "Enter your email",
-      defaultValue: "",
-    },
-    {
-      id: "phone",
-      type: "tel",
-      title: "Phone Number",
-      placeholder: "Enter your phone number",
-      maxLength: 10,
-      defaultValue: "",
-    },
-    {
-      id: "gender",
-      type: "radio",
-      title: "Gender",
-      name: "gender",
-      defaultValue: "Male",
-      options: [
-        { label: "Male", value: "Male" },
-        { label: "Female", value: "Female" },
-        { label: "Other", value: "Other" },
-      ],
-    },
-    {
-      id: "terms",
-      type: "checkbox",
-      title: "I agree to the Terms and Conditions",
-      defaultValue: false,
-    },
-    {
-      id: "newsletter",
-      type: "checkbox",
-      title: "Subscribe to newsletter",
-      defaultValue: true,
-    },
-  ];
+const defaultFields: FormField[] = [
+  {
+    id: "fullName",
+    type: "text",
+    title: "Full Name",
+    placeholder: "Enter your full name",
+    defaultValue: "",
+  },
+  {
+    id: "email",
+    type: "email",
+    title: "Email Address",
+    placeholder: "Enter your email",
+    defaultValue: "",
+  },
+  {
+    id: "phone",
+    type: "tel",
+    title: "Phone Number",
+    placeholder: "Enter your phone number",
+    maxLength: 10,
+    defaultValue: "",
+  },
+  {
+    id: "gender",
+    type: "radio",
+    title: "Gender",
+    name: "gender",
+    defaultValue: "Male",
+    options: [
+      { label: "Male", value: "Male" },
+      { label: "Female", value: "Female" },
+      { label: "Other", value: "Other" },
+    ],
+  },
+  {
+    id: "terms",
+    type: "checkbox",
+    title: "I agree to the Terms and Conditions",
+    defaultValue: false,
+  },
+  {
+    id: "newsletter",
+    type: "checkbox",
+    title: "Subscribe to newsletter",
+    defaultValue: true,
+  },
+];
 
-  const [formData, setFormData] = useState<Record<string, any>>(() => {
+function SinglePage({
+  formTitle = "Registration Form",
+  formDescription = "Please fill out the details below.",
+  formBanner = "https://picsum.photos/800/200",
+  fields = defaultFields,
+  onSubmit,
+}: SinglePageProps) {
+  const [formData, setFormData] = useState<Record<string, any>>({});
+
+  useEffect(() => {
     const initialData: Record<string, any> = {};
-    initialFields.forEach((field) => {
-      initialData[field.id] = field.defaultValue;
+    fields.forEach((field) => {
+      initialData[field.id] = field.defaultValue || "";
     });
-    return initialData;
-  });
+    setFormData(initialData);
+  }, [fields]);
 
   const handleFieldChange = (id: string, value: any) => {
     setFormData((prev) => ({
@@ -96,6 +114,7 @@ function SinglePage() {
 
   const handleSubmit = () => {
     console.log("Form Submitted with Data:", formData);
+    onSubmit?.(formData);
   };
 
   const renderField = (field: FormField) => {
@@ -110,7 +129,7 @@ function SinglePage() {
             type={field.type}
             placeholder={field.placeholder}
             maxLength={field.maxLength}
-            value={formData[field.id]}
+            value={formData[field.id] || ""}
             onChange={(e) => handleFieldChange(field.id, e.target.value)}
           />
         );
@@ -119,6 +138,7 @@ function SinglePage() {
           <div>
             <label className="text-sm font-normal text-gray-700 mb-3 block">
               {field.title}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
             </label>
             <div className="flex flex-col gap-3">
               {field.options?.map((option) => (
@@ -138,7 +158,7 @@ function SinglePage() {
         return (
           <Checkbox
             title={field.title}
-            checked={formData[field.id]}
+            checked={formData[field.id] || false}
             onChange={(checked) => handleFieldChange(field.id, checked)}
           />
         );
@@ -172,7 +192,7 @@ function SinglePage() {
         </div>
 
         <div className="mt-6 space-y-4">
-          {initialFields.map((field) => (
+          {fields.map((field) => (
             <div
               key={field.id}
               className="bg-white rounded-lg border border-gray-100 shadow-md transition-shadow duration-150"

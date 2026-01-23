@@ -22,12 +22,12 @@ function DraggablePaletteItem({ template }: DraggablePaletteItemProps) {
       {...attributes}
       className={`
         flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200
-        cursor-grab active:cursor-grabbing hover:border-blue-400 hover:shadow-md
+        cursor-grab active:cursor-grabbing hover:border-indigo-400 hover:shadow-md
         transition-all duration-200 select-none
         ${isDragging ? "opacity-50 shadow-lg scale-105" : ""}
       `}
     >
-      <span className="text-gray-600">{template.icon}</span>
+      <span className="text-indigo-600">{template.icon}</span>
       <span className="text-sm font-medium text-gray-700">
         {template.label}
       </span>
@@ -38,8 +38,10 @@ function DraggablePaletteItem({ template }: DraggablePaletteItemProps) {
 export default function FieldPalette() {
   return (
     <div className="w-64 bg-gray-50 border-r border-gray-200 p-4 overflow-y-auto">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Form Fields</h2>
-      <p className="text-xs text-gray-500 mb-4">Drag fields to the canvas</p>
+      <h2 className="text-lg font-semibold text-gray-800 mb-2">Form Fields</h2>
+      <p className="text-xs text-gray-500 mb-4">
+        Drag fields to build your form
+      </p>
       <div className="space-y-2">
         {FIELD_TEMPLATES.map((template) => (
           <DraggablePaletteItem key={template.type} template={template} />

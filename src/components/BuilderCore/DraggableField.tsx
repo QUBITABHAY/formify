@@ -97,7 +97,7 @@ export default function DraggableField({
       style={style}
       className={`
         relative bg-white rounded-lg border-2 p-4 transition-all duration-200
-        ${isSelected ? "border-blue-500 shadow-lg" : "border-gray-200 hover:border-gray-300"}
+        ${isSelected ? "border-indigo-500 shadow-lg" : "border-gray-200 hover:border-gray-300"}
         ${isDragging ? "opacity-50 shadow-xl z-50" : ""}
       `}
       onClick={(e) => {
@@ -151,10 +151,15 @@ export default function DraggableField({
         {renderFieldInput()}
       </div>
 
-      <div className="mt-3 ml-8">
+      <div className="mt-3 ml-8 flex items-center gap-2">
         <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
           {field.type}
         </span>
+        {field.required && (
+          <span className="inline-block px-2 py-1 text-xs bg-red-50 text-red-600 rounded">
+            Required
+          </span>
+        )}
       </div>
     </div>
   );
