@@ -65,7 +65,7 @@ export default function FieldEditor({
             <div className="mb-3 h-32 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
               <img
                 src={formMetadata.banner}
-                alt="Preview"
+                alt="Banner"
                 className="w-full h-full object-cover"
               />
             </div>

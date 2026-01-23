@@ -34,7 +34,7 @@ export default function DraggableField({
     transition,
   };
 
-  const renderFieldPreview = () => {
+  const renderFieldInput = () => {
     switch (field.type) {
       case "text":
       case "email":
@@ -148,7 +148,7 @@ export default function DraggableField({
           <p className="text-xs text-gray-500 mb-2">{field.subtitle}</p>
         )}
 
-        {renderFieldPreview()}
+        {renderFieldInput()}
       </div>
 
       <div className="mt-3 ml-8">
