@@ -1,11 +1,8 @@
-import './App.css'
-import FlowPage from './layouts/FlowPage'
+import "./App.css";
+import BuilderPage from "./pages/BuilderPage";
 
 function App() {
-
-  return (
-    <FlowPage />
-  )
+  return <BuilderPage />;
 }
 
-export default App
+export default App;
