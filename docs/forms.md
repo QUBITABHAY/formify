@@ -14,6 +14,7 @@ Traditional single-page form layout where all fields are displayed at once.
 | --------------- | ----------------------------------- | ------------------------------- |
 | formTitle       | string                              | Form title displayed at the top |
 | formDescription | string                              | Form description/subtitle       |
+| formBanner      | string                              | URL for the banner image        |
 | fields          | FormField[]                         | Array of form fields to render  |
 | onSubmit        | (data: Record<string, any>) => void | Callback when form is submitted |
 
@@ -89,6 +90,7 @@ import SinglePage from "./layouts/SinglePage";
 <SinglePage
   formTitle="Contact Us"
   formDescription="Fill out the form below"
+  formBanner="https://example.com/banner.jpg"
   fields={fields}
   onSubmit={(data) => console.log(data)}
 />;
@@ -100,6 +102,8 @@ import SinglePage from "./layouts/SinglePage";
 import FlowPage from "./layouts/FlowPage";
 
 <FlowPage
+  formTitle="Quick Survey"
+  formDescription="We would love to hear your thoughts."
   fields={fields}
   onSubmit={(data) => console.log(data)}
   welcomeScreen={{
@@ -114,3 +118,15 @@ import FlowPage from "./layouts/FlowPage";
   }}
 />;
 ```
+
+---
+
+## BuilderCore Integration
+
+The form builder components in `src/components/BuilderCore/` use these layouts for previewing forms:
+
+- **PreviewModal** (`shared/PreviewModal.tsx`) renders `FlowPage` or `SinglePage` based on the selected mode
+- **FlowFormBuilder** (`Flow/FlowFormBuilder.tsx`) builds forms for the Flow layout
+- **SinglePageFormBuilder** (`Single/SinglePageFormBuilder.tsx`) builds forms for the Single layout
+
+See [components.md](./components.md#buildercore) for full BuilderCore documentation.

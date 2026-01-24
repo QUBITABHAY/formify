@@ -1,5 +1,5 @@
 import type { FieldTemplate } from "./types";
-import { Icons } from "../common/icons";
+import { Icons } from "../../common/icons";
 
 export const FIELD_TEMPLATES: FieldTemplate[] = [
   {

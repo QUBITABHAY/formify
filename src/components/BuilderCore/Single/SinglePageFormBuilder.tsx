@@ -12,36 +12,28 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 
-import FieldPalette from "./FieldPalette";
-import FormCanvas from "./FormCanvas";
-import FieldEditor from "./FieldEditor";
+import FieldPalette from "../shared/FieldPalette";
+import FieldEditor from "../shared/FieldEditor";
+import PreviewModal from "../shared/PreviewModal";
+import SinglePageCanvas from "./SinglePageCanvas";
 
-import type { FormFieldConfig, FieldTemplate } from "./types";
+import type { FormFieldConfig, FieldTemplate } from "../shared/types";
 
 function generateId(): string {
   return `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-export default function FormBuilder() {
+export default function SinglePageFormBuilder() {
   const [fields, setFields] = useState<FormFieldConfig[]>([]);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const [formTitle, setFormTitle] = useState("Registration Form");
   const [formDescription, setFormDescription] = useState(
     "Please fill out the details below.",
   );
   const [formBanner, setFormBanner] = useState("https://picsum.photos/800/200");
-
-  const handleUpdateFormMetadata = useCallback(
-    (updates: { title?: string; description?: string; banner?: string }) => {
-      if (updates.title !== undefined) setFormTitle(updates.title);
-      if (updates.description !== undefined)
-        setFormDescription(updates.description);
-      if (updates.banner !== undefined) setFormBanner(updates.banner);
-    },
-    [],
-  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -55,6 +47,7 @@ export default function FormBuilder() {
   );
 
   const selectedField = fields.find((f) => f.id === selectedFieldId) || null;
+  const selectedScreen = selectedFieldId === "HEADER" ? "HEADER" : null;
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -72,6 +65,7 @@ export default function FormBuilder() {
         id: generateId(),
         type: template.type,
         title: template.defaultConfig.title || "Untitled Field",
+        subtitle: template.defaultConfig.subtitle,
         placeholder: template.defaultConfig.placeholder,
         maxLength: template.defaultConfig.maxLength,
         options: template.defaultConfig.options,
@@ -97,12 +91,12 @@ export default function FormBuilder() {
 
   const handleUpdateField = useCallback(
     (updates: Partial<FormFieldConfig>) => {
-      if (!selectedFieldId) return;
+      if (!selectedFieldId || selectedScreen) return;
       setFields((prev) =>
         prev.map((f) => (f.id === selectedFieldId ? { ...f, ...updates } : f)),
       );
     },
-    [selectedFieldId],
+    [selectedFieldId, selectedScreen],
   );
 
   const handleDeleteField = useCallback((id: string) => {
@@ -110,8 +104,42 @@ export default function FormBuilder() {
     setSelectedFieldId((prev) => (prev === id ? null : prev));
   }, []);
 
+  const handleUpdateFormMetadata = useCallback(
+    (updates: { title?: string; description?: string; banner?: string }) => {
+      if (updates.title !== undefined) setFormTitle(updates.title);
+      if (updates.description !== undefined)
+        setFormDescription(updates.description);
+      if (updates.banner !== undefined) setFormBanner(updates.banner);
+    },
+    [],
+  );
+
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-full flex flex-col bg-gray-100">
+      <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <img src="/logo.svg" alt="Formify" className="w-8 h-8" />
+          <div>
+            <h1 className="text-lg font-semibold text-gray-900">
+              Single Page Builder
+            </h1>
+            <p className="text-xs text-gray-500">{fields.length} fields</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowPreview(true)}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Preview
+          </button>
+          <button className="px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors">
+            Publish
+          </button>
+        </div>
+      </div>
+
       <div className="flex-1 flex overflow-hidden">
         <DndContext
           sensors={sensors}
@@ -120,7 +148,8 @@ export default function FormBuilder() {
           onDragEnd={handleDragEnd}
         >
           <FieldPalette />
-          <FormCanvas
+
+          <SinglePageCanvas
             fields={fields}
             selectedFieldId={selectedFieldId}
             onSelectField={setSelectedFieldId}
@@ -130,26 +159,47 @@ export default function FormBuilder() {
             formBanner={formBanner}
             onSelectHeader={() => setSelectedFieldId("HEADER")}
           />
+
           <DragOverlay>
             {activeId ? (
-              <div className="bg-white p-4 rounded-lg shadow-xl border-2 border-blue-500 opacity-80">
-                Dragging...
+              <div className="bg-white p-4 rounded-xl shadow-2xl border-2 border-indigo-500 opacity-90">
+                <span className="text-sm font-medium text-gray-700">
+                  Adding new field...
+                </span>
               </div>
             ) : null}
           </DragOverlay>
         </DndContext>
+
         <FieldEditor
           field={selectedField}
           onUpdate={handleUpdateField}
-          isHeaderSelected={selectedFieldId === "HEADER"}
+          mode="single"
+          selectedScreen={selectedScreen}
           formMetadata={{
             title: formTitle,
             description: formDescription,
             banner: formBanner,
           }}
           onUpdateMetadata={handleUpdateFormMetadata}
+          welcomeScreen={{ title: "", description: "", buttonText: "" }}
+          thankYouScreen={{ title: "", description: "", emoji: "" }}
+          onUpdateWelcome={() => {}}
+          onUpdateThankYou={() => {}}
         />
       </div>
+
+      <PreviewModal
+        isOpen={showPreview}
+        onClose={() => setShowPreview(false)}
+        mode="single"
+        fields={fields}
+        formTitle={formTitle}
+        formDescription={formDescription}
+        formBanner={formBanner}
+        welcomeScreen={{ title: "", description: "", buttonText: "" }}
+        thankYouScreen={{ title: "", description: "", emoji: "" }}
+      />
     </div>
   );
 }

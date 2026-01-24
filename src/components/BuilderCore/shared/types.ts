@@ -1,6 +1,16 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
-export type FieldType = "text" | "number" | "email" | "tel" | "radio" | "checkbox" | "textarea" | "select";
+export type FormMode = "single" | "flow";
+
+export type FieldType =
+  | "text"
+  | "number"
+  | "email"
+  | "tel"
+  | "radio"
+  | "checkbox"
+  | "textarea"
+  | "select";
 
 export interface FieldOption {
   label: string;
@@ -25,4 +35,16 @@ export interface FieldTemplate {
   label: string;
   icon: ReactNode;
   defaultConfig: Partial<FormFieldConfig>;
+}
+
+export interface WelcomeScreenConfig {
+  title: string;
+  description: string;
+  buttonText: string;
+}
+
+export interface ThankYouScreenConfig {
+  title: string;
+  description: string;
+  emoji: string;
 }
