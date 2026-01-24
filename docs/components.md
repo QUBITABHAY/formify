@@ -90,3 +90,86 @@ A collection of SVG icons exported as the `Icons` object.
   - `Icons.Select`
   - `Icons.Eye`
   - `Icons.ArrowLeft`
+
+---
+
+# BuilderCore
+
+The form builder components are organized in `src/components/BuilderCore` with the following structure:
+
+```
+BuilderCore/
+├── Flow/           # Flow (Typeform-style) builder components
+├── Single/         # Single page builder components
+└── shared/         # Shared components and utilities
+```
+
+## Shared Components (`shared/`)
+
+### FormBuilder
+
+Main entry point that provides a mode toggle between Flow and Single page builders.
+
+- Location: `src/components/BuilderCore/shared/FormBuilder.tsx`
+- Usage: `import FormBuilder from "./components/BuilderCore/shared/FormBuilder"`
+
+### FieldEditor
+
+Property editor panel for configuring field properties.
+
+- Handles field editing for both modes
+- Supports Welcome/ThankYou screen editing (Flow) and Header editing (Single)
+- Props are mode-aware (`mode: "flow" | "single"`)
+
+### FieldPalette
+
+Draggable field type palette for adding new fields.
+
+- Uses `@dnd-kit/core` for drag functionality
+- Renders available field types from `constants.tsx`
+
+### PreviewModal
+
+Modal component for previewing forms using `FlowPage` or `SinglePage` layouts.
+
+### Types (`types.ts`)
+
+Core type definitions:
+
+- `FormMode` — `"single" | "flow"`
+- `FieldType` — `"text" | "number" | "email" | "tel" | "radio" | "checkbox" | "textarea" | "select"`
+- `FormFieldConfig` — Field configuration interface
+- `FieldTemplate` — Template for field palette items
+- `WelcomeScreenConfig` / `ThankYouScreenConfig` — Flow screen configs
+
+---
+
+## Flow Components (`Flow/`)
+
+### FlowFormBuilder
+
+Main builder for Typeform-style forms with welcome/thankyou screens.
+
+### FlowPageCanvas
+
+Canvas displaying welcome screen, sortable field cards, and thankyou screen.
+
+### FlowCard
+
+Step card component with step number indicator and field preview.
+
+---
+
+## Single Components (`Single/`)
+
+### SinglePageFormBuilder
+
+Main builder for traditional single-page forms with header/banner.
+
+### SinglePageCanvas
+
+Canvas displaying form header and sortable field list.
+
+### DraggableField
+
+Draggable/sortable field component for single page forms.

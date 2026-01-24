@@ -118,3 +118,15 @@ import FlowPage from "./layouts/FlowPage";
   }}
 />;
 ```
+
+---
+
+## BuilderCore Integration
+
+The form builder components in `src/components/BuilderCore/` use these layouts for previewing forms:
+
+- **PreviewModal** (`shared/PreviewModal.tsx`) renders `FlowPage` or `SinglePage` based on the selected mode
+- **FlowFormBuilder** (`Flow/FlowFormBuilder.tsx`) builds forms for the Flow layout
+- **SinglePageFormBuilder** (`Single/SinglePageFormBuilder.tsx`) builds forms for the Single layout
+
+See [components.md](./components.md#buildercore) for full BuilderCore documentation.
