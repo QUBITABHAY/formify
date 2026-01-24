@@ -4,7 +4,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import DraggableField from "./DraggableField";
-import type { FormFieldConfig } from "./types";
+import type { FormFieldConfig } from "../shared/types";
 
 interface SinglePageCanvasProps {
   fields: FormFieldConfig[];

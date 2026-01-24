@@ -1,11 +1,11 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { FormFieldConfig } from "./types";
-import InputField from "../common/InputField";
-import TextArea from "../common/TextArea";
-import Select from "../common/Select";
-import RadioButton from "../common/RadioButton";
-import Checkbox from "../common/Checkbox";
+import type { FormFieldConfig } from "../shared/types";
+import InputField from "../../common/InputField";
+import TextArea from "../../common/TextArea";
+import Select from "../../common/Select";
+import RadioButton from "../../common/RadioButton";
+import Checkbox from "../../common/Checkbox";
 
 interface DraggableFieldProps {
   field: FormFieldConfig;

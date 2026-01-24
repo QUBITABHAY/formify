@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FormMode } from "./types";
-import FlowFormBuilder from "./FlowFormBuilder";
-import SinglePageFormBuilder from "./SinglePageFormBuilder";
+import FlowFormBuilder from "../Flow/FlowFormBuilder";
+import SinglePageFormBuilder from "../Single/SinglePageFormBuilder";
 
 export default function FormBuilder() {
   const [mode, setMode] = useState<FormMode>("flow");

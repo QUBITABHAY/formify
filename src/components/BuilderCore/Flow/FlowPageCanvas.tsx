@@ -8,7 +8,7 @@ import type {
   FormFieldConfig,
   WelcomeScreenConfig,
   ThankYouScreenConfig,
-} from "./types";
+} from "../shared/types";
 
 interface FlowPageCanvasProps {
   fields: FormFieldConfig[];

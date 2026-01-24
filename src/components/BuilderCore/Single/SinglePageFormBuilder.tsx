@@ -12,12 +12,12 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 
-import FieldPalette from "./FieldPalette";
+import FieldPalette from "../shared/FieldPalette";
+import FieldEditor from "../shared/FieldEditor";
+import PreviewModal from "../shared/PreviewModal";
 import SinglePageCanvas from "./SinglePageCanvas";
-import FieldEditor from "./FieldEditor";
-import PreviewModal from "./PreviewModal";
 
-import type { FormFieldConfig, FieldTemplate } from "./types";
+import type { FormFieldConfig, FieldTemplate } from "../shared/types";
 
 function generateId(): string {
   return `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

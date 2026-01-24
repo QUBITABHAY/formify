@@ -4,8 +4,8 @@ import type {
   ThankYouScreenConfig,
   FormMode,
 } from "./types";
-import FlowPage from "../../layouts/FlowPage";
-import SinglePage from "../../layouts/SinglePage";
+import FlowPage from "../../../layouts/FlowPage";
+import SinglePage from "../../../layouts/SinglePage";
 
 interface PreviewModalProps {
   isOpen: boolean;
