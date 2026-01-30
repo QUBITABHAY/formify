@@ -240,12 +240,13 @@ function FlowPage({
         return (
           <div className="w-full max-w-lg">
             <InputField
+              key={field.id}
               ref={inputRef}
               title=""
               type={field.type}
               placeholder={field.placeholder}
               maxLength={field.maxLength}
-              value={formData[field.id]}
+              value={formData[field.id] ?? ""}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
             />
           </div>
