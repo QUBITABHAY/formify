@@ -3,26 +3,7 @@ import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
-
-type FieldType = "text" | "number" | "email" | "tel" | "radio" | "checkbox";
-
-interface FieldOption {
-  label: string;
-  value: string;
-}
-
-interface FormField {
-  id: string;
-  type: FieldType;
-  title: string;
-  subtitle?: string;
-  placeholder?: string;
-  maxLength?: number;
-  options?: FieldOption[];
-  defaultValue?: string | boolean;
-  name?: string;
-  required?: boolean;
-}
+import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
 
 interface WelcomeScreenProps {
   title?: string;
