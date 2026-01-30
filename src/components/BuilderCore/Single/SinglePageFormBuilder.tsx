@@ -16,6 +16,7 @@ import FieldPalette from "../shared/FieldPalette";
 import FieldEditor from "../shared/FieldEditor";
 import PreviewModal from "../shared/PreviewModal";
 import SinglePageCanvas from "./SinglePageCanvas";
+import { createForm } from "../../../services/api";
 
 import type { FormFieldConfig, FieldTemplate } from "../shared/types";
 
@@ -34,6 +35,31 @@ export default function SinglePageFormBuilder() {
     "Please fill out the details below.",
   );
   const [formBanner, setFormBanner] = useState("https://picsum.photos/800/200");
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleCreateForm = async () => {
+    try {
+      setIsCreating(true);
+      const schema = {
+        fields,
+        formTitle,
+        formDescription,
+        formBanner,
+      };
+      await createForm({
+        name: formTitle,
+        description: formDescription,
+        user_id: 1, // Replace with actual user ID
+        schema,
+      });
+      alert("Form created successfully!");
+    } catch (error) {
+      console.error("Failed to create form:", error);
+      alert("Failed to create form. Please try again.");
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -133,6 +159,13 @@ export default function SinglePageFormBuilder() {
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
             Preview
+          </button>
+          <button
+            onClick={handleCreateForm}
+            disabled={isCreating}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isCreating ? "Creating..." : "Create Form"}
           </button>
           <button className="px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors">
             Publish

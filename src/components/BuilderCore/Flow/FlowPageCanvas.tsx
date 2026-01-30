@@ -38,7 +38,7 @@ export default function FlowPageCanvas({
   return (
     <div
       ref={setNodeRef}
-      className="flex-1 overflow-y-auto p-8 bg-gradient-to-br from-indigo-50 via-white to-purple-50"
+      className="flex-1 overflow-y-auto p-8"
       onClick={() => onSelectField(null)}
     >
       <div className="max-w-2xl mx-auto space-y-6">

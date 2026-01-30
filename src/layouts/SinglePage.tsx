@@ -3,33 +3,7 @@ import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
-
-type FieldType =
-  | "text"
-  | "number"
-  | "email"
-  | "tel"
-  | "radio"
-  | "checkbox"
-  | "textarea"
-  | "select";
-
-interface FieldOption {
-  label: string;
-  value: string;
-}
-
-interface FormField {
-  id: string;
-  type: FieldType;
-  title: string;
-  placeholder?: string;
-  maxLength?: number;
-  options?: FieldOption[];
-  defaultValue?: string | boolean;
-  name?: string;
-  required?: boolean;
-}
+import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
 
 interface SinglePageProps {
   formTitle?: string;
@@ -96,6 +70,8 @@ function SinglePage({
   onSubmit,
 }: SinglePageProps) {
   const [formData, setFormData] = useState<Record<string, any>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
     const initialData: Record<string, any> = {};
@@ -110,11 +86,66 @@ function SinglePage({
       ...prev,
       [id]: value,
     }));
+    if (errors[id]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[id];
+        return newErrors;
+      });
+    }
+  };
+
+  const validateField = (field: FormField, value: any): string | null => {
+    if (field.required) {
+      if (field.type === "checkbox" && value !== true) {
+        return "This field is required";
+      }
+      if (typeof value === "string" && value.trim() === "") {
+        return "This field is required";
+      }
+      if (value === undefined || value === null || value === "") {
+        return "This field is required";
+      }
+    }
+
+    if (field.type === "email" && value) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        return "Please enter a valid email address";
+      }
+    }
+
+    if (field.type === "tel" && value) {
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!phoneRegex.test(value)) {
+        return "Please enter a valid 10-digit phone number";
+      }
+    }
+
+    return null;
+  };
+
+  const validateAllFields = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    let isValid = true;
+
+    fields.forEach((field) => {
+      const error = validateField(field, formData[field.id]);
+      if (error) {
+        newErrors[field.id] = error;
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleSubmit = () => {
-    console.log("Form Submitted with Data:", formData);
-    onSubmit?.(formData);
+    if (validateAllFields()) {
+      setIsSubmitted(true);
+      onSubmit?.(formData);
+    }
   };
 
   const renderField = (field: FormField) => {
@@ -134,6 +165,36 @@ function SinglePage({
           />
         );
       case "radio":
+        if (field.multiSelect) {
+          const selectedValues = Array.isArray(formData[field.id])
+            ? formData[field.id]
+            : [];
+          return (
+            <div>
+              <label className="text-sm font-normal text-gray-700 mb-3 block">
+                {field.title}
+                {field.required && <span className="text-red-500 ml-1">*</span>}
+              </label>
+              <div className="flex flex-col gap-3">
+                {field.options?.map((option) => (
+                  <Checkbox
+                    key={option.value}
+                    title={option.label}
+                    checked={selectedValues.includes(option.value)}
+                    onChange={(checked) => {
+                      const newValues = checked
+                        ? [...selectedValues, option.value]
+                        : selectedValues.filter(
+                            (v: string) => v !== option.value,
+                          );
+                      handleFieldChange(field.id, newValues);
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        }
         return (
           <div>
             <label className="text-sm font-normal text-gray-700 mb-3 block">
@@ -167,6 +228,26 @@ function SinglePage({
     }
   };
 
+  if (isSubmitted) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gray-50 py-10 px-4 md:px-6">
+        <div className="w-full max-w-3xl mx-auto">
+          <div className="bg-white shadow-xl rounded-lg overflow-hidden border border-gray-100">
+            <div className="h-2 bg-blue-600"></div>
+            <div className="p-8 text-center">
+              <h1 className="text-3xl font-semibold text-gray-900 mb-3">
+                Your response has been recorded
+              </h1>
+              <p className="text-gray-600 text-lg mb-8">
+                Thank you for submitting the form.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-50 py-10 px-4 md:px-6">
       <div className="w-full max-w-3xl mx-auto relative">
@@ -195,9 +276,18 @@ function SinglePage({
           {fields.map((field) => (
             <div
               key={field.id}
-              className="bg-white rounded-lg border border-gray-100 shadow-md transition-shadow duration-150"
+              className={`bg-white rounded-lg border shadow-md transition-shadow duration-150 ${
+                errors[field.id] ? "border-red-300" : "border-gray-100"
+              }`}
             >
-              <div className="p-5 md:p-6">{renderField(field)}</div>
+              <div className="p-5 md:p-6">
+                {renderField(field)}
+                {errors[field.id] && (
+                  <p className="text-red-500 text-sm mt-2">
+                    {errors[field.id]}
+                  </p>
+                )}
+              </div>
             </div>
           ))}
         </div>

@@ -3,26 +3,7 @@ import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
-
-type FieldType = "text" | "number" | "email" | "tel" | "radio" | "checkbox";
-
-interface FieldOption {
-  label: string;
-  value: string;
-}
-
-interface FormField {
-  id: string;
-  type: FieldType;
-  title: string;
-  subtitle?: string;
-  placeholder?: string;
-  maxLength?: number;
-  options?: FieldOption[];
-  defaultValue?: string | boolean;
-  name?: string;
-  required?: boolean;
-}
+import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
 
 interface WelcomeScreenProps {
   title?: string;
@@ -259,17 +240,42 @@ function FlowPage({
         return (
           <div className="w-full max-w-lg">
             <InputField
+              key={field.id}
               ref={inputRef}
               title=""
               type={field.type}
               placeholder={field.placeholder}
               maxLength={field.maxLength}
-              value={formData[field.id]}
+              value={formData[field.id] ?? ""}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
             />
           </div>
         );
       case "radio":
+        if (field.multiSelect) {
+          const selectedValues = Array.isArray(formData[field.id])
+            ? formData[field.id]
+            : [];
+          return (
+            <div className="flex flex-col gap-3 w-full max-w-lg">
+              {field.options?.map((option) => (
+                <Checkbox
+                  key={option.value}
+                  title={option.label}
+                  checked={selectedValues.includes(option.value)}
+                  onChange={(checked) => {
+                    const newValues = checked
+                      ? [...selectedValues, option.value]
+                      : selectedValues.filter(
+                          (v: string) => v !== option.value,
+                        );
+                    handleFieldChange(field.id, newValues);
+                  }}
+                />
+              ))}
+            </div>
+          );
+        }
         return (
           <div className="flex flex-col gap-3 w-full max-w-lg">
             {field.options?.map((option) => (

@@ -27,7 +27,7 @@ export const FIELD_TEMPLATES: FieldTemplate[] = [
     defaultConfig: {
       title: "Phone Number",
       placeholder: "Enter phone number...",
-      maxLength: 15,
+      maxLength: 10,
     },
   },
   {

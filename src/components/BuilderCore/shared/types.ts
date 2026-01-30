@@ -25,9 +25,10 @@ export interface FormFieldConfig {
   placeholder?: string;
   maxLength?: number;
   options?: FieldOption[];
-  defaultValue?: string | boolean;
+  defaultValue?: string | boolean | string[];
   name?: string;
   required?: boolean;
+  multiSelect?: boolean;
 }
 
 export interface FieldTemplate {

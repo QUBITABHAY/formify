@@ -92,21 +92,6 @@ export default function FieldEditor({
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full overflow-y-auto">
         <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-white">
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center">
-              <svg
-                className="w-3 h-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </span>
             <h2 className="text-lg font-semibold text-gray-800">
               Welcome Screen
             </h2>
@@ -160,21 +145,6 @@ export default function FieldEditor({
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full overflow-y-auto">
         <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white">
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center">
-              <svg
-                className="w-3 h-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </span>
             <h2 className="text-lg font-semibold text-gray-800">
               Thank You Screen
             </h2>
@@ -371,6 +341,23 @@ export default function FieldEditor({
 
         {["radio", "select"].includes(field.type) && (
           <div className="pt-4 border-t border-gray-100">
+            {field.type === "radio" && (
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg mb-4">
+                <input
+                  type="checkbox"
+                  id="multiSelect"
+                  checked={field.multiSelect || false}
+                  onChange={(e) => onUpdate({ multiSelect: e.target.checked })}
+                  className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 cursor-pointer"
+                />
+                <label
+                  htmlFor="multiSelect"
+                  className="text-sm font-medium text-gray-700 cursor-pointer"
+                >
+                  Allow multiple selections
+                </label>
+              </div>
+            )}
             <label className="block text-sm font-medium text-gray-700 mb-3">
               Options
             </label>
