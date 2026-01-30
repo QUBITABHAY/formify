@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FormMode } from "./types";
 import FlowFormBuilder from "../Flow/FlowFormBuilder";
 import SinglePageFormBuilder from "../Single/SinglePageFormBuilder";
+import Button from "../../common/Button";
 
 export default function FormBuilder() {
   const [mode, setMode] = useState<FormMode>("flow");
@@ -9,27 +10,27 @@ export default function FormBuilder() {
   return (
     <div className="h-screen flex flex-col relative">
       <div className="absolute top-3 right-80 z-10">
-        <div className="flex items-center bg-gray-100 rounded-lg p-1 shadow-sm border border-gray-200">
-          <button
+        <div className="flex items-center gap-2">
+          <Button
+            title="Single Page"
             onClick={() => setMode("single")}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+            bgColor={
               mode === "single"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            Single Page
-          </button>
-          <button
+                ? "bg-indigo-500 hover:bg-indigo-600"
+                : "bg-white border border-gray-300 hover:bg-gray-50"
+            }
+            textColor={mode === "single" ? "text-white" : "text-gray-700"}
+          />
+          <Button
+            title="Flow"
             onClick={() => setMode("flow")}
-            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+            bgColor={
               mode === "flow"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            Flow
-          </button>
+                ? "bg-indigo-500 hover:bg-indigo-600"
+                : "bg-white border border-gray-300 hover:bg-gray-50"
+            }
+            textColor={mode === "flow" ? "text-white" : "text-gray-700"}
+          />
         </div>
       </div>
 

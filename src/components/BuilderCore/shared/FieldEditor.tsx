@@ -92,21 +92,6 @@ export default function FieldEditor({
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full overflow-y-auto">
         <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-white">
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center">
-              <svg
-                className="w-3 h-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </span>
             <h2 className="text-lg font-semibold text-gray-800">
               Welcome Screen
             </h2>
@@ -160,21 +145,6 @@ export default function FieldEditor({
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full overflow-y-auto">
         <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white">
           <div className="flex items-center gap-2 mb-1">
-            <span className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center">
-              <svg
-                className="w-3 h-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </span>
             <h2 className="text-lg font-semibold text-gray-800">
               Thank You Screen
             </h2>
