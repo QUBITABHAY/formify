@@ -251,6 +251,30 @@ function FlowPage({
           </div>
         );
       case "radio":
+        if (field.multiSelect) {
+          const selectedValues = Array.isArray(formData[field.id])
+            ? formData[field.id]
+            : [];
+          return (
+            <div className="flex flex-col gap-3 w-full max-w-lg">
+              {field.options?.map((option) => (
+                <Checkbox
+                  key={option.value}
+                  title={option.label}
+                  checked={selectedValues.includes(option.value)}
+                  onChange={(checked) => {
+                    const newValues = checked
+                      ? [...selectedValues, option.value]
+                      : selectedValues.filter(
+                          (v: string) => v !== option.value,
+                        );
+                    handleFieldChange(field.id, newValues);
+                  }}
+                />
+              ))}
+            </div>
+          );
+        }
         return (
           <div className="flex flex-col gap-3 w-full max-w-lg">
             {field.options?.map((option) => (

@@ -341,6 +341,23 @@ export default function FieldEditor({
 
         {["radio", "select"].includes(field.type) && (
           <div className="pt-4 border-t border-gray-100">
+            {field.type === "radio" && (
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg mb-4">
+                <input
+                  type="checkbox"
+                  id="multiSelect"
+                  checked={field.multiSelect || false}
+                  onChange={(e) => onUpdate({ multiSelect: e.target.checked })}
+                  className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 cursor-pointer"
+                />
+                <label
+                  htmlFor="multiSelect"
+                  className="text-sm font-medium text-gray-700 cursor-pointer"
+                >
+                  Allow multiple selections
+                </label>
+              </div>
+            )}
             <label className="block text-sm font-medium text-gray-700 mb-3">
               Options
             </label>

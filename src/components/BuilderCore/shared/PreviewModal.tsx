@@ -49,6 +49,7 @@ export default function PreviewModal({
     defaultValue: field.defaultValue,
     name: field.name,
     required: field.required,
+    multiSelect: field.multiSelect,
   }));
 
   return (

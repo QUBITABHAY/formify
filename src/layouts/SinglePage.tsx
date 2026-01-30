@@ -108,6 +108,36 @@ function SinglePage({
           />
         );
       case "radio":
+        if (field.multiSelect) {
+          const selectedValues = Array.isArray(formData[field.id])
+            ? formData[field.id]
+            : [];
+          return (
+            <div>
+              <label className="text-sm font-normal text-gray-700 mb-3 block">
+                {field.title}
+                {field.required && <span className="text-red-500 ml-1">*</span>}
+              </label>
+              <div className="flex flex-col gap-3">
+                {field.options?.map((option) => (
+                  <Checkbox
+                    key={option.value}
+                    title={option.label}
+                    checked={selectedValues.includes(option.value)}
+                    onChange={(checked) => {
+                      const newValues = checked
+                        ? [...selectedValues, option.value]
+                        : selectedValues.filter(
+                            (v: string) => v !== option.value,
+                          );
+                      handleFieldChange(field.id, newValues);
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        }
         return (
           <div>
             <label className="text-sm font-normal text-gray-700 mb-3 block">
