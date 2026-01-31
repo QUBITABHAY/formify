@@ -63,6 +63,11 @@ function HomePage() {
           >
             Learn more &rarr;
           </button>
+          <Button
+            title="Dashboard"
+            onClick={() => navigate("/dashboard")}
+            textColor="text-white px-8 py-3 text-lg"
+          />
         </div>
       </div>
 

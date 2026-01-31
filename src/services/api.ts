@@ -44,6 +44,16 @@ export const createForm = async (
   }
 };
 
+export const getForms = async (userId: number = 1): Promise<FormResponse[]> => {
+  try {
+    const response = await api.get<FormResponse[]>(`/users/${userId}/forms`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching forms for user ${userId}:`, error);
+    throw error;
+  }
+};
+
 export const getForm = async (id: number): Promise<FormResponse> => {
   try {
     const response = await api.get<FormResponse>(`/forms/${id}`);
