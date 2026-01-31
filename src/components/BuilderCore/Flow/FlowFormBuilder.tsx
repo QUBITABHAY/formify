@@ -16,7 +16,8 @@ import FieldPalette from "../shared/FieldPalette";
 import FieldEditor from "../shared/FieldEditor";
 import PreviewModal from "../shared/PreviewModal";
 import FlowPageCanvas from "./FlowPageCanvas";
-import { createForm } from "../../../services/api";
+import { updateForm } from "../../../services/api";
+import logo from "../../../assets/logo.svg";
 
 import type {
   FormFieldConfig,
@@ -29,47 +30,63 @@ function generateId(): string {
   return `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-export default function FlowFormBuilder() {
-  const [fields, setFields] = useState<FormFieldConfig[]>([]);
-  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [showPreview, setShowPreview] = useState(false);
+interface FlowFormBuilderProps {
+  formId?: number;
+  initialFields?: FormFieldConfig[];
+  initialWelcome?: WelcomeScreenConfig;
+  initialThankYou?: ThankYouScreenConfig;
+}
 
-  const [welcomeScreen, setWelcomeScreen] = useState<WelcomeScreenConfig>({
+export default function FlowFormBuilder({
+  formId,
+  initialFields = [],
+  initialWelcome = {
     title: "Welcome!",
     description:
       "Let's get to know you better. This will only take a few minutes.",
     buttonText: "Start",
-  });
-
-  const [thankYouScreen, setThankYouScreen] = useState<ThankYouScreenConfig>({
+  },
+  initialThankYou = {
     title: "Thank you!",
     description:
       "Your response has been submitted successfully. We'll be in touch soon.",
     emoji: "🎉",
-  });
-  const [isCreating, setIsCreating] = useState(false);
+  },
+}: FlowFormBuilderProps) {
+  const [fields, setFields] = useState<FormFieldConfig[]>(initialFields);
+  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
-  const handleCreateForm = async () => {
+  const [welcomeScreen, setWelcomeScreen] =
+    useState<WelcomeScreenConfig>(initialWelcome);
+
+  const [thankYouScreen, setThankYouScreen] =
+    useState<ThankYouScreenConfig>(initialThankYou);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveForm = async () => {
+    if (!formId) {
+      alert("Form ID not found. Cannot save.");
+      return;
+    }
     try {
-      setIsCreating(true);
+      setIsSaving(true);
       const schema = {
+        type: "flow",
         fields,
         welcomeScreen,
         thankYouScreen,
       };
-      await createForm({
-        name: welcomeScreen.title,
-        description: welcomeScreen.description,
-        user_id: 1, // Replace with actual user ID
+      await updateForm(formId, {
         schema,
       });
-      alert("Form created successfully!");
+      alert("Form saved successfully!");
     } catch (error) {
-      console.error("Failed to create form:", error);
-      alert("Failed to create form. Please try again.");
+      console.error("Failed to save form:", error);
+      alert("Failed to save form. Please try again.");
     } finally {
-      setIsCreating(false);
+      setIsSaving(false);
     }
   };
 
@@ -165,10 +182,10 @@ export default function FlowFormBuilder() {
     <div className="h-full flex flex-col bg-gray-100">
       <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <img src="/logo.svg" alt="Formify" className="w-8 h-8" />
+          <img src={logo} alt="Formify" className="w-8 h-8" />
           <div>
             <h1 className="text-lg font-semibold text-gray-900">
-              Flow Builder
+              Conversational Form Builder
             </h1>
             <p className="text-xs text-gray-500">{fields.length} fields</p>
           </div>
@@ -182,11 +199,11 @@ export default function FlowFormBuilder() {
             Preview
           </button>
           <button
-            onClick={handleCreateForm}
-            disabled={isCreating}
+            onClick={handleSaveForm}
+            disabled={isSaving}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isCreating ? "Creating..." : "Create Form"}
+            {isSaving ? "Saving..." : "Save Changes"}
           </button>
           <button className="px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors">
             Publish

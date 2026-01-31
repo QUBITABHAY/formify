@@ -16,7 +16,8 @@ import FieldPalette from "../shared/FieldPalette";
 import FieldEditor from "../shared/FieldEditor";
 import PreviewModal from "../shared/PreviewModal";
 import SinglePageCanvas from "./SinglePageCanvas";
-import { createForm } from "../../../services/api";
+import { updateForm } from "../../../services/api";
+import logo from "../../../assets/logo.svg";
 
 import type { FormFieldConfig, FieldTemplate } from "../shared/types";
 
@@ -24,40 +25,56 @@ function generateId(): string {
   return `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-export default function SinglePageFormBuilder() {
-  const [fields, setFields] = useState<FormFieldConfig[]>([]);
+interface SinglePageFormBuilderProps {
+  formId?: number;
+  initialFields?: FormFieldConfig[];
+  initialTitle?: string;
+  initialDescription?: string;
+  initialBanner?: string;
+}
+
+export default function SinglePageFormBuilder({
+  formId,
+  initialFields = [],
+  initialTitle = "Registration Form",
+  initialDescription = "Please fill out the details below.",
+  initialBanner = "https://picsum.photos/800/200",
+}: SinglePageFormBuilderProps) {
+  const [fields, setFields] = useState<FormFieldConfig[]>(initialFields);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
-  const [formTitle, setFormTitle] = useState("Registration Form");
-  const [formDescription, setFormDescription] = useState(
-    "Please fill out the details below.",
-  );
-  const [formBanner, setFormBanner] = useState("https://picsum.photos/800/200");
-  const [isCreating, setIsCreating] = useState(false);
+  const [formTitle, setFormTitle] = useState(initialTitle);
+  const [formDescription, setFormDescription] = useState(initialDescription);
+  const [formBanner, setFormBanner] = useState(initialBanner);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleCreateForm = async () => {
+  const handleSaveForm = async () => {
+    if (!formId) {
+      alert("Form ID not found. Cannot save.");
+      return;
+    }
     try {
-      setIsCreating(true);
+      setIsSaving(true);
       const schema = {
+        type: "single",
         fields,
         formTitle,
         formDescription,
         formBanner,
       };
-      await createForm({
+      await updateForm(formId, {
         name: formTitle,
         description: formDescription,
-        user_id: 1, // Replace with actual user ID
         schema,
       });
-      alert("Form created successfully!");
+      alert("Form saved successfully!");
     } catch (error) {
-      console.error("Failed to create form:", error);
-      alert("Failed to create form. Please try again.");
+      console.error("Failed to save form:", error);
+      alert("Failed to save form. Please try again.");
     } finally {
-      setIsCreating(false);
+      setIsSaving(false);
     }
   };
 
@@ -144,7 +161,7 @@ export default function SinglePageFormBuilder() {
     <div className="h-full flex flex-col bg-gray-100">
       <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <img src="/logo.svg" alt="Formify" className="w-8 h-8" />
+          <img src={logo} alt="Formify" className="w-8 h-8" />
           <div>
             <h1 className="text-lg font-semibold text-gray-900">
               Single Page Builder
@@ -161,11 +178,11 @@ export default function SinglePageFormBuilder() {
             Preview
           </button>
           <button
-            onClick={handleCreateForm}
-            disabled={isCreating}
+            onClick={handleSaveForm}
+            disabled={isSaving}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isCreating ? "Creating..." : "Create Form"}
+            {isSaving ? "Saving..." : "Save Changes"}
           </button>
           <button className="px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors">
             Publish

@@ -1,41 +1,67 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { FormMode } from "./types";
 import FlowFormBuilder from "../Flow/FlowFormBuilder";
 import SinglePageFormBuilder from "../Single/SinglePageFormBuilder";
-import Button from "../../common/Button";
+import { getForm, type FormResponse } from "../../../services/api";
 
-export default function FormBuilder() {
+interface FormBuilderProps {
+  formId?: number;
+}
+
+export default function FormBuilder({ formId }: FormBuilderProps) {
   const [mode, setMode] = useState<FormMode>("flow");
+  const [formData, setFormData] = useState<FormResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchForm = async () => {
+      if (!formId) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const data = await getForm(formId);
+        setFormData(data);
+        if (data.schema && typeof data.schema.type === "string") {
+          setMode(data.schema.type as FormMode);
+        }
+      } catch (error) {
+        console.error("Failed to fetch form", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchForm();
+  }, [formId]);
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col relative">
-      <div className="absolute top-3 right-80 z-10">
-        <div className="flex items-center gap-2">
-          <Button
-            title="Single Page"
-            onClick={() => setMode("single")}
-            bgColor={
-              mode === "single"
-                ? "bg-indigo-500 hover:bg-indigo-600"
-                : "bg-white border border-gray-300 hover:bg-gray-50"
-            }
-            textColor={mode === "single" ? "text-white" : "text-gray-700"}
-          />
-          <Button
-            title="Flow"
-            onClick={() => setMode("flow")}
-            bgColor={
-              mode === "flow"
-                ? "bg-indigo-500 hover:bg-indigo-600"
-                : "bg-white border border-gray-300 hover:bg-gray-50"
-            }
-            textColor={mode === "flow" ? "text-white" : "text-gray-700"}
-          />
-        </div>
-      </div>
-
       <div className="flex-1 h-full">
-        {mode === "flow" ? <FlowFormBuilder /> : <SinglePageFormBuilder />}
+        {mode === "flow" ? (
+          <FlowFormBuilder
+            formId={formId}
+            initialFields={formData?.schema?.fields as any}
+            initialWelcome={formData?.schema?.welcomeScreen as any}
+            initialThankYou={formData?.schema?.thankYouScreen as any}
+          />
+        ) : (
+          <SinglePageFormBuilder
+            formId={formId}
+            initialFields={formData?.schema?.fields as any}
+            initialTitle={formData?.name}
+            initialDescription={formData?.description}
+            initialBanner={formData?.schema?.formBanner as string}
+          />
+        )}
       </div>
     </div>
   );
