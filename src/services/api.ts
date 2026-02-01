@@ -27,7 +27,10 @@ export interface FormResponse {
   name: string;
   description: string;
   user_id: number;
+  status: "draft" | "published";
   schema: Record<string, unknown>;
+  settings: Record<string, unknown>;
+  share_url: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -73,6 +76,77 @@ export const updateForm = async (
     return response.data;
   } catch (error) {
     console.error(`Error updating form ${id}:`, error);
+    throw error;
+  }
+};
+
+export interface FormSubmission {
+  id: number;
+  form_id: number;
+  data: Record<string, string | string[] | boolean>;
+  meta: Record<string, any>;
+  created_at: string;
+}
+
+export interface FormResponsesResult {
+  form_id: number;
+  count: number;
+  responses: FormSubmission[];
+}
+
+export const getResponse = async (id: number): Promise<FormSubmission> => {
+  try {
+    const response = await api.get<FormSubmission>(`/responses/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching response ${id}:`, error);
+    throw error;
+  }
+};
+
+export const getFormResponses = async (
+  formId: number,
+): Promise<FormResponsesResult> => {
+  try {
+    const response = await api.get<FormResponsesResult>(
+      `/forms/${formId}/responses`,
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching responses for form ${formId}:`, error);
+    throw error;
+  }
+};
+
+export const publishForm = async (id: number): Promise<FormResponse> => {
+  try {
+    const response = await api.post<FormResponse>(`/forms/${id}/publish`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error publishing form ${id}:`, error);
+    throw error;
+  }
+};
+
+export const unpublishForm = async (id: number): Promise<FormResponse> => {
+  try {
+    const response = await api.post<FormResponse>(`/forms/${id}/unpublish`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error unpublishing form ${id}:`, error);
+    throw error;
+  }
+};
+
+export const submitResponse = async (
+  formId: number,
+  answers: Record<string, string | string[]>,
+  meta: Record<string, any> = {},
+): Promise<void> => {
+  try {
+    await api.post(`/responses/${formId}`, { data: answers, meta });
+  } catch (error) {
+    console.error(`Error submitting response for form ${formId}:`, error);
     throw error;
   }
 };

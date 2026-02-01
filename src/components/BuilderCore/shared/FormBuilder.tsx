@@ -52,6 +52,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
             initialFields={formData?.schema?.fields as any}
             initialWelcome={formData?.schema?.welcomeScreen as any}
             initialThankYou={formData?.schema?.thankYouScreen as any}
+            initialIsPublished={formData?.status === "published"}
           />
         ) : (
           <SinglePageFormBuilder
@@ -60,6 +61,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
             initialTitle={formData?.name}
             initialDescription={formData?.description}
             initialBanner={formData?.schema?.formBanner as string}
+            initialIsPublished={formData?.status === "published"}
           />
         )}
       </div>

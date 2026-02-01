@@ -83,7 +83,7 @@ export default function DashboardPage() {
           <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-200">
             <div className="mx-auto h-12 w-12 text-gray-400 mb-4">
               <div className="mx-auto h-12 w-12 text-gray-400 mb-4 flex items-center justify-center">
-                <Icons.Sparkles />
+                <Icons.Inbox />
               </div>
             </div>
             <h3 className="text-lg font-medium text-gray-900">No forms yet</h3>
@@ -126,6 +126,15 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100 text-sm text-gray-500">
                   <span>
                     {new Date(form.created_at).toLocaleDateString("en-IN")}
+                  </span>
+                  <span
+                    className="flex items-center text-indigo-600 font-medium mr-4 hover:underline z-10"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/forms/${form.id}/responses`);
+                    }}
+                  >
+                    View Responses
                   </span>
                   <span className="flex items-center text-indigo-600 font-medium">
                     Edit <span className="ml-1">&rarr;</span>

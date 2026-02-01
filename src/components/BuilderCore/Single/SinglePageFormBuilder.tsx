@@ -15,8 +15,9 @@ import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import FieldPalette from "../shared/FieldPalette";
 import FieldEditor from "../shared/FieldEditor";
 import PreviewModal from "../shared/PreviewModal";
+import ShareModal from "../../common/ShareModal";
 import SinglePageCanvas from "./SinglePageCanvas";
-import { updateForm } from "../../../services/api";
+import { updateForm, publishForm, unpublishForm } from "../../../services/api";
 import logo from "../../../assets/logo.svg";
 
 import type { FormFieldConfig, FieldTemplate } from "../shared/types";
@@ -31,6 +32,7 @@ interface SinglePageFormBuilderProps {
   initialTitle?: string;
   initialDescription?: string;
   initialBanner?: string;
+  initialIsPublished?: boolean;
 }
 
 export default function SinglePageFormBuilder({
@@ -39,6 +41,7 @@ export default function SinglePageFormBuilder({
   initialTitle = "Registration Form",
   initialDescription = "Please fill out the details below.",
   initialBanner = "https://picsum.photos/800/200",
+  initialIsPublished = false,
 }: SinglePageFormBuilderProps) {
   const [fields, setFields] = useState<FormFieldConfig[]>(initialFields);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
@@ -49,6 +52,9 @@ export default function SinglePageFormBuilder({
   const [formDescription, setFormDescription] = useState(initialDescription);
   const [formBanner, setFormBanner] = useState(initialBanner);
   const [isSaving, setIsSaving] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [isPublished, setIsPublished] = useState(initialIsPublished);
 
   const handleSaveForm = async () => {
     if (!formId) {
@@ -69,12 +75,51 @@ export default function SinglePageFormBuilder({
         description: formDescription,
         schema,
       });
-      alert("Form saved successfully!");
+      return true;
     } catch (error) {
       console.error("Failed to save form:", error);
       alert("Failed to save form. Please try again.");
+      return false;
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!formId) return;
+
+    const saved = await handleSaveForm();
+    if (!saved) return;
+
+    try {
+      setIsPublishing(true);
+      const result = await publishForm(formId);
+      setIsPublished(result.status === "published");
+      setShowShareModal(true);
+    } catch (error) {
+      console.error("Failed to publish form:", error);
+      alert("Failed to publish form.");
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  const handleUnpublish = async () => {
+    if (!formId) return;
+    if (
+      !confirm(
+        "Are you sure you want to unpublish this form? It will no longer be accessible to the public.",
+      )
+    )
+      return;
+
+    try {
+      const result = await unpublishForm(formId);
+      setIsPublished(result.status === "published");
+      alert("Form unpublished successfully.");
+    } catch (error) {
+      console.error("Failed to unpublish form:", error);
+      alert("Failed to unpublish form.");
     }
   };
 
@@ -172,6 +217,12 @@ export default function SinglePageFormBuilder({
 
         <div className="flex items-center gap-2">
           <button
+            onClick={() => setShowShareModal(true)}
+            className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors"
+          >
+            Share
+          </button>
+          <button
             onClick={() => setShowPreview(true)}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
@@ -182,11 +233,24 @@ export default function SinglePageFormBuilder({
             disabled={isSaving}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSaving ? "Saving..." : "Save Changes"}
+            {isSaving ? "Saving..." : "Save"}
           </button>
-          <button className="px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors">
-            Publish
-          </button>
+          {isPublished ? (
+            <button
+              onClick={handleUnpublish}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+            >
+              Unpublish
+            </button>
+          ) : (
+            <button
+              onClick={handlePublish}
+              disabled={isPublishing}
+              className="px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors disabled:opacity-50"
+            >
+              {isPublishing ? "Publishing..." : "Publish"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -250,6 +314,13 @@ export default function SinglePageFormBuilder({
         welcomeScreen={{ title: "", description: "", buttonText: "" }}
         thankYouScreen={{ title: "", description: "", emoji: "" }}
       />
+      {formId && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          formId={formId}
+        />
+      )}
     </div>
   );
 }
