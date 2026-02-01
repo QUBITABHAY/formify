@@ -79,6 +79,8 @@ export default function FlowFormBuilder({
         thankYouScreen,
       };
       await updateForm(formId, {
+        name: welcomeScreen.title,
+        description: welcomeScreen.description,
         schema,
       });
       alert("Form saved successfully!");
@@ -185,7 +187,7 @@ export default function FlowFormBuilder({
           <img src={logo} alt="Formify" className="w-8 h-8" />
           <div>
             <h1 className="text-lg font-semibold text-gray-900">
-              Conversational Form Builder
+              {welcomeScreen.title || "Conversational Form Builder"}
             </h1>
             <p className="text-xs text-gray-500">{fields.length} fields</p>
           </div>
@@ -263,8 +265,8 @@ export default function FlowFormBuilder({
         fields={fields}
         welcomeScreen={welcomeScreen}
         thankYouScreen={thankYouScreen}
-        formTitle=""
-        formDescription=""
+        formTitle={welcomeScreen.title}
+        formDescription={welcomeScreen.description}
         formBanner=""
       />
     </div>
