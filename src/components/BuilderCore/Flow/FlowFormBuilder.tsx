@@ -15,8 +15,10 @@ import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import FieldPalette from "../shared/FieldPalette";
 import FieldEditor from "../shared/FieldEditor";
 import PreviewModal from "../shared/PreviewModal";
+import ShareModal from "../../common/ShareModal";
 import FlowPageCanvas from "./FlowPageCanvas";
-import { createForm } from "../../../services/api";
+import { updateForm, publishForm, unpublishForm } from "../../../services/api";
+import logo from "../../../assets/logo.svg";
 
 import type {
   FormFieldConfig,
@@ -29,47 +31,109 @@ function generateId(): string {
   return `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-export default function FlowFormBuilder() {
-  const [fields, setFields] = useState<FormFieldConfig[]>([]);
-  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [showPreview, setShowPreview] = useState(false);
+interface FlowFormBuilderProps {
+  formId?: number;
+  initialFields?: FormFieldConfig[];
+  initialWelcome?: WelcomeScreenConfig;
+  initialThankYou?: ThankYouScreenConfig;
+  initialIsPublished?: boolean;
+}
 
-  const [welcomeScreen, setWelcomeScreen] = useState<WelcomeScreenConfig>({
+export default function FlowFormBuilder({
+  formId,
+  initialFields = [],
+  initialWelcome = {
     title: "Welcome!",
     description:
       "Let's get to know you better. This will only take a few minutes.",
     buttonText: "Start",
-  });
-
-  const [thankYouScreen, setThankYouScreen] = useState<ThankYouScreenConfig>({
+  },
+  initialThankYou = {
     title: "Thank you!",
     description:
       "Your response has been submitted successfully. We'll be in touch soon.",
     emoji: "🎉",
-  });
-  const [isCreating, setIsCreating] = useState(false);
+  },
+  initialIsPublished = false,
+}: FlowFormBuilderProps) {
+  const [fields, setFields] = useState<FormFieldConfig[]>(initialFields);
+  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
-  const handleCreateForm = async () => {
+  const [welcomeScreen, setWelcomeScreen] =
+    useState<WelcomeScreenConfig>(initialWelcome);
+
+  const [thankYouScreen, setThankYouScreen] =
+    useState<ThankYouScreenConfig>(initialThankYou);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [isPublished, setIsPublished] = useState(initialIsPublished);
+
+  const handleSaveForm = async () => {
+    if (!formId) {
+      alert("Form ID not found. Cannot save.");
+      return;
+    }
     try {
-      setIsCreating(true);
+      setIsSaving(true);
       const schema = {
+        type: "flow",
         fields,
         welcomeScreen,
         thankYouScreen,
       };
-      await createForm({
+      await updateForm(formId, {
         name: welcomeScreen.title,
         description: welcomeScreen.description,
-        user_id: 1, // Replace with actual user ID
         schema,
       });
-      alert("Form created successfully!");
+      return true;
     } catch (error) {
-      console.error("Failed to create form:", error);
-      alert("Failed to create form. Please try again.");
+      console.error("Failed to save form:", error);
+      alert("Failed to save form. Please try again.");
+      return false;
     } finally {
-      setIsCreating(false);
+      setIsSaving(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!formId) return;
+
+    const saved = await handleSaveForm();
+    if (!saved) return;
+
+    try {
+      setIsPublishing(true);
+      const result = await publishForm(formId);
+      setIsPublished(result.status === "published");
+      setShowShareModal(true);
+    } catch (error) {
+      console.error("Failed to publish form:", error);
+      alert("Failed to publish form.");
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  const handleUnpublish = async () => {
+    if (!formId) return;
+    if (
+      !confirm(
+        "Are you sure you want to unpublish this form? It will no longer be accessible to the public.",
+      )
+    )
+      return;
+
+    try {
+      const result = await unpublishForm(formId);
+      setIsPublished(result.status === "published");
+      alert("Form unpublished successfully.");
+    } catch (error) {
+      console.error("Failed to unpublish form:", error);
+      alert("Failed to unpublish form.");
     }
   };
 
@@ -165,10 +229,10 @@ export default function FlowFormBuilder() {
     <div className="h-full flex flex-col bg-gray-100">
       <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <img src="/logo.svg" alt="Formify" className="w-8 h-8" />
+          <img src={logo} alt="Formify" className="w-8 h-8" />
           <div>
             <h1 className="text-lg font-semibold text-gray-900">
-              Flow Builder
+              {welcomeScreen.title || "Conversational Form Builder"}
             </h1>
             <p className="text-xs text-gray-500">{fields.length} fields</p>
           </div>
@@ -176,21 +240,40 @@ export default function FlowFormBuilder() {
 
         <div className="flex items-center gap-2">
           <button
+            onClick={() => setShowShareModal(true)}
+            className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors"
+          >
+            Share
+          </button>
+          <button
             onClick={() => setShowPreview(true)}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
             Preview
           </button>
           <button
-            onClick={handleCreateForm}
-            disabled={isCreating}
+            onClick={handleSaveForm}
+            disabled={isSaving}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isCreating ? "Creating..." : "Create Form"}
+            {isSaving ? "Saving..." : "Save"}
           </button>
-          <button className="px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors">
-            Publish
-          </button>
+          {isPublished ? (
+            <button
+              onClick={handleUnpublish}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
+            >
+              Unpublish
+            </button>
+          ) : (
+            <button
+              onClick={handlePublish}
+              disabled={isPublishing}
+              className="px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors disabled:opacity-50"
+            >
+              {isPublishing ? "Publishing..." : "Publish"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -246,10 +329,17 @@ export default function FlowFormBuilder() {
         fields={fields}
         welcomeScreen={welcomeScreen}
         thankYouScreen={thankYouScreen}
-        formTitle=""
-        formDescription=""
+        formTitle={welcomeScreen.title}
+        formDescription={welcomeScreen.description}
         formBanner=""
       />
+      {formId && (
+        <ShareModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          formId={formId}
+        />
+      )}
     </div>
   );
 }
