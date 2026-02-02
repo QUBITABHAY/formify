@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import Modal from "../components/common/Modal";
 import Button from "../components/common/Button";
 import { Icons } from "../components/common/icons";
-import { createForm, getForms, type FormResponse } from "../services/api";
+import {
+  createForm,
+  getForms,
+  deleteForm,
+  type FormResponse,
+} from "../services/api";
 import logo from "../assets/logo.svg";
 
 export default function DashboardPage() {
@@ -12,6 +17,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [deleting, setDeleting] = useState<number | null>(null);
 
   useEffect(() => {
     fetchForms();
@@ -42,6 +48,27 @@ export default function DashboardPage() {
     } finally {
       setCreating(false);
       setIsModalOpen(false);
+    }
+  };
+
+  const handleDeleteForm = async (e: React.MouseEvent, formId: number) => {
+    e.stopPropagation();
+    if (
+      !confirm(
+        "Are you sure you want to delete this form? This action cannot be undone.",
+      )
+    ) {
+      return;
+    }
+    try {
+      setDeleting(formId);
+      await deleteForm(formId);
+      setForms(forms.filter((f) => f.id !== formId));
+    } catch (error) {
+      console.error("Failed to delete form", error);
+      alert("Failed to delete form. Please try again.");
+    } finally {
+      setDeleting(null);
     }
   };
 
@@ -90,7 +117,7 @@ export default function DashboardPage() {
             <p className="mt-1 text-gray-500">
               Get started by creating your first form.
             </p>
-            <div className="mt-6">
+            <div className="mt-6 flex items-center justify-center">
               <Button
                 title="Create Form"
                 onClick={() => setIsModalOpen(true)}
@@ -127,18 +154,26 @@ export default function DashboardPage() {
                   <span>
                     {new Date(form.created_at).toLocaleDateString("en-IN")}
                   </span>
-                  <span
-                    className="flex items-center text-indigo-600 font-medium mr-4 hover:underline z-10"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/forms/${form.id}/responses`);
-                    }}
-                  >
-                    View Responses
-                  </span>
-                  <span className="flex items-center text-indigo-600 font-medium">
-                    Edit <span className="ml-1">&rarr;</span>
-                  </span>
+                  <div className="flex items-center gap-4">
+                    <span
+                      className="flex items-center text-indigo-600 font-medium hover:underline z-10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/forms/${form.id}/responses`);
+                      }}
+                    >
+                      View Responses
+                    </span>
+                    <span
+                      className={`flex items-center font-medium z-10 ${deleting === form.id ? "text-gray-400" : "text-red-600 hover:text-red-700 hover:underline"}`}
+                      onClick={(e) => handleDeleteForm(e, form.id)}
+                    >
+                      {deleting === form.id ? "Deleting..." : "Delete"}
+                    </span>
+                    <span className="flex items-center text-indigo-600 font-medium">
+                      Edit <span className="ml-1">&rarr;</span>
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}

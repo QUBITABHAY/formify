@@ -80,6 +80,15 @@ export const updateForm = async (
   }
 };
 
+export const deleteForm = async (id: number): Promise<void> => {
+  try {
+    await api.delete(`/forms/${id}`);
+  } catch (error) {
+    console.error(`Error deleting form ${id}:`, error);
+    throw error;
+  }
+};
+
 export interface FormSubmission {
   id: number;
   form_id: number;
@@ -100,6 +109,15 @@ export const getResponse = async (id: number): Promise<FormSubmission> => {
     return response.data;
   } catch (error) {
     console.error(`Error fetching response ${id}:`, error);
+    throw error;
+  }
+};
+
+export const deleteResponse = async (id: number): Promise<void> => {
+  try {
+    await api.delete(`/responses/${id}`);
+  } catch (error) {
+    console.error(`Error deleting response ${id}:`, error);
     throw error;
   }
 };
