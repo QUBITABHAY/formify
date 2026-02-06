@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  getForm,
-  getFormResponses,
-  type FormResponse,
-  type FormResponsesResult,
-} from "../services/api";
+import { getForm, getFormResponses, deleteResponse } from "../services/api";
+import type { FormResponse, FormResponsesResult } from "../services/apiTypes";
 import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
 import { Icons } from "../components/common/icons";
 
@@ -16,6 +12,7 @@ export default function FormResponsesPage() {
   const [responsesData, setResponsesData] =
     useState<FormResponsesResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,6 +65,30 @@ export default function FormResponsesPage() {
     if (Array.isArray(answer)) return answer.join(", ");
     if (typeof answer === "boolean") return answer ? "Yes" : "No";
     return answer.toString();
+  };
+
+  const handleDeleteResponse = async (responseId: number) => {
+    if (
+      !confirm(
+        "Are you sure you want to delete this response? This action cannot be undone.",
+      )
+    ) {
+      return;
+    }
+    try {
+      setDeleting(responseId);
+      await deleteResponse(responseId);
+      setResponsesData({
+        ...responsesData!,
+        count: responsesData!.count - 1,
+        responses: responsesData!.responses.filter((r) => r.id !== responseId),
+      });
+    } catch (error) {
+      console.error("Failed to delete response", error);
+      alert("Failed to delete response. Please try again.");
+    } finally {
+      setDeleting(null);
+    }
   };
 
   return (
@@ -127,6 +148,9 @@ export default function FormResponsesPage() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                       Submission Time
                     </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -153,6 +177,15 @@ export default function FormResponsesPage() {
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                         {new Date(response.created_at).toLocaleTimeString()}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm">
+                        <button
+                          onClick={() => handleDeleteResponse(response.id)}
+                          disabled={deleting === response.id}
+                          className={`font-medium ${deleting === response.id ? "text-gray-400" : "text-red-600 hover:text-red-700 hover:underline"}`}
+                        >
+                          {deleting === response.id ? "Deleting..." : "Delete"}
+                        </button>
                       </td>
                     </tr>
                   ))}
