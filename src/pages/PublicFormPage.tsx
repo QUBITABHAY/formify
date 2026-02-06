@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getForm, submitResponse, type FormResponse } from "../services/api";
+import { getForm, submitResponse } from "../services/api";
+import type { FormResponse } from "../services/apiTypes";
 import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
 import FlowPage from "../layouts/FlowPage";
 import SinglePage from "../layouts/SinglePage";

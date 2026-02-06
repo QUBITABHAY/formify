@@ -3,12 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Modal from "../components/common/Modal";
 import Button from "../components/common/Button";
 import { Icons } from "../components/common/icons";
-import {
-  createForm,
-  getForms,
-  deleteForm,
-  type FormResponse,
-} from "../services/api";
+import { createForm, getForms, deleteForm } from "../services/api";
+import type { FormResponse } from "../services/apiTypes";
 import logo from "../assets/logo.svg";
 
 export default function DashboardPage() {

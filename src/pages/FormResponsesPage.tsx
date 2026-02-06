@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  getForm,
-  getFormResponses,
-  deleteResponse,
-  type FormResponse,
-  type FormResponsesResult,
-} from "../services/api";
+import { getForm, getFormResponses, deleteResponse } from "../services/api";
+import type { FormResponse, FormResponsesResult } from "../services/apiTypes";
 import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
 import { Icons } from "../components/common/icons";
 

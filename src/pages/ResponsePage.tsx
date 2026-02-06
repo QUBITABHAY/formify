@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  getForm,
-  getResponse,
-  type FormResponse,
-  type FormSubmission,
-} from "../services/api";
+import { getForm, getResponse } from "../services/api";
+import type { FormResponse, FormSubmission } from "../services/apiTypes";
 import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
 
 export default function ResponsePage() {

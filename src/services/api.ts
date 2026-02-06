@@ -1,4 +1,15 @@
 import axios from "axios";
+import type {
+  CreateFormRequest,
+  FormResponse,
+  UpdateFormRequest,
+  FormSubmission,
+  FormResponsesResult,
+  SignupRequest,
+  UserResponse,
+  LoginRequest,
+  LoginResponse,
+} from "./apiTypes";
 
 const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api`,
@@ -7,33 +18,6 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
-
-export interface CreateFormRequest {
-  name: string;
-  description?: string;
-  user_id: number;
-  schema: Record<string, unknown>;
-}
-
-export interface UpdateFormRequest {
-  name?: string;
-  description?: string;
-  schema?: Record<string, unknown>;
-  user_id?: number;
-}
-
-export interface FormResponse {
-  id: number;
-  name: string;
-  description: string;
-  user_id: number;
-  status: "draft" | "published";
-  schema: Record<string, unknown>;
-  settings: Record<string, unknown>;
-  share_url: string | null;
-  created_at: string;
-  updated_at: string;
-}
 
 export const createForm = async (
   data: CreateFormRequest,
@@ -88,20 +72,6 @@ export const deleteForm = async (id: number): Promise<void> => {
     throw error;
   }
 };
-
-export interface FormSubmission {
-  id: number;
-  form_id: number;
-  data: Record<string, string | string[] | boolean>;
-  meta: Record<string, any>;
-  created_at: string;
-}
-
-export interface FormResponsesResult {
-  form_id: number;
-  count: number;
-  responses: FormSubmission[];
-}
 
 export const getResponse = async (id: number): Promise<FormSubmission> => {
   try {
@@ -167,6 +137,30 @@ export const submitResponse = async (
     console.error(`Error submitting response for form ${formId}:`, error);
     throw error;
   }
+};
+
+export const signup = async (data: SignupRequest): Promise<UserResponse> => {
+  try {
+    const response = await api.post<UserResponse>("/users", data);
+    return response.data;
+  } catch (error) {
+    console.error("Error signing up:", error);
+    throw error;
+  }
+};
+
+export const login = async (data: LoginRequest): Promise<LoginResponse> => {
+  try {
+    const response = await api.post<LoginResponse>("/auth/login", data);
+    return response.data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+};
+
+export const getGoogleAuthUrl = (): string => {
+  return `${api.defaults.baseURL}/auth/google`;
 };
 
 export default api;
