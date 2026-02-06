@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Modal from "../components/common/Modal";
 import Button from "../components/common/Button";
 import { Icons } from "../components/common/icons";
 import { createForm, getForms, deleteForm } from "../services/api";
 import type { FormResponse } from "../services/apiTypes";
+import type { RootState } from "../store/store";
 import logo from "../assets/logo.svg";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.auth);
   const [forms, setForms] = useState<FormResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,11 +20,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchForms();
-  }, []);
+  }, [user]);
 
   const fetchForms = async () => {
+    if (!user?.id) return;
     try {
-      const data = await getForms();
+      const data = await getForms(user.id);
       setForms(data);
     } catch (error) {
       console.error("Failed to fetch forms", error);
@@ -31,11 +35,12 @@ export default function DashboardPage() {
   };
 
   const handleCreateForm = async (type: "single" | "flow") => {
+    if (!user?.id) return;
     try {
       setCreating(true);
       const newForm = await createForm({
         name: `My ${type === "single" ? "Single Page" : "Flow"} Form`,
-        user_id: 1,
+        user_id: user.id,
         schema: { type },
       });
       navigate(`/builder/${newForm.id}`);

@@ -1,25 +1,38 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import Button from "../components/common/Button";
 import logo from "../assets/logo.svg";
 import Modal from "../components/common/Modal";
 import { createForm } from "../services/api";
+import { logoutUser } from "../store/slices/authSlice";
+import type { RootState, AppDispatch } from "../store/store";
 
 function HomePage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleStartBuilding = () => {
+    if (!user?.id) {
+      navigate("/login");
+      return;
+    }
     setIsModalOpen(true);
   };
 
   const handleCreateForm = async (type: "single" | "flow") => {
+    if (!user?.id) {
+      navigate("/login");
+      return;
+    }
     try {
       setLoading(true);
       const newForm = await createForm({
         name: `My ${type === "single" ? "Single Page" : "Flow"} Form`,
-        user_id: 1,
+        user_id: user.id,
         schema: { type },
       });
       navigate(`/builder/${newForm.id}`);
@@ -31,6 +44,11 @@ function HomePage() {
     }
   };
 
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
       <nav className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
@@ -39,6 +57,40 @@ function HomePage() {
           <span className="text-xl font-bold tracking-tight text-gray-900">
             Formify
           </span>
+        </div>
+        <div className="flex items-center gap-3">
+          {user ? (
+            <>
+              <Button
+                title="Dashboard"
+                onClick={() => navigate("/dashboard")}
+                bgColor="bg-white hover:bg-gray-50"
+                textColor="text-gray-700"
+                className="border border-gray-200"
+              />
+              <Button
+                title="Logout"
+                onClick={handleLogout}
+                bgColor="bg-indigo-600 hover:bg-indigo-700"
+                textColor="text-white"
+              />
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium"
+              >
+                Login
+              </Link>
+              <Button
+                title="Sign Up"
+                onClick={() => navigate("/signup")}
+                bgColor="bg-indigo-600 hover:bg-indigo-700"
+                textColor="text-white"
+              />
+            </>
+          )}
         </div>
       </nav>
 
@@ -63,11 +115,6 @@ function HomePage() {
           >
             Learn more &rarr;
           </button>
-          <Button
-            title="Dashboard"
-            onClick={() => navigate("/dashboard")}
-            textColor="text-white px-8 py-3 text-lg"
-          />
         </div>
       </div>
 

@@ -9,15 +9,15 @@ import type {
 interface AuthState {
   isAuthenticated: boolean;
   user: UserResponse | null;
-  token: string | null;
   error: string | null;
   loading: boolean;
 }
 
+const storedUser = localStorage.getItem("user");
+
 const initialState: AuthState = {
-  isAuthenticated: false,
-  user: null,
-  token: null,
+  isAuthenticated: !!storedUser,
+  user: storedUser ? JSON.parse(storedUser) : null,
   error: null,
   loading: false,
 };
@@ -48,6 +48,7 @@ export const loginUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
   await api.post("/auth/logout");
+  localStorage.removeItem("user");
   return null;
 });
 
@@ -57,6 +58,11 @@ const authSlice = createSlice({
   reducers: {
     clearError: (state) => {
       state.error = null;
+    },
+    setAuth: (state, action) => {
+      state.isAuthenticated = true;
+      state.user = action.payload.user;
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
     },
   },
   extraReducers: (builder) => {
@@ -69,7 +75,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = true;
         state.user = action.payload.user;
-        state.token = action.payload.token;
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -78,7 +84,6 @@ const authSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         state.isAuthenticated = false;
         state.user = null;
-        state.token = null;
       })
       .addCase(signupUser.pending, (state) => {
         state.loading = true;
@@ -96,5 +101,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearError, setAuth } = authSlice.actions;
 export default authSlice.reducer;

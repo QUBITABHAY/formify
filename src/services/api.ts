@@ -14,6 +14,7 @@ import type {
 const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api`,
   timeout: 10000,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -132,7 +133,7 @@ export const submitResponse = async (
   meta: Record<string, any> = {},
 ): Promise<void> => {
   try {
-    await api.post(`/responses/${formId}`, { data: answers, meta });
+    await api.post(`/forms/${formId}/responses`, { data: answers, meta });
   } catch (error) {
     console.error(`Error submitting response for form ${formId}:`, error);
     throw error;

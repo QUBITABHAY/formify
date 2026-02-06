@@ -6,12 +6,19 @@ import ResponsePage from "./pages/ResponsePage";
 import FormResponsesPage from "./pages/FormResponsesPage";
 import PublicFormPage from "./pages/PublicFormPage";
 import "./App.css";
+import "react-redux";
+import LoginPage from "./pages/LoginPage";
+import SignUpPage from "./pages/SignUpPage";
+import AuthCallbackPage from "./pages/AuthCallbackPage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/builder/:formId" element={<BuilderPage />} />
         <Route
@@ -19,7 +26,7 @@ function App() {
           element={<FormResponsesPage />}
         />
         <Route path="/responses/:responseId" element={<ResponsePage />} />
-        <Route path="/s/:formId" element={<PublicFormPage />} />
+        <Route path="/forms/:formId" element={<PublicFormPage />} />
       </Routes>
     </BrowserRouter>
   );
