@@ -52,6 +52,18 @@ export const getForm = async (id: number): Promise<FormResponse> => {
   }
 };
 
+export const getPublicForm = async (
+  shareUrl: string,
+): Promise<FormResponse> => {
+  try {
+    const response = await api.get<FormResponse>(`/forms/share/${shareUrl}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching public form ${shareUrl}:`, error);
+    throw error;
+  }
+};
+
 export const updateForm = async (
   id: number,
   data: UpdateFormRequest,
@@ -162,6 +174,16 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
 
 export const getGoogleAuthUrl = (): string => {
   return `${api.defaults.baseURL}/auth/google`;
+};
+
+export const getCurrentUser = async (): Promise<UserResponse> => {
+  try {
+    const response = await api.get<UserResponse>("/auth/me");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    throw error;
+  }
 };
 
 export default api;

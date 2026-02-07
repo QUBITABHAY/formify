@@ -141,10 +141,14 @@ function SinglePage({
     return isValid;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateAllFields()) {
-      setIsSubmitted(true);
-      onSubmit?.(formData);
+      try {
+        await onSubmit?.(formData);
+        setIsSubmitted(true);
+      } catch (err) {
+        console.error("Form submission failed:", err);
+      }
     }
   };
 

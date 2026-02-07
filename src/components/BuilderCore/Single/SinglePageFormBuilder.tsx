@@ -55,6 +55,7 @@ export default function SinglePageFormBuilder({
   const [showShareModal, setShowShareModal] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isPublished, setIsPublished] = useState(initialIsPublished);
+  const [shareUrl, setShareUrl] = useState<string>("");
 
   const handleSaveForm = async () => {
     if (!formId) {
@@ -95,6 +96,9 @@ export default function SinglePageFormBuilder({
       setIsPublishing(true);
       const result = await publishForm(formId);
       setIsPublished(result.status === "published");
+      if (result.share_url) {
+        setShareUrl(result.share_url);
+      }
       setShowShareModal(true);
     } catch (error) {
       console.error("Failed to publish form:", error);
@@ -318,7 +322,7 @@ export default function SinglePageFormBuilder({
         <ShareModal
           isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
-          formId={formId}
+          shareUrl={shareUrl || formId.toString()}
         />
       )}
     </div>

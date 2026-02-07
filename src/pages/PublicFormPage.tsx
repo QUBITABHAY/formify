@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getForm, submitResponse } from "../services/api";
+import { submitResponse, getPublicForm } from "../services/api";
 import type { FormResponse } from "../services/apiTypes";
 import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
 import FlowPage from "../layouts/FlowPage";
@@ -17,7 +17,7 @@ export default function PublicFormPage() {
     const fetchForm = async () => {
       try {
         if (!formId) return;
-        const data = await getForm(parseInt(formId));
+        const data = await getPublicForm(formId);
         setForm(data);
       } catch (err) {
         console.error(err);
@@ -34,6 +34,27 @@ export default function PublicFormPage() {
 
     const schema = form.schema as any;
     const formFields = (schema.fields as FormFieldConfig[]) || [];
+
+    const missingFields: string[] = [];
+    formFields.forEach((field) => {
+      if (field.required) {
+        const value = answers[field.id];
+        if (
+          value === undefined ||
+          value === null ||
+          value === "" ||
+          (Array.isArray(value) && value.length === 0)
+        ) {
+          missingFields.push(field.title || field.id);
+        }
+      }
+    });
+
+    if (missingFields.length > 0) {
+      alert(`Please fill in the required fields: ${missingFields.join(", ")}`);
+      return;
+    }
+
     const fieldIdToTitle = formFields.reduce(
       (acc, field) => {
         acc[field.id] = field.title || field.id;
@@ -53,11 +74,12 @@ export default function PublicFormPage() {
 
     try {
       console.log("Submitting response:", structuredAnswers);
-      await submitResponse(parseInt(formId), structuredAnswers, {});
+      await submitResponse(form.id, structuredAnswers, {});
       setSubmitted(true);
     } catch (err) {
       console.error(err);
       alert("Failed to submit form. Please try again.");
+      throw err;
     }
   };
 

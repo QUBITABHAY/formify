@@ -5,19 +5,19 @@ import { useState } from "react";
 interface ShareModalProps {
   isOpen: boolean;
   onClose: () => void;
-  formId: number;
+  shareUrl: string;
 }
 
 export default function ShareModal({
   isOpen,
   onClose,
-  formId,
+  shareUrl,
 }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
-  const shareUrl = `${window.location.origin}/s/${formId}`;
+  const fullShareUrl = `${window.location.origin}/forms/${shareUrl}`;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(shareUrl);
+    navigator.clipboard.writeText(fullShareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -34,7 +34,7 @@ export default function ShareModal({
           <input
             type="text"
             readOnly
-            value={shareUrl}
+            value={fullShareUrl}
             className="flex-1 p-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
           />
           <Button
@@ -47,7 +47,7 @@ export default function ShareModal({
 
         <div className="flex justify-end pt-4 border-t border-gray-100">
           <button
-            onClick={() => window.open(shareUrl, "_blank")}
+            onClick={() => window.open(fullShareUrl, "_blank")}
             className="text-indigo-600 hover:text-indigo-800 font-medium"
           >
             Open in new tab &rarr;
