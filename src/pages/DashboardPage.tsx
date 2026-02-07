@@ -19,7 +19,9 @@ export default function DashboardPage() {
   const [deleting, setDeleting] = useState<number | null>(null);
 
   useEffect(() => {
-    fetchForms();
+    if (user?.id) {
+      fetchForms();
+    }
   }, [user]);
 
   const fetchForms = async () => {
