@@ -3,6 +3,8 @@ import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
+import DatePicker from "../components/common/DatePicker";
+import FileUpload from "../components/common/FileUpload";
 import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
 
 interface SinglePageProps {
@@ -226,6 +228,40 @@ function SinglePage({
             checked={formData[field.id] || false}
             onChange={(checked) => handleFieldChange(field.id, checked)}
           />
+        );
+      case "date":
+        return (
+          <div>
+            <label className="text-sm font-normal text-gray-700 mb-2 block">
+              {field.title}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <DatePicker
+              label=""
+              name={field.id}
+              value={formData[field.id] || ""}
+              onChange={(e) => handleFieldChange(field.id, e.target.value)}
+              min={field.minDate}
+              max={field.maxDate}
+            />
+          </div>
+        );
+      case "file":
+        return (
+          <div>
+            <label className="text-sm font-normal text-gray-700 mb-2 block">
+              {field.title}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
+            </label>
+            <FileUpload
+              label=""
+              name={field.id}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                handleFieldChange(field.id, file?.name || "");
+              }}
+            />
+          </div>
         );
       default:
         return null;

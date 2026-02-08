@@ -415,6 +415,40 @@ export default function FieldEditor({
             </div>
           </div>
         )}
+
+        {field.type === "date" && (
+          <div className="pt-4 border-t border-gray-100 space-y-4">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Date Constraints
+            </label>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">
+                Minimum Date
+              </label>
+              <input
+                type="date"
+                value={field.minDate || ""}
+                onChange={(e) =>
+                  onUpdate({ minDate: e.target.value || undefined })
+                }
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">
+                Maximum Date
+              </label>
+              <input
+                type="date"
+                value={field.maxDate || ""}
+                onChange={(e) =>
+                  onUpdate({ maxDate: e.target.value || undefined })
+                }
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm"
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

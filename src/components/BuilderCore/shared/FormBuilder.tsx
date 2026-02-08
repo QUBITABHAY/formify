@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import type { FormMode } from "./types";
 import FlowFormBuilder from "../Flow/FlowFormBuilder";
 import SinglePageFormBuilder from "../Single/SinglePageFormBuilder";
-import { getForm, type FormResponse } from "../../../services/api";
+import { getForm } from "../../../services/api";
+import type { FormResponse } from "../../../services/apiTypes";
 
 interface FormBuilderProps {
   formId?: number;
