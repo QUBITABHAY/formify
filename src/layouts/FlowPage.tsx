@@ -3,6 +3,8 @@ import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
+import DatePicker from "../components/common/DatePicker";
+import FileUpload from "../components/common/FileUpload";
 import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
 
 interface WelcomeScreenProps {
@@ -297,6 +299,32 @@ function FlowPage({
               title={field.title}
               checked={formData[field.id]}
               onChange={(checked) => handleFieldChange(field.id, checked)}
+            />
+          </div>
+        );
+      case "date":
+        return (
+          <div className="w-full max-w-lg">
+            <DatePicker
+              label=""
+              name={field.id}
+              value={formData[field.id] || ""}
+              onChange={(e) => handleFieldChange(field.id, e.target.value)}
+              min={field.minDate}
+              max={field.maxDate}
+            />
+          </div>
+        );
+      case "file":
+        return (
+          <div className="w-full max-w-lg">
+            <FileUpload
+              label=""
+              name={field.id}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                handleFieldChange(field.id, file?.name || "");
+              }}
             />
           </div>
         );

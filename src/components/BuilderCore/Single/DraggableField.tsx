@@ -6,6 +6,8 @@ import TextArea from "../../common/TextArea";
 import Select from "../../common/Select";
 import RadioButton from "../../common/RadioButton";
 import Checkbox from "../../common/Checkbox";
+import DatePicker from "../../common/DatePicker";
+import FileUpload from "../../common/FileUpload";
 
 interface DraggableFieldProps {
   field: FormFieldConfig;
@@ -86,6 +88,17 @@ export default function DraggableField({
             disabled={true}
           />
         );
+      case "date":
+        return (
+          <DatePicker
+            label={field.title}
+            min={field.minDate}
+            max={field.maxDate}
+            disabled={true}
+          />
+        );
+      case "file":
+        return <FileUpload label={field.title} disabled={true} />;
       default:
         return null;
     }

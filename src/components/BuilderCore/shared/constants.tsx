@@ -83,4 +83,20 @@ export const FIELD_TEMPLATES: FieldTemplate[] = [
       ],
     },
   },
+  {
+    type: "date",
+    label: "Date",
+    icon: <Icons.Calendar />,
+    defaultConfig: {
+      title: "Date",
+    },
+  },
+  {
+    type: "file",
+    label: "File Upload",
+    icon: <Icons.Upload />,
+    defaultConfig: {
+      title: "Upload File",
+    },
+  },
 ];

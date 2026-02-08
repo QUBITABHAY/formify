@@ -40,7 +40,9 @@ export default function PreviewModal({
       | "email"
       | "tel"
       | "radio"
-      | "checkbox",
+      | "checkbox"
+      | "date"
+      | "file",
     title: field.title,
     subtitle: field.subtitle,
     placeholder: field.placeholder,
@@ -50,6 +52,8 @@ export default function PreviewModal({
     name: field.name,
     required: field.required,
     multiSelect: field.multiSelect,
+    minDate: field.minDate,
+    maxDate: field.maxDate,
   }));
 
   return (

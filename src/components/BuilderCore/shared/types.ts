@@ -10,7 +10,9 @@ export type FieldType =
   | "radio"
   | "checkbox"
   | "textarea"
-  | "select";
+  | "select"
+  | "date"
+  | "file";
 
 export interface FieldOption {
   label: string;
@@ -29,6 +31,8 @@ export interface FormFieldConfig {
   name?: string;
   required?: boolean;
   multiSelect?: boolean;
+  minDate?: string;
+  maxDate?: string;
 }
 
 export interface FieldTemplate {

@@ -6,6 +6,8 @@ import TextArea from "../../common/TextArea";
 import Select from "../../common/Select";
 import RadioButton from "../../common/RadioButton";
 import Checkbox from "../../common/Checkbox";
+import DatePicker from "../../common/DatePicker";
+import FileUpload from "../../common/FileUpload";
 
 interface FlowCardProps {
   field: FormFieldConfig;
@@ -96,6 +98,23 @@ export default function FlowCard({
               placeholder="Select an option..."
               disabled={true}
             />
+          </div>
+        );
+      case "date":
+        return (
+          <div className="w-full max-w-md">
+            <DatePicker
+              label=""
+              min={field.minDate}
+              max={field.maxDate}
+              disabled={true}
+            />
+          </div>
+        );
+      case "file":
+        return (
+          <div className="w-full max-w-md">
+            <FileUpload label="" disabled={true} />
           </div>
         );
       default:
