@@ -19,6 +19,17 @@ export interface FieldOption {
   value: string;
 }
 
+export interface ConditionalRule {
+  id: string;
+  operator: "equals" | "not_equals" | "contains" | "not_contains";
+  value: string;
+  targetFieldId: string;
+}
+
+export interface FieldLogic {
+  rules: ConditionalRule[];
+}
+
 export interface FormFieldConfig {
   id: string;
   type: FieldType;
@@ -33,6 +44,7 @@ export interface FormFieldConfig {
   multiSelect?: boolean;
   minDate?: string;
   maxDate?: string;
+  logic?: FieldLogic;
 }
 
 export interface FieldTemplate {

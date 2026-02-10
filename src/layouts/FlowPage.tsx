@@ -5,7 +5,10 @@ import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
 import DatePicker from "../components/common/DatePicker";
 import FileUpload from "../components/common/FileUpload";
-import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
+import type {
+  FormFieldConfig as FormField,
+  ConditionalRule,
+} from "../components/BuilderCore/shared/types";
 
 interface WelcomeScreenProps {
   title?: string;
@@ -115,12 +118,51 @@ function FlowPage({
   const [isAnimating, setIsAnimating] = useState(false);
   const [direction, setDirection] = useState<"up" | "down">("down");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [navigationHistory, setNavigationHistory] = useState<number[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const totalSteps = fields.length;
   const isIntroScreen = currentStep === -1;
   const currentField = fields[currentStep];
+
+  const evaluateRule = (rule: ConditionalRule, value: any): boolean => {
+    const strValue = Array.isArray(value)
+      ? value.join(",")
+      : String(value ?? "");
+    const ruleValue = rule.value;
+    switch (rule.operator) {
+      case "equals":
+        return strValue === ruleValue;
+      case "not_equals":
+        return strValue !== ruleValue;
+      case "contains":
+        if (Array.isArray(value)) return value.includes(ruleValue);
+        return strValue.toLowerCase().includes(ruleValue.toLowerCase());
+      case "not_contains":
+        if (Array.isArray(value)) return !value.includes(ruleValue);
+        return !strValue.toLowerCase().includes(ruleValue.toLowerCase());
+      default:
+        return false;
+    }
+  };
+
+  const getNextStep = (fromStep: number): number | "SUBMIT" => {
+    const field = fields[fromStep];
+    if (field?.logic?.rules && field.logic.rules.length > 0) {
+      const value = formData[field.id];
+      for (const rule of field.logic.rules) {
+        if (rule.targetFieldId && evaluateRule(rule, value)) {
+          if (rule.targetFieldId === "SUBMIT") return "SUBMIT";
+          const targetIndex = fields.findIndex(
+            (f) => f.id === rule.targetFieldId,
+          );
+          if (targetIndex !== -1) return targetIndex;
+        }
+      }
+    }
+    return fromStep + 1;
+  };
 
   useEffect(() => {
     setCurrentStep(-1);
@@ -196,24 +238,36 @@ function FlowPage({
 
     setTimeout(() => {
       if (isIntroScreen) {
+        setNavigationHistory([]);
         setCurrentStep(0);
-      } else if (currentStep < totalSteps - 1) {
-        setCurrentStep((prev) => prev + 1);
       } else {
-        handleSubmit();
+        const nextStep = getNextStep(currentStep);
+        if (
+          nextStep === "SUBMIT" ||
+          (typeof nextStep === "number" && nextStep >= totalSteps)
+        ) {
+          setNavigationHistory((prev) => [...prev, currentStep]);
+          handleSubmit();
+        } else {
+          setNavigationHistory((prev) => [...prev, currentStep]);
+          setCurrentStep(nextStep as number);
+        }
       }
       setIsAnimating(false);
     }, 300);
   };
 
   const goToPrevious = () => {
-    if (isAnimating || currentStep <= 0) return;
+    if (isAnimating) return;
+    if (navigationHistory.length === 0) return;
 
     setDirection("up");
     setIsAnimating(true);
 
     setTimeout(() => {
-      setCurrentStep((prev) => prev - 1);
+      const prevStep = navigationHistory[navigationHistory.length - 1];
+      setNavigationHistory((prev) => prev.slice(0, -1));
+      setCurrentStep(prevStep);
       setIsAnimating(false);
     }, 300);
   };
@@ -435,7 +489,10 @@ function FlowPage({
             <p className="text-red-500 text-sm mb-4">{validationError}</p>
           )}
 
-          {currentStep === totalSteps - 1 ? (
+          {currentStep === totalSteps - 1 ||
+          getNextStep(currentStep) === "SUBMIT" ||
+          (typeof getNextStep(currentStep) === "number" &&
+            (getNextStep(currentStep) as number) >= totalSteps) ? (
             <Button
               title="Submit"
               onClick={goToNext}
@@ -460,9 +517,9 @@ function FlowPage({
       <div className="fixed bottom-0 left-0 right-0 p-4 flex items-center justify-between bg-white/80 backdrop-blur-sm border-t border-gray-100">
         <button
           onClick={goToPrevious}
-          disabled={currentStep <= 0}
+          disabled={navigationHistory.length === 0}
           className={`inline-flex items-center gap-2 px-4 py-2 font-medium rounded-lg transition-all duration-200 ${
-            currentStep > 0
+            navigationHistory.length > 0
               ? "text-gray-700 hover:bg-gray-100"
               : "text-gray-300 cursor-not-allowed"
           }`}
@@ -486,32 +543,33 @@ function FlowPage({
         <span className="text-sm text-gray-500">
           {currentStep + 1} of {totalSteps}
         </span>
-        {currentStep !== totalSteps - 1 && (
-          <button
-            onClick={goToNext}
-            disabled={!canProceed()}
-            className={`md:hidden inline-flex items-center gap-2 px-4 py-2 text-white font-medium rounded-lg transition-all duration-200 ${
-              canProceed()
-                ? "bg-indigo-500 hover:bg-indigo-600"
-                : "bg-gray-300 cursor-not-allowed"
-            }`}
-          >
-            Next
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        {currentStep !== totalSteps - 1 &&
+          getNextStep(currentStep) !== "SUBMIT" && (
+            <button
+              onClick={goToNext}
+              disabled={!canProceed()}
+              className={`md:hidden inline-flex items-center gap-2 px-4 py-2 text-white font-medium rounded-lg transition-all duration-200 ${
+                canProceed()
+                  ? "bg-indigo-500 hover:bg-indigo-600"
+                  : "bg-gray-300 cursor-not-allowed"
+              }`}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 7l5 5m0 0l-5 5m5-5H6"
-              />
-            </svg>
-          </button>
-        )}
+              Next
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </button>
+          )}
 
         {currentStep === totalSteps - 1 && <div className="md:block hidden" />}
       </div>

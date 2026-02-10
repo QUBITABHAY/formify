@@ -54,6 +54,7 @@ export default function PreviewModal({
     multiSelect: field.multiSelect,
     minDate: field.minDate,
     maxDate: field.maxDate,
+    logic: field.logic,
   }));
 
   return (
