@@ -323,6 +323,7 @@ export default function FlowFormBuilder({
           onUpdateThankYou={handleUpdateThankYou}
           formMetadata={{ title: "", description: "", banner: "" }}
           onUpdateMetadata={() => {}}
+          allFields={fields}
         />
       </div>
 

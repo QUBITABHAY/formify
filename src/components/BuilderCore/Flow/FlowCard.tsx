@@ -189,6 +189,11 @@ export default function FlowCard({
               Required
             </span>
           )}
+          {field.logic && field.logic.rules.length > 0 && (
+            <span className="inline-block px-2 py-1 text-xs bg-indigo-50 text-indigo-600 rounded font-medium">
+              Logic
+            </span>
+          )}
         </div>
       </div>
     </div>

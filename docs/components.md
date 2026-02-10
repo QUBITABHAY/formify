@@ -90,6 +90,7 @@ A collection of SVG icons exported as the `Icons` object.
   - `Icons.Select`
   - `Icons.Eye`
   - `Icons.ArrowLeft`
+  - `Icons.Logic`
 
 ---
 
@@ -119,6 +120,7 @@ Property editor panel for configuring field properties.
 
 - Handles field editing for both modes
 - Supports Welcome/ThankYou screen editing (Flow) and Header editing (Single)
+- Includes **Conditional Logic** builder for Flow mode
 - Props are mode-aware (`mode: "flow" | "single"`)
 
 ### FieldPalette
@@ -138,7 +140,9 @@ Core type definitions:
 
 - `FormMode` — `"single" | "flow"`
 - `FieldType` — `"text" | "number" | "email" | "tel" | "radio" | "checkbox" | "textarea" | "select"`
-- `FormFieldConfig` — Field configuration interface
+- `FormFieldConfig` — Field configuration interface (now includes optional `logic`)
+- `ConditionalRule` — Logic rule definition (`operator`, `value`, `targetFieldId`)
+- `FieldLogic` — Container for field rules
 - `FieldTemplate` — Template for field palette items
 - `WelcomeScreenConfig` / `ThankYouScreenConfig` — Flow screen configs
 

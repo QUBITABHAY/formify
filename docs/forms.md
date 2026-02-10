@@ -57,6 +57,13 @@ Typeform-style layout with one question at a time and smooth transitions.
 | description | string | "Your response has been submitted..." |
 | emoji       | string | "🎉"                                  |
 
+### Features
+
+- Smooth step-by-step transitions
+- **Conditional Logic:** Branching paths based on user answers
+- Built-in validation and required field checks
+- Custom welcome and thank you screens
+
 ---
 
 ## FormField Interface
@@ -73,10 +80,41 @@ interface FormField {
   maxLength?: number;
   options?: { label: string; value: string }[];
   defaultValue?: string | boolean;
+  /* Flow-only: Conditional branching */
+  logic?: {
+    rules: {
+      id: string;
+      operator: "equals" | "not_equals" | "contains" | "not_contains";
+      value: string;
+      targetFieldId: string; // ID of field to jump to, or "SUBMIT"
+    }[];
+  };
   name?: string;
   required?: boolean;
 }
 ```
+
+---
+
+## Conditional Logic (Flow Only)
+
+Flow forms support conditional branching, allowing users to skip questions or take different paths based on their answers.
+
+### Structure
+
+Logic is defined in the `logic` property of a `FormField`. It consists of a list of rules that are evaluated in order.
+
+- **Rule Evaluation:** The first rule that matches the user's input determines the next step.
+- **Default Path:** If no rules match, the form proceeds to the next sequential field.
+- **Target:** A rule can jump to a specific `targetFieldId` or trigger an early submission (`targetFieldId: "SUBMIT"`).
+- **Checkbox Logic:** For checkbox fields, use "Checked" (true) or "Unchecked" (false) as the value.
+
+### Operators
+
+- `equals`: Exact match (case-sensitive)
+- `not_equals`: Does not match
+- `contains`: Value contains string (case-insensitive)
+- `not_contains`: Value does not contain string
 
 ---
 
