@@ -273,7 +273,7 @@ function SinglePage({
       <div className="flex flex-col min-h-screen bg-gray-50 py-10 px-4 md:px-6">
         <div className="w-full max-w-3xl mx-auto">
           <div className="bg-white shadow-xl rounded-lg overflow-hidden border border-gray-100">
-            <div className="h-2 bg-blue-600"></div>
+            <div className="h-2 bg-gray-900"></div>
             <div className="p-8 text-center">
               <h1 className="text-3xl font-semibold text-gray-900 mb-3">
                 Your response has been recorded
@@ -336,7 +336,7 @@ function SinglePage({
           <Button
             title="Submit Form"
             onClick={handleSubmit}
-            bgColor="bg-blue-600 hover:bg-blue-700 justify-center px-6 py-3 text-base md:text-lg shadow-lg shadow-blue-200"
+            bgColor="bg-gray-900 hover:bg-black justify-center px-6 py-3 text-base md:text-lg shadow-lg shadow-gray-200"
           />
           <span className="text-sm text-gray-500">
             Never share passwords or sensitive info.

@@ -11,7 +11,7 @@ interface ButtonProp extends ButtonHTMLAttributes<HTMLButtonElement> {
 function Button({
   title,
   onClick,
-  bgColor = "bg-blue-500",
+  bgColor = "bg-gray-900",
   textColor = "text-white",
   className = "",
   children,

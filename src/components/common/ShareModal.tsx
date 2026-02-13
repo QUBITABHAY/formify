@@ -40,7 +40,7 @@ export default function ShareModal({
           <Button
             title={copied ? "Copied!" : "Copy"}
             onClick={handleCopy}
-            bgColor={copied ? "bg-green-600" : "bg-indigo-600"}
+            bgColor={copied ? "bg-green-600" : "bg-gray-900"}
             textColor="text-white"
           />
         </div>
@@ -48,7 +48,7 @@ export default function ShareModal({
         <div className="flex justify-end pt-4 border-t border-gray-100">
           <button
             onClick={() => window.open(fullShareUrl, "_blank")}
-            className="text-indigo-600 hover:text-indigo-800 font-medium"
+            className="text-gray-600 hover:text-black font-medium"
           >
             Open in new tab &rarr;
           </button>

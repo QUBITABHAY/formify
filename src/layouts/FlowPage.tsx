@@ -389,7 +389,7 @@ function FlowPage({
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-6">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gray-500 flex items-center justify-center">
             <svg
@@ -423,7 +423,7 @@ function FlowPage({
         ref={containerRef}
         tabIndex={0}
         onKeyDown={handleKeyDown}
-        className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-6 outline-none"
+        className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6 outline-none"
       >
         <div className="text-center max-w-2xl">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
@@ -436,7 +436,7 @@ function FlowPage({
             <Button
               title={welcomeButtonText}
               onClick={goToNext}
-              bgColor="bg-indigo-500 hover:bg-indigo-600"
+              bgColor="bg-gray-900 hover:bg-black"
             />
           </div>
           <p className="mt-8 text-sm text-gray-500">
@@ -456,7 +456,7 @@ function FlowPage({
       ref={containerRef}
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-purple-50 outline-none"
+      className="min-h-screen flex flex-col bg-gray-50 outline-none"
     >
       <div className="flex-1 flex items-center justify-center p-6 md:p-12">
         <div
@@ -498,7 +498,7 @@ function FlowPage({
               onClick={goToNext}
               bgColor={
                 canProceed()
-                  ? "bg-indigo-500 hover:bg-indigo-600"
+                  ? "bg-gray-900 hover:bg-black"
                   : "bg-gray-300 cursor-not-allowed"
               }
             />
@@ -550,7 +550,7 @@ function FlowPage({
               disabled={!canProceed()}
               className={`md:hidden inline-flex items-center gap-2 px-4 py-2 text-white font-medium rounded-lg transition-all duration-200 ${
                 canProceed()
-                  ? "bg-indigo-500 hover:bg-indigo-600"
+                  ? "bg-gray-900 hover:bg-black"
                   : "bg-gray-300 cursor-not-allowed"
               }`}
             >

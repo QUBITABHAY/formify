@@ -38,7 +38,7 @@ function FileUpload({
         className={`
           relative flex flex-col items-center justify-center
           p-6 border-2 border-dashed border-gray-300 rounded-lg
-          bg-gray-50 hover:bg-gray-100 hover:border-indigo-400
+          bg-gray-50 hover:bg-gray-100 hover:border-gray-900
           transition-all duration-200 cursor-pointer
           ${disabled ? "opacity-50 cursor-not-allowed hover:bg-gray-50 hover:border-gray-300" : ""}
         `}

@@ -22,12 +22,12 @@ function DraggablePaletteItem({ template }: DraggablePaletteItemProps) {
       {...attributes}
       className={`
         flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200
-        cursor-grab active:cursor-grabbing hover:border-indigo-400 hover:shadow-md
+        cursor-grab active:cursor-grabbing hover:border-gray-900 hover:shadow-md
         transition-all duration-200 select-none
         ${isDragging ? "opacity-50 shadow-lg scale-105" : ""}
       `}
     >
-      <span className="text-indigo-600">{template.icon}</span>
+      <span className="text-gray-900">{template.icon}</span>
       <span className="text-sm font-medium text-gray-700">
         {template.label}
       </span>

@@ -110,7 +110,7 @@ export default function DraggableField({
       style={style}
       className={`
         relative bg-white rounded-lg border-2 p-4 transition-all duration-200
-        ${isSelected ? "border-indigo-500 shadow-lg" : "border-gray-200 hover:border-gray-300"}
+        ${isSelected ? "border-gray-900 shadow-lg" : "border-gray-200 hover:border-gray-300"}
         ${isDragging ? "opacity-50 shadow-xl z-50" : ""}
       `}
       onClick={(e) => {

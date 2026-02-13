@@ -64,7 +64,7 @@ function DatePicker({
             bg-transparent
             text-gray-900
             cursor-pointer
-            focus:outline-none focus:border-indigo-500
+            focus:outline-none focus:border-gray-900
             disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed
             transition-colors duration-200
             [&::-webkit-calendar-picker-indicator]:opacity-0

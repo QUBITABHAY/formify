@@ -38,7 +38,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           rows={rows}
           maxLength={maxLength}
           disabled={disabled}
-          className="p-3 border-b border-gray-300 focus:outline-none focus:border-blue-600 bg-transparent resize-none"
+          className="p-3 border-b border-gray-300 focus:outline-none focus:border-gray-900 bg-transparent resize-none"
           placeholder={placeholder}
         />
       </div>

@@ -45,7 +45,7 @@ export default function FieldEditor({
   if (selectedScreen === "HEADER" && mode === "single") {
     return (
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full overflow-y-auto">
-        <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+        <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
           <h2 className="text-lg font-semibold text-gray-800">Form Settings</h2>
           <p className="text-sm text-gray-500">Edit form header details</p>
         </div>
@@ -59,7 +59,7 @@ export default function FieldEditor({
               type="text"
               value={formMetadata.title}
               onChange={(e) => onUpdateMetadata({ title: e.target.value })}
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all"
             />
           </div>
 
@@ -73,7 +73,7 @@ export default function FieldEditor({
               onChange={(e) =>
                 onUpdateMetadata({ description: e.target.value })
               }
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all resize-none"
             />
           </div>
 
@@ -85,7 +85,7 @@ export default function FieldEditor({
               type="text"
               value={formMetadata.banner}
               onChange={(e) => onUpdateMetadata({ banner: e.target.value })}
-              className="w-full p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="w-full p-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 outline-none"
               placeholder="https://example.com/image.jpg"
             />
           </div>
@@ -97,7 +97,7 @@ export default function FieldEditor({
   if (selectedScreen === "WELCOME" && mode === "flow") {
     return (
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full overflow-y-auto">
-        <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-white">
+        <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
           <div className="flex items-center gap-2 mb-1">
             <h2 className="text-lg font-semibold text-gray-800">
               Welcome Screen
@@ -115,7 +115,7 @@ export default function FieldEditor({
               type="text"
               value={welcomeScreen.title}
               onChange={(e) => onUpdateWelcome({ title: e.target.value })}
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all"
             />
           </div>
 
@@ -127,7 +127,7 @@ export default function FieldEditor({
               rows={3}
               value={welcomeScreen.description}
               onChange={(e) => onUpdateWelcome({ description: e.target.value })}
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all resize-none"
             />
           </div>
 
@@ -139,7 +139,7 @@ export default function FieldEditor({
               type="text"
               value={welcomeScreen.buttonText}
               onChange={(e) => onUpdateWelcome({ buttonText: e.target.value })}
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all"
             />
           </div>
         </div>
@@ -150,7 +150,7 @@ export default function FieldEditor({
   if (selectedScreen === "THANKYOU" && mode === "flow") {
     return (
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full overflow-y-auto">
-        <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white">
+        <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
           <div className="flex items-center gap-2 mb-1">
             <h2 className="text-lg font-semibold text-gray-800">
               Thank You Screen
@@ -170,7 +170,7 @@ export default function FieldEditor({
               type="text"
               value={thankYouScreen.title}
               onChange={(e) => onUpdateThankYou({ title: e.target.value })}
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all"
             />
           </div>
 
@@ -184,7 +184,7 @@ export default function FieldEditor({
               onChange={(e) =>
                 onUpdateThankYou({ description: e.target.value })
               }
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all resize-none"
             />
           </div>
 
@@ -196,7 +196,7 @@ export default function FieldEditor({
               type="text"
               value={thankYouScreen.emoji}
               onChange={(e) => onUpdateThankYou({ emoji: e.target.value })}
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-2xl"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all text-2xl"
               placeholder="🎉"
             />
           </div>
@@ -208,9 +208,9 @@ export default function FieldEditor({
   if (!field) {
     return (
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col items-center justify-center h-full text-gray-500 p-6 text-center">
-        <div className="mb-4 p-4 bg-indigo-50 rounded-full">
+        <div className="mb-4 p-4 bg-gray-50 rounded-full">
           <svg
-            className="w-8 h-8 text-indigo-400"
+            className="w-8 h-8 text-gray-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -258,12 +258,11 @@ export default function FieldEditor({
 
   return (
     <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full overflow-y-auto">
-      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-white">
+      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
         <h2 className="text-lg font-semibold text-gray-800">Field Settings</h2>
         <p className="text-sm text-gray-500">
           Editing{" "}
-          <span className="font-medium text-indigo-600">{field.type}</span>{" "}
-          field
+          <span className="font-medium text-gray-900">{field.type}</span> field
         </p>
       </div>
 
@@ -276,7 +275,7 @@ export default function FieldEditor({
             type="text"
             value={field.title}
             onChange={(e) => onUpdate({ title: e.target.value })}
-            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all"
           />
         </div>
 
@@ -289,7 +288,7 @@ export default function FieldEditor({
             value={field.subtitle || ""}
             onChange={(e) => onUpdate({ subtitle: e.target.value })}
             placeholder="Optional description"
-            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all"
           />
         </div>
 
@@ -304,7 +303,7 @@ export default function FieldEditor({
               type="text"
               value={field.placeholder || ""}
               onChange={(e) => onUpdate({ placeholder: e.target.value })}
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 transition-all"
             />
           </div>
         )}
@@ -325,7 +324,7 @@ export default function FieldEditor({
                 })
               }
               placeholder="No limit"
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 transition-all"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 transition-all"
             />
           </div>
         )}
@@ -336,7 +335,7 @@ export default function FieldEditor({
             id="required"
             checked={field.required || false}
             onChange={(e) => onUpdate({ required: e.target.checked })}
-            className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 cursor-pointer"
+            className="w-4 h-4 text-gray-900 rounded border-gray-300 focus:ring-gray-900 cursor-pointer"
           />
           <label
             htmlFor="required"
@@ -355,7 +354,7 @@ export default function FieldEditor({
                   id="multiSelect"
                   checked={field.multiSelect || false}
                   onChange={(e) => onUpdate({ multiSelect: e.target.checked })}
-                  className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 cursor-pointer"
+                  className="w-4 h-4 text-gray-900 rounded border-gray-300 focus:ring-gray-900 cursor-pointer"
                 />
                 <label
                   htmlFor="multiSelect"
@@ -377,7 +376,7 @@ export default function FieldEditor({
                     onChange={(e) =>
                       handleOptionChange(index, "label", e.target.value)
                     }
-                    className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+                    className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-gray-900"
                     placeholder={`Option ${index + 1}`}
                   />
                   <button
@@ -402,7 +401,7 @@ export default function FieldEditor({
               ))}
               <button
                 onClick={addOption}
-                className="text-sm text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1 mt-2"
+                className="text-sm text-gray-900 hover:text-indigo-700 font-medium flex items-center gap-1 mt-2"
               >
                 <svg
                   className="w-4 h-4"
@@ -438,7 +437,7 @@ export default function FieldEditor({
                 onChange={(e) =>
                   onUpdate({ minDate: e.target.value || undefined })
                 }
-                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm"
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all text-sm"
               />
             </div>
             <div>
@@ -451,7 +450,7 @@ export default function FieldEditor({
                 onChange={(e) =>
                   onUpdate({ maxDate: e.target.value || undefined })
                 }
-                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm"
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all text-sm"
               />
             </div>
           </div>
@@ -481,7 +480,7 @@ export default function FieldEditor({
                     onUpdate({ logic: undefined });
                   }
                 }}
-                className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 cursor-pointer"
+                className="w-4 h-4 text-gray-900 rounded border-gray-300 focus:ring-gray-900 cursor-pointer"
               />
               <label
                 htmlFor="conditionalLogic"
@@ -500,7 +499,7 @@ export default function FieldEditor({
                   (rule: ConditionalRule, ruleIndex: number) => (
                     <div key={rule.id} className="p-3 rounded-lg space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-indigo-600">
+                        <span className="text-xs font-medium text-gray-900">
                           Rule {ruleIndex + 1}
                         </span>
                         <button
@@ -548,7 +547,7 @@ export default function FieldEditor({
                             };
                             onUpdate({ logic: { rules: newRules } });
                           }}
-                          className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm bg-white"
+                          className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all text-sm bg-white"
                         >
                           <option value="equals">Equals</option>
                           <option value="not_equals">Does not equal</option>
@@ -572,7 +571,7 @@ export default function FieldEditor({
                               };
                               onUpdate({ logic: { rules: newRules } });
                             }}
-                            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm bg-white"
+                            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all text-sm bg-white"
                           >
                             <option value="">Select state...</option>
                             <option value="true">Checked</option>
@@ -589,7 +588,7 @@ export default function FieldEditor({
                               };
                               onUpdate({ logic: { rules: newRules } });
                             }}
-                            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm bg-white"
+                            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all text-sm bg-white"
                           >
                             <option value="">Select a value...</option>
                             {field.options.map((opt) => (
@@ -611,7 +610,7 @@ export default function FieldEditor({
                               onUpdate({ logic: { rules: newRules } });
                             }}
                             placeholder="Enter value..."
-                            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm"
+                            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all text-sm"
                           />
                         )}
                       </div>
@@ -630,7 +629,7 @@ export default function FieldEditor({
                             };
                             onUpdate({ logic: { rules: newRules } });
                           }}
-                          className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm bg-white"
+                          className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none transition-all text-sm bg-white"
                         >
                           <option value="">Select target...</option>
                           {allFields
@@ -660,7 +659,7 @@ export default function FieldEditor({
                     ];
                     onUpdate({ logic: { rules: newRules } });
                   }}
-                  className="text-sm text-indigo-600 font-medium flex items-center gap-1 mt-2"
+                  className="text-sm text-gray-900 font-medium flex items-center gap-1 mt-2"
                 >
                   <svg
                     className="w-4 h-4"
