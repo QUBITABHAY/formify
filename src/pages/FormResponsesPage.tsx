@@ -4,6 +4,8 @@ import { getForm, getFormResponses, deleteResponse } from "../services/api";
 import type { FormResponse, FormResponsesResult } from "../services/apiTypes";
 import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
 import { Icons } from "../components/common/icons";
+import Papa from "papaparse";
+import Button from "../components/common/Button";
 
 export default function FormResponsesPage() {
   const { formId } = useParams();
@@ -23,7 +25,6 @@ export default function FormResponsesPage() {
           getForm(id),
           getFormResponses(id),
         ]);
-        console.log(formData, resData);
         setForm(formData);
         setResponsesData(resData);
       } catch (err) {
@@ -34,6 +35,42 @@ export default function FormResponsesPage() {
     };
     fetchData();
   }, [formId]);
+
+  const handleExportCSV = () => {
+    if (!form || !responsesData) return;
+
+    const fields = ((form.schema as any).fields as FormFieldConfig[]) || [];
+    const responses = responsesData.responses;
+
+    if (!responses.length) return;
+
+    const csvData = responses.map((response, idx) => {
+      const row: Record<string, string> = {};
+
+      row["S.No."] = (idx + 1).toString();
+
+      fields.forEach((field) => {
+        const answer = response.data[field.title] ?? response.data[field.id];
+        row[field.title] = formatAnswer(answer);
+      });
+
+      const createdAt = new Date(response.created_at);
+      row["Submission Date"] = createdAt.toLocaleDateString();
+      row["Submission Time"] = createdAt.toLocaleTimeString();
+
+      return row;
+    });
+
+    const csv = Papa.unparse(csvData);
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${form?.name}_response.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   if (loading) {
     return (
@@ -108,8 +145,20 @@ export default function FormResponsesPage() {
               <span className="text-gray-400 font-normal">Responses</span>
             </h1>
           </div>
-          <div className="text-sm text-gray-500">
-            {responsesData.count} response{responsesData.count !== 1 ? "s" : ""}
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={handleExportCSV}
+              className="border border-gray-300 hover:bg-gray-50 flex items-center gap-2 shadow-sm"
+              bgColor="bg-white"
+              textColor="text-gray-700"
+            >
+              <Icons.Download />
+              <span>Export CSV</span>
+            </Button>
+            <div className="text-sm text-gray-500">
+              {responsesData.count} response
+              {responsesData.count !== 1 ? "s" : ""}
+            </div>
           </div>
         </div>
       </nav>
