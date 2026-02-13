@@ -91,7 +91,7 @@ export default function DashboardPage() {
           <Button
             title="+ Create New Form"
             onClick={() => setIsModalOpen(true)}
-            bgColor="bg-indigo-600"
+            bgColor="bg-gray-900"
             textColor="text-white text-sm"
           />
         </div>
@@ -107,7 +107,7 @@ export default function DashboardPage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
           </div>
         ) : forms.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-200">
@@ -124,7 +124,7 @@ export default function DashboardPage() {
               <Button
                 title="Create Form"
                 onClick={() => setIsModalOpen(true)}
-                bgColor="bg-indigo-600"
+                bgColor="bg-gray-900"
                 textColor="text-white text-sm"
               />
             </div>
@@ -138,8 +138,8 @@ export default function DashboardPage() {
                 onClick={() => navigate(`/builder/${form.id}`)}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
-                    <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600 flex items-center justify-center">
+                  <div className="p-2 bg-gray-50 rounded-lg text-gray-900">
+                    <div className="p-2 bg-gray-50 rounded-lg text-gray-900 flex items-center justify-center">
                       <Icons.Text />
                     </div>
                   </div>
@@ -159,7 +159,7 @@ export default function DashboardPage() {
                   </span>
                   <div className="flex items-center gap-4">
                     <span
-                      className="flex items-center text-indigo-600 font-medium hover:underline z-10"
+                      className="flex items-center text-gray-900 font-medium hover:underline z-10"
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/forms/${form.id}/responses`);
@@ -173,7 +173,7 @@ export default function DashboardPage() {
                     >
                       {deleting === form.id ? "Deleting..." : "Delete"}
                     </span>
-                    <span className="flex items-center text-indigo-600 font-medium">
+                    <span className="flex items-center text-gray-900 font-medium">
                       Edit <span className="ml-1">&rarr;</span>
                     </span>
                   </div>
@@ -193,11 +193,11 @@ export default function DashboardPage() {
           <button
             onClick={() => handleCreateForm("single")}
             disabled={creating}
-            className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-indigo-600 hover:bg-indigo-50 transition-all group disabled:opacity-50"
+            className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-black hover:bg-gray-50 transition-all group disabled:opacity-50"
           >
             <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <svg
-                className="w-6 h-6 text-indigo-600"
+                className="w-6 h-6 text-gray-900"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -219,11 +219,11 @@ export default function DashboardPage() {
           <button
             onClick={() => handleCreateForm("flow")}
             disabled={creating}
-            className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-indigo-600 hover:bg-indigo-50 transition-all group disabled:opacity-50"
+            className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-black hover:bg-gray-50 transition-all group disabled:opacity-50"
           >
             <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <svg
-                className="w-6 h-6 text-indigo-600"
+                className="w-6 h-6 text-gray-900"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

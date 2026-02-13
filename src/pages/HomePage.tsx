@@ -71,7 +71,7 @@ function HomePage() {
               <Button
                 title="Logout"
                 onClick={handleLogout}
-                bgColor="bg-indigo-600 hover:bg-indigo-700"
+                bgColor="bg-gray-900 hover:bg-black"
                 textColor="text-white"
               />
             </>
@@ -86,7 +86,7 @@ function HomePage() {
               <Button
                 title="Sign Up"
                 onClick={() => navigate("/signup")}
-                bgColor="bg-indigo-600 hover:bg-indigo-700"
+                bgColor="bg-gray-900 hover:bg-black"
                 textColor="text-white"
               />
             </>
@@ -96,7 +96,7 @@ function HomePage() {
 
       <div className="flex flex-col items-center justify-center text-center px-4 pt-20 pb-32 max-w-4xl mx-auto">
         <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 mb-6 leading-tight">
-          Build forms that <span className="text-indigo-600">convert</span>.
+          Build forms that <span className="text-gray-500">convert</span>.
         </h1>
         <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
           Create beautiful, logic-driven forms with our intuitive drag-and-drop
@@ -106,7 +106,7 @@ function HomePage() {
           <Button
             title="Start Building Now"
             onClick={handleStartBuilding}
-            bgColor="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200"
+            bgColor="bg-gray-900 hover:bg-black shadow-lg shadow-gray-400/20"
             textColor="text-white px-8 py-3 text-lg"
           />
           <button
@@ -127,11 +127,11 @@ function HomePage() {
           <button
             onClick={() => handleCreateForm("single")}
             disabled={loading}
-            className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-indigo-600 hover:bg-indigo-50 transition-all group disabled:opacity-50"
+            className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-black hover:bg-gray-50 transition-all group disabled:opacity-50"
           >
             <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <svg
-                className="w-6 h-6 text-indigo-600"
+                className="w-6 h-6 text-gray-900"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -153,11 +153,11 @@ function HomePage() {
           <button
             onClick={() => handleCreateForm("flow")}
             disabled={loading}
-            className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-indigo-600 hover:bg-indigo-50 transition-all group disabled:opacity-50"
+            className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-xl hover:border-black hover:bg-gray-50 transition-all group disabled:opacity-50"
           >
             <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <svg
-                className="w-6 h-6 text-indigo-600"
+                className="w-6 h-6 text-gray-900"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

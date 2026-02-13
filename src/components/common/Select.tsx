@@ -16,7 +16,18 @@ interface SelectProps {
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ title, options, name, value, onChange, placeholder = "Select an option", disabled }, ref) => {
+  (
+    {
+      title,
+      options,
+      name,
+      value,
+      onChange,
+      placeholder = "Select an option",
+      disabled,
+    },
+    ref,
+  ) => {
     return (
       <div className="flex flex-col w-full">
         <label className="text-sm font-normal text-gray-700 mb-2">
@@ -29,7 +40,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             value={value}
             onChange={onChange}
             disabled={disabled}
-            className="w-full p-3 border-b border-gray-300 focus:outline-none focus:border-blue-600 bg-transparent appearance-none cursor-pointer"
+            className="w-full p-3 border-b border-gray-300 focus:outline-none focus:border-gray-900 bg-transparent appearance-none cursor-pointer"
           >
             <option value="" disabled>
               {placeholder}
@@ -41,8 +52,18 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ))}
           </select>
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
         </div>

@@ -93,8 +93,8 @@ function LoginPage() {
                 type="submit"
                 disabled={loading}
                 title={loading ? "Signing in..." : "Sign in"}
-                bgColor="bg-indigo-600 hover:bg-indigo-700"
-                className="mt-2 py-3 shadow-lg shadow-indigo-200"
+                bgColor="bg-gray-900 hover:bg-black"
+                className="mt-2 py-3 shadow-lg shadow-gray-400/20"
                 fullWidth
               />
 
@@ -130,7 +130,7 @@ function LoginPage() {
               Don't have an account?{" "}
               <Link
                 to="/signup"
-                className="text-indigo-600 hover:text-indigo-700 font-medium"
+                className="text-gray-900 hover:text-black font-medium underline decoration-2 decoration-gray-300 hover:decoration-black transition-all"
               >
                 Create one
               </Link>

@@ -44,7 +44,7 @@ export default function SinglePageCanvas({
             onSelectHeader?.();
           }}
           className={`bg-white shadow-xl rounded-lg overflow-hidden border transition-all cursor-pointer group
-            ${selectedFieldId === "HEADER" ? "ring-2 ring-indigo-500 border-indigo-500" : "border-gray-100 hover:border-indigo-300"}
+            ${selectedFieldId === "HEADER" ? "ring-2 ring-gray-900 border-gray-900" : "border-gray-100 hover:border-gray-900"}
           `}
         >
           <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-100 relative group-hover:opacity-95 transition-opacity">

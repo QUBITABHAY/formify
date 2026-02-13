@@ -128,7 +128,7 @@ export default function FlowCard({
       style={style}
       className={`
         relative bg-white rounded-xl border-2 p-6 transition-all duration-200 group
-        ${isSelected ? "border-indigo-500 shadow-xl ring-2 ring-indigo-100" : "border-gray-200 hover:border-indigo-300 hover:shadow-lg"}
+        ${isSelected ? "border-gray-900 shadow-xl ring-2 ring-gray-100" : "border-gray-200 hover:border-gray-900 hover:shadow-lg"}
         ${isDragging ? "opacity-50 shadow-2xl z-50" : ""}
       `}
       onClick={(e) => {
@@ -168,7 +168,7 @@ export default function FlowCard({
         </svg>
       </button>
 
-      <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-indigo-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md">
+      <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-gray-900 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md">
         {stepNumber}
       </div>
       <div className="ml-6">
@@ -181,7 +181,7 @@ export default function FlowCard({
         )}
         <div className="pointer-events-none">{renderFieldPreview()}</div>
         <div className="mt-4 flex items-center gap-2">
-          <span className="inline-block px-2 py-1 text-xs bg-indigo-50 text-indigo-600 rounded font-medium">
+          <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-900 rounded font-medium">
             {field.type}
           </span>
           {field.required && (
@@ -190,7 +190,7 @@ export default function FlowCard({
             </span>
           )}
           {field.logic && field.logic.rules.length > 0 && (
-            <span className="inline-block px-2 py-1 text-xs bg-indigo-50 text-indigo-600 rounded font-medium">
+            <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-900 rounded font-medium">
               Logic
             </span>
           )}

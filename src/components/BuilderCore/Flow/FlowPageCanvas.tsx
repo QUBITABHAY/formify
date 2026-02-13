@@ -49,14 +49,14 @@ export default function FlowPageCanvas({
           }}
           className={`
             bg-white rounded-xl border-2 p-8 cursor-pointer transition-all duration-200 group
-            ${selectedFieldId === "WELCOME" ? "border-indigo-500 shadow-xl ring-2 ring-indigo-100" : "border-gray-200 hover:border-indigo-300 hover:shadow-lg"}
+            ${selectedFieldId === "WELCOME" ? "border-gray-900 shadow-xl ring-2 ring-gray-100" : "border-gray-200 hover:border-gray-900 hover:shadow-lg"}
           `}
         >
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             {welcomeScreen.title}
           </h2>
           <p className="text-gray-600 mb-4">{welcomeScreen.description}</p>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-lg text-sm font-medium">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium">
             {welcomeScreen.buttonText}
             <svg
               className="w-4 h-4"
@@ -80,14 +80,14 @@ export default function FlowPageCanvas({
         >
           <div className="space-y-4 min-h-[100px] relative">
             {fields.length > 0 && (
-              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-200 via-indigo-300 to-indigo-200 ml-[9px] -z-10" />
+              <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gray-200 via-gray-300 to-gray-200 ml-[9px] -z-10" />
             )}
 
             {fields.length === 0 ? (
               <div className="bg-white rounded-xl border-2 border-dashed border-gray-300 p-12 text-center">
-                <div className="w-12 h-12 mx-auto mb-4 bg-indigo-100 rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 mx-auto mb-4 bg-gray-50 rounded-full flex items-center justify-center">
                   <svg
-                    className="w-6 h-6 text-indigo-500"
+                    className="w-6 h-6 text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -129,7 +129,7 @@ export default function FlowPageCanvas({
           }}
           className={`
             bg-white rounded-xl border-2 p-8 cursor-pointer transition-all duration-200 group
-            ${selectedFieldId === "THANKYOU" ? "border-indigo-500 shadow-xl ring-2 ring-indigo-100" : "border-gray-200 hover:border-indigo-300 hover:shadow-lg"}
+            ${selectedFieldId === "THANKYOU" ? "border-gray-900 shadow-xl ring-2 ring-gray-100" : "border-gray-200 hover:border-gray-900 hover:shadow-lg"}
           `}
         >
           <div className="text-center">

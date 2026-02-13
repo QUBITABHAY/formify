@@ -245,7 +245,7 @@ export default function FlowFormBuilder({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowShareModal(true)}
-            className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-black transition-colors"
           >
             Share
           </button>
@@ -273,7 +273,7 @@ export default function FlowFormBuilder({
             <button
               onClick={handlePublish}
               disabled={isPublishing}
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-black transition-colors disabled:opacity-50"
             >
               {isPublishing ? "Publishing..." : "Publish"}
             </button>
@@ -303,7 +303,7 @@ export default function FlowFormBuilder({
 
           <DragOverlay>
             {activeId ? (
-              <div className="bg-white p-4 rounded-xl shadow-2xl border-2 border-indigo-500 opacity-90">
+              <div className="bg-white p-4 rounded-xl shadow-2xl border-2 border-gray-900 opacity-90">
                 <span className="text-sm font-medium text-gray-700">
                   Adding new field...
                 </span>
