@@ -17,6 +17,9 @@ export default function DashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [formToDelete, setFormToDelete] = useState<number | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -54,22 +57,24 @@ export default function DashboardPage() {
     }
   };
 
-  const handleDeleteForm = async (e: React.MouseEvent, formId: number) => {
+  const handleDeleteClick = (e: React.MouseEvent, formId: number) => {
     e.stopPropagation();
-    if (
-      !confirm(
-        "Are you sure you want to delete this form? This action cannot be undone.",
-      )
-    ) {
-      return;
-    }
+    setFormToDelete(formId);
+    setDeleteError(null);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!formToDelete) return;
+
     try {
-      setDeleting(formId);
-      await deleteForm(formId);
-      setForms(forms.filter((f) => f.id !== formId));
+      setDeleting(formToDelete);
+      await deleteForm(formToDelete);
+      setForms(forms.filter((f) => f.id !== formToDelete));
+      setIsDeleteModalOpen(false);
+      setFormToDelete(null);
     } catch (error) {
-      console.error("Failed to delete form", error);
-      alert("Failed to delete form. Please try again.");
+      setDeleteError("Failed to delete form. Please try again.");
     } finally {
       setDeleting(null);
     }
@@ -169,7 +174,7 @@ export default function DashboardPage() {
                     </span>
                     <span
                       className={`flex items-center font-medium z-10 ${deleting === form.id ? "text-gray-400" : "text-red-600 hover:text-red-700 hover:underline"}`}
-                      onClick={(e) => handleDeleteForm(e, form.id)}
+                      onClick={(e) => handleDeleteClick(e, form.id)}
                     >
                       {deleting === form.id ? "Deleting..." : "Delete"}
                     </span>
@@ -243,6 +248,39 @@ export default function DashboardPage() {
               One question at a time
             </p>
           </button>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Delete Form"
+      >
+        <div className="space-y-4">
+          {deleteError && (
+            <div className="p-3 bg-red-50 text-red-700 rounded-lg text-sm mb-4">
+              {deleteError}
+            </div>
+          )}
+          <p className="text-gray-600">
+            Are you sure you want to delete this form? This action cannot be
+            undone.
+          </p>
+          <div className="flex justify-end gap-3 mt-6">
+            <button
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              disabled={!!deleting}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+            >
+              {deleting ? "Deleting..." : "Delete Form"}
+            </button>
+          </div>
         </div>
       </Modal>
     </div>

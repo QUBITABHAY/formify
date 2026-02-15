@@ -134,7 +134,7 @@ export default function FormResponsesPage() {
         <div className="max-w-full mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate(-1)}
               className="text-gray-500 hover:text-gray-700 transition-colors"
             >
               ← Back to Dashboard
