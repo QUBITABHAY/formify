@@ -26,6 +26,8 @@ import type {
   WelcomeScreenConfig,
   ThankYouScreenConfig,
 } from "../shared/types";
+import { useNavigate } from "react-router-dom";
+import { Icons } from "../../common/icons";
 
 function generateId(): string {
   return `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -56,6 +58,7 @@ export default function FlowFormBuilder({
   },
   initialIsPublished = false,
 }: FlowFormBuilderProps) {
+  const navigate = useNavigate();
   const [fields, setFields] = useState<FormFieldConfig[]>(initialFields);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -233,6 +236,12 @@ export default function FlowFormBuilder({
     <div className="h-full flex flex-col bg-gray-100">
       <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => navigate(-1)}
+          >
+            <Icons.ArrowLeft />
+          </div>
           <img src={logo} alt="Formify" className="w-8 h-8" />
           <div>
             <h1 className="text-lg font-semibold text-gray-900">

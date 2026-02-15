@@ -27,7 +27,6 @@ export const createForm = async (
     const response = await api.post<FormResponse>("/forms", data);
     return response.data;
   } catch (error) {
-    console.error("Error creating form:", error);
     throw error;
   }
 };
@@ -37,7 +36,6 @@ export const getForms = async (userId: number = 1): Promise<FormResponse[]> => {
     const response = await api.get<FormResponse[]>(`/users/${userId}/forms`);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching forms for user ${userId}:`, error);
     throw error;
   }
 };
@@ -47,7 +45,6 @@ export const getForm = async (id: number): Promise<FormResponse> => {
     const response = await api.get<FormResponse>(`/forms/${id}`);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching form ${id}:`, error);
     throw error;
   }
 };
@@ -59,7 +56,6 @@ export const getPublicForm = async (
     const response = await api.get<FormResponse>(`/forms/share/${shareUrl}`);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching public form ${shareUrl}:`, error);
     throw error;
   }
 };
@@ -72,7 +68,6 @@ export const updateForm = async (
     const response = await api.put<FormResponse>(`/forms/${id}`, data);
     return response.data;
   } catch (error) {
-    console.error(`Error updating form ${id}:`, error);
     throw error;
   }
 };
@@ -81,7 +76,6 @@ export const deleteForm = async (id: number): Promise<void> => {
   try {
     await api.delete(`/forms/${id}`);
   } catch (error) {
-    console.error(`Error deleting form ${id}:`, error);
     throw error;
   }
 };
@@ -91,7 +85,6 @@ export const getResponse = async (id: number): Promise<FormSubmission> => {
     const response = await api.get<FormSubmission>(`/responses/${id}`);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching response ${id}:`, error);
     throw error;
   }
 };
@@ -100,7 +93,6 @@ export const deleteResponse = async (id: number): Promise<void> => {
   try {
     await api.delete(`/responses/${id}`);
   } catch (error) {
-    console.error(`Error deleting response ${id}:`, error);
     throw error;
   }
 };
@@ -114,7 +106,6 @@ export const getFormResponses = async (
     );
     return response.data;
   } catch (error) {
-    console.error(`Error fetching responses for form ${formId}:`, error);
     throw error;
   }
 };
@@ -124,7 +115,6 @@ export const publishForm = async (id: number): Promise<FormResponse> => {
     const response = await api.post<FormResponse>(`/forms/${id}/publish`);
     return response.data;
   } catch (error) {
-    console.error(`Error publishing form ${id}:`, error);
     throw error;
   }
 };
@@ -134,7 +124,6 @@ export const unpublishForm = async (id: number): Promise<FormResponse> => {
     const response = await api.post<FormResponse>(`/forms/${id}/unpublish`);
     return response.data;
   } catch (error) {
-    console.error(`Error unpublishing form ${id}:`, error);
     throw error;
   }
 };
@@ -147,7 +136,6 @@ export const submitResponse = async (
   try {
     await api.post(`/forms/${formId}/responses`, { data: answers, meta });
   } catch (error) {
-    console.error(`Error submitting response for form ${formId}:`, error);
     throw error;
   }
 };
@@ -157,7 +145,6 @@ export const signup = async (data: SignupRequest): Promise<UserResponse> => {
     const response = await api.post<UserResponse>("/users", data);
     return response.data;
   } catch (error) {
-    console.error("Error signing up:", error);
     throw error;
   }
 };
@@ -167,7 +154,6 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
     const response = await api.post<LoginResponse>("/auth/login", data);
     return response.data;
   } catch (error) {
-    console.error("Error logging in:", error);
     throw error;
   }
 };
@@ -181,7 +167,6 @@ export const getCurrentUser = async (): Promise<UserResponse> => {
     const response = await api.get<UserResponse>("/auth/me");
     return response.data;
   } catch (error) {
-    console.error("Error fetching current user:", error);
     throw error;
   }
 };
