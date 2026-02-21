@@ -35,6 +35,7 @@ interface SinglePageFormBuilderProps {
   initialDescription?: string;
   initialBanner?: string;
   initialIsPublished?: boolean;
+  initialShareUrl?: string | null;
 }
 
 export default function SinglePageFormBuilder({
@@ -44,6 +45,7 @@ export default function SinglePageFormBuilder({
   initialDescription = "Please fill out the details below.",
   initialBanner = "https://picsum.photos/800/200",
   initialIsPublished = false,
+  initialShareUrl,
 }: SinglePageFormBuilderProps) {
   const navigate = useNavigate();
   const [fields, setFields] = useState<FormFieldConfig[]>(initialFields);
@@ -58,7 +60,7 @@ export default function SinglePageFormBuilder({
   const [showShareModal, setShowShareModal] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isPublished, setIsPublished] = useState(initialIsPublished);
-  const [shareUrl, setShareUrl] = useState<string>("");
+  const [shareUrl, setShareUrl] = useState<string>(initialShareUrl ?? "");
 
   const handleSaveForm = async () => {
     if (!formId) {
@@ -81,7 +83,6 @@ export default function SinglePageFormBuilder({
       });
       return true;
     } catch (error) {
-      console.error("Failed to save form:", error);
       alert("Failed to save form. Please try again.");
       return false;
     } finally {
@@ -104,7 +105,6 @@ export default function SinglePageFormBuilder({
       }
       setShowShareModal(true);
     } catch (error) {
-      console.error("Failed to publish form:", error);
       alert("Failed to publish form.");
     } finally {
       setIsPublishing(false);
@@ -125,7 +125,6 @@ export default function SinglePageFormBuilder({
       setIsPublished(result.status === "published");
       alert("Form unpublished successfully.");
     } catch (error) {
-      console.error("Failed to unpublish form:", error);
       alert("Failed to unpublish form.");
     }
   };

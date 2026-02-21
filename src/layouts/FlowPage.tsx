@@ -273,7 +273,6 @@ function FlowPage({
   };
 
   const handleSubmit = () => {
-    console.log("Form Submitted:", formData);
     setIsSubmitted(true);
     onSubmit?.(formData);
   };

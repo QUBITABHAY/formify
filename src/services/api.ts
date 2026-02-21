@@ -9,6 +9,9 @@ import type {
   UserResponse,
   LoginRequest,
   LoginResponse,
+  LinkGoogleSheetRequest,
+  CreateGoogleSheetRequest,
+  CreateGoogleSheetResponse,
 } from "./apiTypes";
 
 const api = axios.create({
@@ -23,139 +26,114 @@ const api = axios.create({
 export const createForm = async (
   data: CreateFormRequest,
 ): Promise<FormResponse> => {
-  try {
-    const response = await api.post<FormResponse>("/forms", data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.post<FormResponse>("/forms", data);
+  return response.data;
 };
 
 export const getForms = async (userId: number = 1): Promise<FormResponse[]> => {
-  try {
-    const response = await api.get<FormResponse[]>(`/users/${userId}/forms`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.get<FormResponse[]>(`/users/${userId}/forms`);
+  return response.data;
 };
 
 export const getForm = async (id: number): Promise<FormResponse> => {
-  try {
-    const response = await api.get<FormResponse>(`/forms/${id}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.get<FormResponse>(`/forms/${id}`);
+  return response.data;
 };
 
 export const getPublicForm = async (
   shareUrl: string,
 ): Promise<FormResponse> => {
-  try {
-    const response = await api.get<FormResponse>(`/forms/share/${shareUrl}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.get<FormResponse>(`/forms/share/${shareUrl}`);
+  return response.data;
 };
 
 export const updateForm = async (
   id: number,
   data: UpdateFormRequest,
 ): Promise<FormResponse> => {
-  try {
-    const response = await api.put<FormResponse>(`/forms/${id}`, data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.put<FormResponse>(`/forms/${id}`, data);
+  return response.data;
 };
 
 export const deleteForm = async (id: number): Promise<void> => {
-  try {
-    await api.delete(`/forms/${id}`);
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getResponse = async (id: number): Promise<FormSubmission> => {
-  try {
-    const response = await api.get<FormSubmission>(`/responses/${id}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const deleteResponse = async (id: number): Promise<void> => {
-  try {
-    await api.delete(`/responses/${id}`);
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getFormResponses = async (
-  formId: number,
-): Promise<FormResponsesResult> => {
-  try {
-    const response = await api.get<FormResponsesResult>(
-      `/forms/${formId}/responses`,
-    );
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  await api.delete(`/forms/${id}`);
 };
 
 export const publishForm = async (id: number): Promise<FormResponse> => {
-  try {
-    const response = await api.post<FormResponse>(`/forms/${id}/publish`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.post<FormResponse>(`/forms/${id}/publish`);
+  return response.data;
 };
 
 export const unpublishForm = async (id: number): Promise<FormResponse> => {
-  try {
-    const response = await api.post<FormResponse>(`/forms/${id}/unpublish`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.post<FormResponse>(`/forms/${id}/unpublish`);
+  return response.data;
 };
 
 export const submitResponse = async (
   formId: number,
   answers: Record<string, string | string[]>,
-  meta: Record<string, any> = {},
+  meta: Record<string, unknown> = {},
 ): Promise<void> => {
-  try {
-    await api.post(`/forms/${formId}/responses`, { data: answers, meta });
-  } catch (error) {
-    throw error;
-  }
+  await api.post(`/forms/${formId}/responses`, { data: answers, meta });
+};
+
+export const getFormResponses = async (
+  formId: number,
+): Promise<FormResponsesResult> => {
+  const response = await api.get<FormResponsesResult>(
+    `/forms/${formId}/responses`,
+  );
+  return response.data;
+};
+
+export const getResponse = async (id: number): Promise<FormSubmission> => {
+  const response = await api.get<FormSubmission>(`/responses/${id}`);
+  return response.data;
+};
+
+export const deleteResponse = async (id: number): Promise<void> => {
+  await api.delete(`/responses/${id}`);
+};
+
+export const linkGoogleSheet = async (
+  formId: number,
+  data: LinkGoogleSheetRequest,
+): Promise<FormResponse> => {
+  const response = await api.post<FormResponse>(
+    `/forms/${formId}/sheets/link`,
+    data,
+  );
+  return response.data;
+};
+
+export const createAndLinkGoogleSheet = async (
+  formId: number,
+  data: CreateGoogleSheetRequest,
+): Promise<CreateGoogleSheetResponse> => {
+  const response = await api.post<CreateGoogleSheetResponse>(
+    `/forms/${formId}/sheets/create`,
+    data,
+  );
+  return response.data;
+};
+
+export const unlinkGoogleSheet = async (
+  formId: number,
+): Promise<FormResponse> => {
+  const response = await api.delete<FormResponse>(
+    `/forms/${formId}/sheets/link`,
+  );
+  return response.data;
 };
 
 export const signup = async (data: SignupRequest): Promise<UserResponse> => {
-  try {
-    const response = await api.post<UserResponse>("/users", data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.post<UserResponse>("/users", data);
+  return response.data;
 };
 
 export const login = async (data: LoginRequest): Promise<LoginResponse> => {
-  try {
-    const response = await api.post<LoginResponse>("/auth/login", data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.post<LoginResponse>("/auth/login", data);
+  return response.data;
 };
 
 export const getGoogleAuthUrl = (): string => {
@@ -163,12 +141,8 @@ export const getGoogleAuthUrl = (): string => {
 };
 
 export const getCurrentUser = async (): Promise<UserResponse> => {
-  try {
-    const response = await api.get<UserResponse>("/auth/me");
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.get<UserResponse>("/auth/me");
+  return response.data;
 };
 
 export default api;

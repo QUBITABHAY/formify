@@ -275,4 +275,23 @@ export const Icons = {
       />
     </svg>
   ),
+  Sheets: () => (
+    <svg
+      viewBox="0 0 48 48"
+      className="w-5 h-5"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill="#43A047"
+        d="M37 45H11c-1.657 0-3-1.343-3-3V6c0-1.657 1.343-3 3-3h19l10 10v29c0 1.657-1.343 3-3 3z"
+      />
+      <path fill="#C8E6C9" d="M40 13H30V3z" />
+      <path fill="#2E7D32" d="M30 13l10 10V13z" />
+      <path
+        fill="#fff"
+        d="M13 23h22v2H13zm0 4h22v2H13zm0 4h22v2H13zm0-8h22v2H13z"
+      />
+      <path fill="#fff" d="M13 23h10v10H13z" opacity=".2" />
+    </svg>
+  ),
 };

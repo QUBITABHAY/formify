@@ -39,6 +39,7 @@ interface FlowFormBuilderProps {
   initialWelcome?: WelcomeScreenConfig;
   initialThankYou?: ThankYouScreenConfig;
   initialIsPublished?: boolean;
+  initialShareUrl?: string | null;
 }
 
 export default function FlowFormBuilder({
@@ -57,6 +58,7 @@ export default function FlowFormBuilder({
     emoji: "🎉",
   },
   initialIsPublished = false,
+  initialShareUrl,
 }: FlowFormBuilderProps) {
   const navigate = useNavigate();
   const [fields, setFields] = useState<FormFieldConfig[]>(initialFields);
@@ -73,7 +75,7 @@ export default function FlowFormBuilder({
   const [showShareModal, setShowShareModal] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isPublished, setIsPublished] = useState(initialIsPublished);
-  const [shareUrl, setShareUrl] = useState<string>("");
+  const [shareUrl, setShareUrl] = useState<string>(initialShareUrl ?? "");
 
   const handleSaveForm = async () => {
     if (!formId) {
@@ -95,7 +97,6 @@ export default function FlowFormBuilder({
       });
       return true;
     } catch (error) {
-      console.error("Failed to save form:", error);
       alert("Failed to save form. Please try again.");
       return false;
     } finally {
@@ -118,7 +119,6 @@ export default function FlowFormBuilder({
       }
       setShowShareModal(true);
     } catch (error) {
-      console.error("Failed to publish form:", error);
       alert("Failed to publish form.");
     } finally {
       setIsPublishing(false);
@@ -139,7 +139,6 @@ export default function FlowFormBuilder({
       setIsPublished(result.status === "published");
       alert("Form unpublished successfully.");
     } catch (error) {
-      console.error("Failed to unpublish form:", error);
       alert("Failed to unpublish form.");
     }
   };

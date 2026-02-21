@@ -54,6 +54,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
             initialWelcome={formData?.schema?.welcomeScreen as any}
             initialThankYou={formData?.schema?.thankYouScreen as any}
             initialIsPublished={formData?.status === "published"}
+            initialShareUrl={formData?.share_url}
           />
         ) : (
           <SinglePageFormBuilder
@@ -63,6 +64,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
             initialDescription={formData?.description}
             initialBanner={formData?.schema?.formBanner as string}
             initialIsPublished={formData?.status === "published"}
+            initialShareUrl={formData?.share_url}
           />
         )}
       </div>
