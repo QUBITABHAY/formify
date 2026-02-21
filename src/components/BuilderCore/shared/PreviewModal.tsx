@@ -95,7 +95,7 @@ export default function PreviewModal({
                 description: thankYouScreen.description,
                 emoji: thankYouScreen.emoji,
               }}
-              onSubmit={(data) => console.log("Preview submitted:", data)}
+              onSubmit={() => {}}
             />
           ) : (
             <div className="h-full overflow-y-auto">
@@ -104,7 +104,7 @@ export default function PreviewModal({
                 formDescription={formDescription}
                 formBanner={formBanner}
                 fields={layoutFields}
-                onSubmit={(data) => console.log("Preview submitted:", data)}
+                onSubmit={() => {}}
               />
             </div>
           )}

@@ -73,7 +73,6 @@ export default function PublicFormPage() {
     );
 
     try {
-      console.log("Submitting response:", structuredAnswers);
       await submitResponse(form.id, structuredAnswers, {});
       setSubmitted(true);
     } catch (err) {

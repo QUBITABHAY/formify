@@ -4,6 +4,7 @@ import { getForm, getFormResponses, deleteResponse } from "../services/api";
 import type { FormResponse, FormResponsesResult } from "../services/apiTypes";
 import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
 import { Icons } from "../components/common/icons";
+import GoogleSheetsModal from "../components/common/GoogleSheetsModal";
 import Papa from "papaparse";
 import Button from "../components/common/Button";
 
@@ -15,6 +16,7 @@ export default function FormResponsesPage() {
     useState<FormResponsesResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [showSheetsModal, setShowSheetsModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,7 +123,6 @@ export default function FormResponsesPage() {
         responses: responsesData!.responses.filter((r) => r.id !== responseId),
       });
     } catch (error) {
-      console.error("Failed to delete response", error);
       alert("Failed to delete response. Please try again.");
     } finally {
       setDeleting(null);
@@ -146,6 +147,15 @@ export default function FormResponsesPage() {
             </h1>
           </div>
           <div className="flex items-center gap-4">
+            <Button
+              onClick={() => setShowSheetsModal(true)}
+              className="border border-gray-200 hover:bg-gray-50 flex items-center gap-2 shadow-sm"
+              bgColor="bg-white"
+              textColor="text-gray-700"
+            >
+              <Icons.Sheets />
+              <span>Sheets</span>
+            </Button>
             <Button
               onClick={handleExportCSV}
               className="border border-gray-300 hover:bg-gray-50 flex items-center gap-2 shadow-sm"
@@ -244,6 +254,14 @@ export default function FormResponsesPage() {
           </div>
         )}
       </div>
+
+      <GoogleSheetsModal
+        isOpen={showSheetsModal}
+        onClose={() => setShowSheetsModal(false)}
+        formId={parseInt(formId!)}
+        initialSheetId={form.google_sheet_id}
+        initialSheetName={form.google_sheet_name}
+      />
     </div>
   );
 }

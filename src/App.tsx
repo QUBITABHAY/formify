@@ -6,7 +6,6 @@ import ResponsePage from "./pages/ResponsePage";
 import FormResponsesPage from "./pages/FormResponsesPage";
 import PublicFormPage from "./pages/PublicFormPage";
 import "./App.css";
-import "react-redux";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
