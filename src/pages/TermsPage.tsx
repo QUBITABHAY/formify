@@ -127,7 +127,7 @@ const TermsPage: React.FC = () => {
             contact us:
           </p>
           <ul className="list-disc pl-6 space-y-2 mb-8">
-            <li className="leading-relaxed">By email: terms@formify.com</li>
+            <li className="leading-relaxed">By email: support@formify.software</li>
           </ul>
         </div>
       </main>
