@@ -28,7 +28,7 @@ import type {
 } from "../shared/types";
 import { useNavigate } from "react-router-dom";
 import { Icons } from "../../common/icons";
-import ConfirmModal from "../../common/ConfirmModal";
+import Modal from "../../common/Modal";
 
 function generateId(): string {
   return `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -78,10 +78,11 @@ export default function FlowFormBuilder({
   const [isPublished, setIsPublished] = useState(initialIsPublished);
   const [shareUrl, setShareUrl] = useState<string>(initialShareUrl ?? "");
   const [showUnpublishConfirm, setShowUnpublishConfirm] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSaveForm = async () => {
     if (!formId) {
-      alert("Form ID not found. Cannot save.");
+      setErrorMessage("Form ID not found. Cannot save.");
       return;
     }
     try {
@@ -99,7 +100,7 @@ export default function FlowFormBuilder({
       });
       return true;
     } catch (error) {
-      alert("Failed to save form. Please try again.");
+      setErrorMessage("Failed to save form. Please try again.");
       return false;
     } finally {
       setIsSaving(false);
@@ -121,7 +122,7 @@ export default function FlowFormBuilder({
       }
       setShowShareModal(true);
     } catch (error) {
-      alert("Failed to publish form.");
+      setErrorMessage("Failed to publish form.");
     } finally {
       setIsPublishing(false);
     }
@@ -134,9 +135,8 @@ export default function FlowFormBuilder({
     try {
       const result = await unpublishForm(formId);
       setIsPublished(result.status === "published");
-      alert("Form unpublished successfully.");
-    } catch (error) {
-      alert("Failed to unpublish form.");
+    } catch {
+      setErrorMessage("Failed to unpublish form.");
     }
   };
 
@@ -347,19 +347,42 @@ export default function FlowFormBuilder({
         <ShareModal
           isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
-          shareUrl={shareUrl || formId.toString()}
+          shareUrl={shareUrl}
         />
       )}
 
-      <ConfirmModal
+      <Modal
         isOpen={showUnpublishConfirm}
+        onClose={() => setShowUnpublishConfirm(false)}
         title="Unpublish Form?"
-        message="This form will no longer be accessible to the public. You can re-publish it later."
-        confirmLabel="Unpublish"
-        variant="danger"
-        onConfirm={handleUnpublish}
-        onCancel={() => setShowUnpublishConfirm(false)}
-      />
+      >
+        <p className="text-sm text-gray-600 mb-6">
+          This form will no longer be accessible to the public. You can
+          re-publish it later.
+        </p>
+        <div className="flex items-center justify-end gap-3">
+          <button
+            onClick={() => setShowUnpublishConfirm(false)}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleUnpublish}
+            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Unpublish
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={errorMessage !== null}
+        onClose={() => setErrorMessage(null)}
+        title="Error"
+      >
+        <p className="text-sm text-gray-600">{errorMessage}</p>
+      </Modal>
     </div>
   );
 }

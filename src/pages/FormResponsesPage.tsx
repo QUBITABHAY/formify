@@ -7,7 +7,7 @@ import { Icons } from "../components/common/icons";
 import GoogleSheetsModal from "../components/common/GoogleSheetsModal";
 import Papa from "papaparse";
 import Button from "../components/common/Button";
-import ConfirmModal from "../components/common/ConfirmModal";
+import Modal from "../components/common/Modal";
 
 export default function FormResponsesPage() {
   const { formId } = useParams();
@@ -19,6 +19,7 @@ export default function FormResponsesPage() {
   const [deleting, setDeleting] = useState<number | null>(null);
   const [showSheetsModal, setShowSheetsModal] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,7 +120,7 @@ export default function FormResponsesPage() {
         responses: responsesData!.responses.filter((r) => r.id !== responseId),
       });
     } catch (error) {
-      alert("Failed to delete response. Please try again.");
+      setErrorMessage("Failed to delete response. Please try again.");
     } finally {
       setDeleting(null);
     }
@@ -259,17 +260,40 @@ export default function FormResponsesPage() {
         initialSheetName={form.google_sheet_name}
       />
 
-      <ConfirmModal
+      <Modal
         isOpen={deleteConfirmId !== null}
+        onClose={() => setDeleteConfirmId(null)}
         title="Delete Response?"
-        message="This action cannot be undone. The response data will be permanently removed."
-        confirmLabel="Delete"
-        variant="danger"
-        onConfirm={() =>
-          deleteConfirmId !== null && handleDeleteResponse(deleteConfirmId)
-        }
-        onCancel={() => setDeleteConfirmId(null)}
-      />
+      >
+        <p className="text-sm text-gray-600 mb-6">
+          This action cannot be undone. The response data will be permanently
+          removed.
+        </p>
+        <div className="flex items-center justify-end gap-3">
+          <button
+            onClick={() => setDeleteConfirmId(null)}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() =>
+              deleteConfirmId !== null && handleDeleteResponse(deleteConfirmId)
+            }
+            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Delete
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={errorMessage !== null}
+        onClose={() => setErrorMessage(null)}
+        title="Error"
+      >
+        <p className="text-sm text-gray-600">{errorMessage}</p>
+      </Modal>
     </div>
   );
 }

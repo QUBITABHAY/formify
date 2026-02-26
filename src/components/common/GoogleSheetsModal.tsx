@@ -7,7 +7,6 @@ import {
   createAndLinkGoogleSheet,
   unlinkGoogleSheet,
 } from "../../services/api";
-import ConfirmModal from "./ConfirmModal";
 
 interface GoogleSheetsModalProps {
   isOpen: boolean;
@@ -174,15 +173,30 @@ export default function GoogleSheetsModal({
         </div>
       </Modal>
 
-      <ConfirmModal
+      <Modal
         isOpen={showUnlinkConfirm}
+        onClose={() => setShowUnlinkConfirm(false)}
         title="Unlink Google Sheet?"
-        message="Existing data in the sheet will be kept. You can re-link or create a new sheet later."
-        confirmLabel="Unlink"
-        variant="danger"
-        onConfirm={handleUnlink}
-        onCancel={() => setShowUnlinkConfirm(false)}
-      />
+      >
+        <p className="text-sm text-gray-600 mb-6">
+          Existing data in the sheet will be kept. You can re-link or create a
+          new sheet later.
+        </p>
+        <div className="flex items-center justify-end gap-3">
+          <button
+            onClick={() => setShowUnlinkConfirm(false)}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleUnlink}
+            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Unlink
+          </button>
+        </div>
+      </Modal>
     </>
   );
 }

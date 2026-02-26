@@ -24,36 +24,44 @@ export default function ShareModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Share your form">
-      <div className="space-y-4">
-        <p className="text-gray-600">
-          Your form is now published! Share this link to start collecting
-          responses.
-        </p>
+      {shareUrl ? (
+        <div className="space-y-4">
+          <p className="text-gray-600">
+            Your form is now published! Share this link to start collecting
+            responses.
+          </p>
 
-        <div className="flex gap-2">
-          <input
-            type="text"
-            readOnly
-            value={fullShareUrl}
-            className="flex-1 p-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-          />
-          <Button
-            title={copied ? "Copied!" : "Copy"}
-            onClick={handleCopy}
-            bgColor={copied ? "bg-green-600" : "bg-gray-900"}
-            textColor="text-white"
-          />
-        </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              readOnly
+              value={fullShareUrl}
+              className="flex-1 p-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
+            />
+            <Button
+              title={copied ? "Copied!" : "Copy"}
+              onClick={handleCopy}
+              bgColor={copied ? "bg-green-600" : "bg-gray-900"}
+              textColor="text-white"
+            />
+          </div>
 
-        <div className="flex justify-end pt-4 border-t border-gray-100">
-          <button
-            onClick={() => window.open(fullShareUrl, "_blank")}
-            className="text-gray-600 hover:text-black font-medium"
-          >
-            Open in new tab &rarr;
-          </button>
+          <div className="flex justify-end pt-4 border-t border-gray-100">
+            <button
+              onClick={() => window.open(fullShareUrl, "_blank")}
+              className="text-gray-600 hover:text-black font-medium"
+            >
+              Open in new tab &rarr;
+            </button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="text-center py-4">
+          <p className="text-gray-500">
+            Publish your form first to get a shareable link.
+          </p>
+        </div>
+      )}
     </Modal>
   );
 }

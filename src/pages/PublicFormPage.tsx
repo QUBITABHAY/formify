@@ -5,6 +5,7 @@ import type { FormResponse } from "../services/apiTypes";
 import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
 import FlowPage from "../layouts/FlowPage";
 import SinglePage from "../layouts/SinglePage";
+import Modal from "../components/common/Modal";
 
 export default function PublicFormPage() {
   const { formId } = useParams();
@@ -12,6 +13,7 @@ export default function PublicFormPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchForm = async () => {
@@ -51,7 +53,9 @@ export default function PublicFormPage() {
     });
 
     if (missingFields.length > 0) {
-      alert(`Please fill in the required fields: ${missingFields.join(", ")}`);
+      setAlertMessage(
+        `Please fill in the required fields: ${missingFields.join(", ")}`,
+      );
       return;
     }
 
@@ -77,7 +81,7 @@ export default function PublicFormPage() {
       setSubmitted(true);
     } catch (err) {
       console.error(err);
-      alert("Failed to submit form. Please try again.");
+      setAlertMessage("Failed to submit form. Please try again.");
       throw err;
     }
   };
@@ -145,6 +149,13 @@ export default function PublicFormPage() {
           }
           onSubmit={handleSubmit}
         />
+        <Modal
+          isOpen={alertMessage !== null}
+          onClose={() => setAlertMessage(null)}
+          title="Error"
+        >
+          <p className="text-sm text-gray-600">{alertMessage}</p>
+        </Modal>
       </div>
     );
   }
@@ -170,6 +181,13 @@ export default function PublicFormPage() {
           onSubmit={handleSubmit}
         />
       )}
+      <Modal
+        isOpen={alertMessage !== null}
+        onClose={() => setAlertMessage(null)}
+        title="Error"
+      >
+        <p className="text-sm text-gray-600">{alertMessage}</p>
+      </Modal>
     </div>
   );
 }
