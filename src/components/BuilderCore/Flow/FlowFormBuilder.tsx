@@ -28,6 +28,7 @@ import type {
 } from "../shared/types";
 import { useNavigate } from "react-router-dom";
 import { Icons } from "../../common/icons";
+import ConfirmModal from "../../common/ConfirmModal";
 
 function generateId(): string {
   return `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -76,6 +77,7 @@ export default function FlowFormBuilder({
   const [isPublishing, setIsPublishing] = useState(false);
   const [isPublished, setIsPublished] = useState(initialIsPublished);
   const [shareUrl, setShareUrl] = useState<string>(initialShareUrl ?? "");
+  const [showUnpublishConfirm, setShowUnpublishConfirm] = useState(false);
 
   const handleSaveForm = async () => {
     if (!formId) {
@@ -127,12 +129,7 @@ export default function FlowFormBuilder({
 
   const handleUnpublish = async () => {
     if (!formId) return;
-    if (
-      !confirm(
-        "Are you sure you want to unpublish this form? It will no longer be accessible to the public.",
-      )
-    )
-      return;
+    setShowUnpublishConfirm(false);
 
     try {
       const result = await unpublishForm(formId);
@@ -272,7 +269,7 @@ export default function FlowFormBuilder({
           </button>
           {isPublished ? (
             <button
-              onClick={handleUnpublish}
+              onClick={() => setShowUnpublishConfirm(true)}
               className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors"
             >
               Unpublish
@@ -353,6 +350,16 @@ export default function FlowFormBuilder({
           shareUrl={shareUrl || formId.toString()}
         />
       )}
+
+      <ConfirmModal
+        isOpen={showUnpublishConfirm}
+        title="Unpublish Form?"
+        message="This form will no longer be accessible to the public. You can re-publish it later."
+        confirmLabel="Unpublish"
+        variant="danger"
+        onConfirm={handleUnpublish}
+        onCancel={() => setShowUnpublishConfirm(false)}
+      />
     </div>
   );
 }

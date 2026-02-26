@@ -7,6 +7,7 @@ import { Icons } from "../components/common/icons";
 import GoogleSheetsModal from "../components/common/GoogleSheetsModal";
 import Papa from "papaparse";
 import Button from "../components/common/Button";
+import ConfirmModal from "../components/common/ConfirmModal";
 
 export default function FormResponsesPage() {
   const { formId } = useParams();
@@ -17,6 +18,7 @@ export default function FormResponsesPage() {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<number | null>(null);
   const [showSheetsModal, setShowSheetsModal] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -107,13 +109,7 @@ export default function FormResponsesPage() {
   };
 
   const handleDeleteResponse = async (responseId: number) => {
-    if (
-      !confirm(
-        "Are you sure you want to delete this response? This action cannot be undone.",
-      )
-    ) {
-      return;
-    }
+    setDeleteConfirmId(null);
     try {
       setDeleting(responseId);
       await deleteResponse(responseId);
@@ -239,7 +235,7 @@ export default function FormResponsesPage() {
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm">
                         <button
-                          onClick={() => handleDeleteResponse(response.id)}
+                          onClick={() => setDeleteConfirmId(response.id)}
                           disabled={deleting === response.id}
                           className={`font-medium ${deleting === response.id ? "text-gray-400" : "text-red-600 hover:text-red-700 hover:underline"}`}
                         >
@@ -261,6 +257,18 @@ export default function FormResponsesPage() {
         formId={parseInt(formId!)}
         initialSheetId={form.google_sheet_id}
         initialSheetName={form.google_sheet_name}
+      />
+
+      <ConfirmModal
+        isOpen={deleteConfirmId !== null}
+        title="Delete Response?"
+        message="This action cannot be undone. The response data will be permanently removed."
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={() =>
+          deleteConfirmId !== null && handleDeleteResponse(deleteConfirmId)
+        }
+        onCancel={() => setDeleteConfirmId(null)}
       />
     </div>
   );
