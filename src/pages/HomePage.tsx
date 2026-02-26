@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Button from "../components/common/Button";
 import logo from "../assets/logo.svg";
 import Modal from "../components/common/Modal";
 import Footer from "../components/common/Footer";
-import { createForm } from "../services/api";
+import { createForm, getGoogleAuthUrl } from "../services/api";
 import { Icons } from "../components/common/icons";
 import { logoutUser } from "../store/slices/authSlice";
 import type { RootState, AppDispatch } from "../store/store";
@@ -19,7 +19,7 @@ function HomePage() {
 
   const handleStartBuilding = () => {
     if (!user?.id) {
-      navigate("/login");
+      window.location.href = getGoogleAuthUrl();
       return;
     }
     setIsModalOpen(true);
@@ -27,7 +27,7 @@ function HomePage() {
 
   const handleCreateForm = async (type: "single" | "flow") => {
     if (!user?.id) {
-      navigate("/login");
+      window.location.href = getGoogleAuthUrl();
       return;
     }
     try {
@@ -53,7 +53,7 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 relative">
-      <div className="absolute inset-0 z-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none opacity-60"></div>
+      <div className="absolute inset-0 z-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[24px_24px] pointer-events-none opacity-60"></div>
 
       <nav className="relative z-10 flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
@@ -81,15 +81,9 @@ function HomePage() {
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium transition-colors"
-              >
-                Login
-              </Link>
               <Button
-                title="Sign Up"
-                onClick={() => navigate("/signup")}
+                title="Get Started"
+                onClick={() => (window.location.href = getGoogleAuthUrl())}
                 bgColor="bg-gray-900 hover:bg-black"
                 textColor="text-white"
               />
@@ -161,7 +155,7 @@ function HomePage() {
               <div className="w-full bg-gray-50/80 rounded-t-xl border border-gray-200 border-b-0 p-5 pt-6 shadow-inner relative transform translate-y-4 group-hover:translate-y-2 transition-transform duration-500">
                 <div className="flex gap-4 opacity-90">
                   <div className="w-1/3 md:w-1/4 space-y-3">
-                    <div className="h-10 bg-white border border-gray-200 rounded-lg flex items-center px-3 gap-3 shadow-sm transform scale-[1.02] border-gray-300">
+                    <div className="h-10 bg-white border border-gray-200 rounded-lg flex items-center px-3 gap-3 shadow-sm transform scale-[1.02]">
                       <span className="w-4 h-4 rounded-full bg-gray-900"></span>
                       <div className="h-2.5 w-16 bg-gray-200 rounded"></div>
                     </div>
@@ -175,7 +169,7 @@ function HomePage() {
                     </div>
                   </div>
                   <div className="flex-1 bg-white border border-gray-200 rounded-lg p-5 space-y-6 shadow-sm relative">
-                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-t-lg"></div>
+                    <div className="absolute top-0 inset-x-0 h-1 bg-linear-to-r from-gray-200 via-gray-300 to-gray-200 rounded-t-lg"></div>
                     <div className="space-y-2 mt-2">
                       <div className="h-3 w-24 bg-gray-300 rounded mb-1"></div>
                       <div className="h-11 w-full bg-gray-50 border border-gray-200 rounded-md"></div>
