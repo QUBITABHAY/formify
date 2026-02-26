@@ -9,7 +9,6 @@ import type {
   UserResponse,
   LoginRequest,
   LoginResponse,
-  LinkGoogleSheetRequest,
   CreateGoogleSheetRequest,
   CreateGoogleSheetResponse,
 } from "./apiTypes";
@@ -93,17 +92,6 @@ export const getResponse = async (id: number): Promise<FormSubmission> => {
 
 export const deleteResponse = async (id: number): Promise<void> => {
   await api.delete(`/responses/${id}`);
-};
-
-export const linkGoogleSheet = async (
-  formId: number,
-  data: LinkGoogleSheetRequest,
-): Promise<FormResponse> => {
-  const response = await api.post<FormResponse>(
-    `/forms/${formId}/sheets/link`,
-    data,
-  );
-  return response.data;
 };
 
 export const createAndLinkGoogleSheet = async (

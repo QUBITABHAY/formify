@@ -65,10 +65,6 @@ export interface LoginResponse {
   user: UserResponse;
 }
 
-export interface LinkGoogleSheetRequest {
-  spreadsheet_id: string;
-}
-
 export interface CreateGoogleSheetRequest {
   title?: string;
 }
