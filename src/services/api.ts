@@ -5,10 +5,7 @@ import type {
   UpdateFormRequest,
   FormSubmission,
   FormResponsesResult,
-  SignupRequest,
   UserResponse,
-  LoginRequest,
-  LoginResponse,
   CreateGoogleSheetRequest,
   CreateGoogleSheetResponse,
 } from "./apiTypes";
@@ -111,16 +108,6 @@ export const unlinkGoogleSheet = async (
   const response = await api.delete<FormResponse>(
     `/forms/${formId}/sheets/link`,
   );
-  return response.data;
-};
-
-export const signup = async (data: SignupRequest): Promise<UserResponse> => {
-  const response = await api.post<UserResponse>("/users", data);
-  return response.data;
-};
-
-export const login = async (data: LoginRequest): Promise<LoginResponse> => {
-  const response = await api.post<LoginResponse>("/auth/login", data);
   return response.data;
 };
 

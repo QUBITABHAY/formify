@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Button from "../components/common/Button";
 import logo from "../assets/logo.svg";
 import Modal from "../components/common/Modal";
 import Footer from "../components/common/Footer";
-import { createForm } from "../services/api";
+import { createForm, getGoogleAuthUrl } from "../services/api";
 import { Icons } from "../components/common/icons";
 import { logoutUser } from "../store/slices/authSlice";
 import type { RootState, AppDispatch } from "../store/store";
@@ -19,7 +19,7 @@ function HomePage() {
 
   const handleStartBuilding = () => {
     if (!user?.id) {
-      navigate("/login");
+      window.location.href = getGoogleAuthUrl();
       return;
     }
     setIsModalOpen(true);
@@ -27,7 +27,7 @@ function HomePage() {
 
   const handleCreateForm = async (type: "single" | "flow") => {
     if (!user?.id) {
-      navigate("/login");
+      window.location.href = getGoogleAuthUrl();
       return;
     }
     try {
@@ -81,15 +81,9 @@ function HomePage() {
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium transition-colors"
-              >
-                Login
-              </Link>
               <Button
-                title="Sign Up"
-                onClick={() => navigate("/signup")}
+                title="Get Started"
+                onClick={() => (window.location.href = getGoogleAuthUrl())}
                 bgColor="bg-gray-900 hover:bg-black"
                 textColor="text-white"
               />
