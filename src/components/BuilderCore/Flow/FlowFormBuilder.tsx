@@ -240,10 +240,18 @@ export default function FlowFormBuilder({
           </div>
           <img src={logo} alt="Formify" className="w-8 h-8" />
           <div>
-            <h1 className="text-lg font-semibold text-gray-900">
-              {welcomeScreen.title || "Conversational Form Builder"}
-            </h1>
-            <p className="text-xs text-gray-500">{fields.length} fields</p>
+            <div className="group relative flex items-center">
+              <input
+                type="text"
+                value={welcomeScreen.title}
+                onChange={(e) => handleUpdateWelcome({ title: e.target.value })}
+                className="text-lg font-semibold text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-white border-transparent hover:border-gray-200 focus:border-gray-300 border rounded-md px-2 py-0.5 -ml-2 outline-none transition-all cursor-text min-w-[200px]"
+                placeholder="Enter form title..."
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {fields.length} fields
+            </p>
           </div>
         </div>
 
