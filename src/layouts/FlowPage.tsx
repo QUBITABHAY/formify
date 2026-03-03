@@ -4,7 +4,7 @@ import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
 import DatePicker from "../components/common/DatePicker";
-import FileUpload from "../components/common/FileUpload";
+// import FileUpload from "../components/common/FileUpload";
 import type {
   FormFieldConfig as FormField,
   ConditionalRule,
@@ -368,6 +368,7 @@ function FlowPage({
             />
           </div>
         );
+      /*
       case "file":
         return (
           <div className="w-full max-w-lg">
@@ -381,6 +382,7 @@ function FlowPage({
             />
           </div>
         );
+*/
       default:
         return null;
     }

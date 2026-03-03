@@ -91,6 +91,7 @@ export const FIELD_TEMPLATES: FieldTemplate[] = [
       title: "Date",
     },
   },
+  /*
   {
     type: "file",
     label: "File Upload",
@@ -99,4 +100,5 @@ export const FIELD_TEMPLATES: FieldTemplate[] = [
       title: "Upload File",
     },
   },
+*/
 ];

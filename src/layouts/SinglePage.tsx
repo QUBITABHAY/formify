@@ -4,7 +4,7 @@ import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
 import DatePicker from "../components/common/DatePicker";
-import FileUpload from "../components/common/FileUpload";
+// import FileUpload from "../components/common/FileUpload";
 import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
 
 interface SinglePageProps {
@@ -246,6 +246,7 @@ function SinglePage({
             />
           </div>
         );
+      /*
       case "file":
         return (
           <div>
@@ -263,6 +264,7 @@ function SinglePage({
             />
           </div>
         );
+*/
       default:
         return null;
     }
