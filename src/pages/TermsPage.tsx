@@ -29,12 +29,7 @@ const TermsPage: React.FC = () => {
 
         <div className="max-w-none text-gray-600">
           <p className="text-sm border-b border-gray-100 pb-8 mb-8 text-gray-400 font-medium">
-            Last updated:{" "}
-            {new Date().toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
+            Last updated: March 03, 2026
           </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">
@@ -127,7 +122,9 @@ const TermsPage: React.FC = () => {
             contact us:
           </p>
           <ul className="list-disc pl-6 space-y-2 mb-8">
-            <li className="leading-relaxed">By email: support@formify.software</li>
+            <li className="leading-relaxed">
+              By email: support@formify.software
+            </li>
           </ul>
         </div>
       </main>
