@@ -92,13 +92,33 @@ export default function ResponsePage() {
                           <li key={idx}>{val}</li>
                         ))}
                       </ul>
+                    ) : answer?.toString() ? (
+                      (() => {
+                        const text = answer.toString();
+                        try {
+                          const url = new URL(text);
+                          if (url.protocol === "http:" || url.protocol === "https:") {
+                            return (
+                              <a
+                                href={text}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 underline break-all"
+                              >
+                                {text}
+                              </a>
+                            );
+                          }
+                        } catch {
+                          // not a URL
+                        }
+                        return <p>{text}</p>;
+                      })()
                     ) : (
                       <p>
-                        {answer?.toString() || (
-                          <span className="text-gray-400 italic">
-                            No answer provided
-                          </span>
-                        )}
+                        <span className="text-gray-400 italic">
+                          No answer provided
+                        </span>
                       </p>
                     )}
                   </div>

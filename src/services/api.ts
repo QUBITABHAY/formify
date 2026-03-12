@@ -8,15 +8,13 @@ import type {
   UserResponse,
   CreateGoogleSheetRequest,
   CreateGoogleSheetResponse,
+  FileUploadResponse,
 } from "./apiTypes";
 
 const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api`,
   timeout: 10000,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 export const createForm = async (
@@ -71,6 +69,20 @@ export const submitResponse = async (
   meta: Record<string, unknown> = {},
 ): Promise<void> => {
   await api.post(`/forms/${formId}/responses`, { data: answers, meta });
+};
+
+export const uploadFile = async (
+  formId: string | number,
+  file: File,
+): Promise<FileUploadResponse> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await api.post<FileUploadResponse>(
+    `/forms/${formId}/upload`,
+    formData,
+  );
+  return response.data;
 };
 
 export const getFormResponses = async (

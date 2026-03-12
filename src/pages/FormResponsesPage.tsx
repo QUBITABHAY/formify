@@ -218,13 +218,33 @@ export default function FormResponsesPage() {
                       {fields.map((field) => {
                         const answer =
                           response.data[field.title] ?? response.data[field.id];
+                        const formatted = formatAnswer(answer);
+                        let isUrl = false;
+                        try {
+                          const u = new URL(formatted);
+                          isUrl = u.protocol === "http:" || u.protocol === "https:";
+                        } catch {
+                          // not a URL
+                        }
                         return (
                           <td
                             key={field.id}
                             className="px-4 py-3 text-sm text-gray-700 max-w-xs truncate"
-                            title={formatAnswer(answer)}
+                            title={formatted}
                           >
-                            {formatAnswer(answer)}
+                            {isUrl ? (
+                              <a
+                                href={formatted}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 underline"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {formatted}
+                              </a>
+                            ) : (
+                              formatted
+                            )}
                           </td>
                         );
                       })}

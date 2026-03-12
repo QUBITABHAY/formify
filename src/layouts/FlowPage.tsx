@@ -4,11 +4,12 @@ import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
 import DatePicker from "../components/common/DatePicker";
-// import FileUpload from "../components/common/FileUpload";
+import FileUpload from "../components/common/FileUpload";
 import type {
   FormFieldConfig as FormField,
   ConditionalRule,
 } from "../components/BuilderCore/shared/types";
+import { uploadFile } from "../services/api";
 
 interface WelcomeScreenProps {
   title?: string;
@@ -23,6 +24,7 @@ interface ThankYouScreenProps {
 }
 
 interface FlowPageProps {
+  formId?: string | number;
   formTitle?: string;
   formDescription?: string;
   fields?: FormField[];
@@ -98,6 +100,7 @@ function FlowPage({
   onSubmit,
   welcomeScreen = {},
   thankYouScreen = {},
+  formId,
 }: FlowPageProps) {
   const welcomeTitle = welcomeScreen.title || formTitle;
   const welcomeDescription = welcomeScreen.description || formDescription;
@@ -119,6 +122,10 @@ function FlowPage({
   const [direction, setDirection] = useState<"up" | "down">("down");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [navigationHistory, setNavigationHistory] = useState<number[]>([]);
+  const [uploadingFields, setUploadingFields] = useState<Set<string>>(
+    new Set(),
+  );
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -169,6 +176,7 @@ function FlowPage({
   }, []);
 
   useEffect(() => {
+    setUploadError(null);
     containerRef.current?.focus();
     const timer = setTimeout(() => {
       if (
@@ -186,6 +194,32 @@ function FlowPage({
       ...prev,
       [id]: value,
     }));
+  };
+
+  const handleFileUpload = async (fieldId: string, file: File) => {
+    if (!formId) {
+      setUploadError("File upload failed: form configuration error.");
+      return;
+    }
+
+    setUploadError(null);
+    setUploadingFields((prev) => new Set(prev).add(fieldId));
+    try {
+      const response = await uploadFile(formId, file);
+      handleFieldChange(fieldId, response.url);
+    } catch (err: any) {
+      setUploadError(
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          "File upload failed. Please try again.",
+      );
+    } finally {
+      setUploadingFields((prev) => {
+        const next = new Set(prev);
+        next.delete(fieldId);
+        return next;
+      });
+    }
   };
 
   const validateField = (field: FormField, value: any): string | null => {
@@ -222,6 +256,7 @@ function FlowPage({
     if (isIntroScreen) return true;
     const field = currentField;
     if (!field) return false;
+    if (uploadingFields.has(field.id)) return false;
     return validateField(field, formData[field.id]) === null;
   };
 
@@ -368,21 +403,23 @@ function FlowPage({
             />
           </div>
         );
-      /*
       case "file":
         return (
           <div className="w-full max-w-lg">
             <FileUpload
               label=""
               name={field.id}
+              value={formData[field.id] || ""}
+              isUploading={uploadingFields.has(field.id)}
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                handleFieldChange(field.id, file?.name || "");
+                if (file) {
+                  handleFileUpload(field.id, file);
+                }
               }}
             />
           </div>
         );
-*/
       default:
         return null;
     }
@@ -488,6 +525,9 @@ function FlowPage({
 
           {validationError && (
             <p className="text-red-500 text-sm mb-4">{validationError}</p>
+          )}
+          {uploadError && (
+            <p className="text-red-500 text-sm mb-4">{uploadError}</p>
           )}
 
           {currentStep === totalSteps - 1 ||
