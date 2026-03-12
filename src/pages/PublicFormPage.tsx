@@ -148,6 +148,7 @@ export default function PublicFormPage() {
             }
           }
           onSubmit={handleSubmit}
+          formId={form.id}
         />
         <Modal
           isOpen={alertMessage !== null}
@@ -179,6 +180,7 @@ export default function PublicFormPage() {
           formBanner={schema.formBanner}
           fields={fields}
           onSubmit={handleSubmit}
+          formId={form.id}
         />
       )}
       <Modal

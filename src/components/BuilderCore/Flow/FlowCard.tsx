@@ -7,7 +7,7 @@ import Select from "../../common/Select";
 import RadioButton from "../../common/RadioButton";
 import Checkbox from "../../common/Checkbox";
 import DatePicker from "../../common/DatePicker";
-// import FileUpload from "../../common/FileUpload";
+import FileUpload from "../../common/FileUpload";
 
 interface FlowCardProps {
   field: FormFieldConfig;
@@ -111,14 +111,12 @@ export default function FlowCard({
             />
           </div>
         );
-      /*
       case "file":
         return (
           <div className="w-full max-w-md">
             <FileUpload label="" disabled={true} />
           </div>
         );
-*/
       default:
         return null;
     }

@@ -4,10 +4,12 @@ import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
 import DatePicker from "../components/common/DatePicker";
-// import FileUpload from "../components/common/FileUpload";
+import FileUpload from "../components/common/FileUpload";
 import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
+import { uploadFile } from "../services/api";
 
 interface SinglePageProps {
+  formId?: string | number;
   formTitle?: string;
   formDescription?: string;
   formBanner?: string;
@@ -70,10 +72,15 @@ function SinglePage({
   formBanner = "https://picsum.photos/800/200",
   fields = defaultFields,
   onSubmit,
+  formId,
 }: SinglePageProps) {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [uploadingFields, setUploadingFields] = useState<Set<string>>(
+    new Set(),
+  );
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     const initialData: Record<string, any> = {};
@@ -143,13 +150,42 @@ function SinglePage({
     return isValid;
   };
 
+  const handleFileUpload = async (fieldId: string, file: File) => {
+    if (!formId) {
+      setErrors((prev) => ({ ...prev, [fieldId]: "File upload failed: form configuration error." }));
+      return;
+    }
+
+    setUploadingFields((prev) => new Set(prev).add(fieldId));
+    try {
+      const response = await uploadFile(formId, file);
+      handleFieldChange(fieldId, response.url);
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "File upload failed. Please try again.";
+      setErrors((prev) => ({
+        ...prev,
+        [fieldId]: errorMessage,
+      }));
+    } finally {
+      setUploadingFields((prev) => {
+        const next = new Set(prev);
+        next.delete(fieldId);
+        return next;
+      });
+    }
+  };
+
   const handleSubmit = async () => {
+    if (uploadingFields.size > 0) return;
     if (validateAllFields()) {
       try {
         await onSubmit?.(formData);
         setIsSubmitted(true);
       } catch (err) {
-        console.error("Form submission failed:", err);
+        setSubmitError("Form submission failed. Please try again.");
       }
     }
   };
@@ -246,7 +282,6 @@ function SinglePage({
             />
           </div>
         );
-      /*
       case "file":
         return (
           <div>
@@ -257,14 +292,17 @@ function SinglePage({
             <FileUpload
               label=""
               name={field.id}
+              value={formData[field.id] || ""}
+              isUploading={uploadingFields.has(field.id)}
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                handleFieldChange(field.id, file?.name || "");
+                if (file) {
+                  handleFileUpload(field.id, file);
+                }
               }}
             />
           </div>
         );
-*/
       default:
         return null;
     }
@@ -336,14 +374,18 @@ function SinglePage({
 
         <div className="mt-8 flex items-center gap-4">
           <Button
-            title="Submit Form"
+            title={uploadingFields.size > 0 ? "Uploading..." : "Submit Form"}
             onClick={handleSubmit}
-            bgColor="bg-gray-900 hover:bg-black justify-center px-6 py-3 text-base md:text-lg shadow-lg shadow-gray-200"
+            disabled={uploadingFields.size > 0}
+            bgColor={`${uploadingFields.size > 0 ? "bg-gray-400" : "bg-gray-900 hover:bg-black"} justify-center px-6 py-3 text-base md:text-lg shadow-lg shadow-gray-200`}
           />
           <span className="text-sm text-gray-500">
             Never share passwords or sensitive info.
           </span>
         </div>
+        {submitError && (
+          <p className="mt-3 text-red-500 text-sm">{submitError}</p>
+        )}
       </div>
     </div>
   );

@@ -58,3 +58,10 @@ export interface CreateGoogleSheetResponse {
   spreadsheet_id: string;
   spreadsheet_url: string;
 }
+
+export interface FileUploadResponse {
+  public_id: string;
+  url: string;
+  format: string;
+  bytes: number;
+}
