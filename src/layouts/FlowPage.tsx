@@ -1,4 +1,11 @@
-import { useState, useEffect, useRef, type KeyboardEvent } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  type KeyboardEvent,
+} from "react";
 import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
@@ -10,6 +17,26 @@ import type {
   ConditionalRule,
 } from "../components/BuilderCore/shared/types";
 import { uploadFile } from "../services/api";
+import { validateField } from "../utils/validation";
+
+const evaluateRule = (rule: ConditionalRule, value: any): boolean => {
+  const strValue = Array.isArray(value) ? value.join(",") : String(value ?? "");
+  const ruleValue = rule.value;
+  switch (rule.operator) {
+    case "equals":
+      return strValue === ruleValue;
+    case "not_equals":
+      return strValue !== ruleValue;
+    case "contains":
+      if (Array.isArray(value)) return value.includes(ruleValue);
+      return strValue.toLowerCase().includes(ruleValue.toLowerCase());
+    case "not_contains":
+      if (Array.isArray(value)) return !value.includes(ruleValue);
+      return !strValue.toLowerCase().includes(ruleValue.toLowerCase());
+    default:
+      return false;
+  }
+};
 
 interface WelcomeScreenProps {
   title?: string;
@@ -102,14 +129,26 @@ function FlowPage({
   thankYouScreen = {},
   formId,
 }: FlowPageProps) {
-  const welcomeTitle = welcomeScreen.title || formTitle;
-  const welcomeDescription = welcomeScreen.description || formDescription;
-  const welcomeButtonText = welcomeScreen.buttonText || "Start";
-  const thankYouTitle = thankYouScreen.title || "Thank you!";
-  const thankYouDescription =
-    thankYouScreen.description ||
-    "Your response has been submitted successfully. We'll be in touch soon.";
-  const thankYouEmoji = thankYouScreen.emoji || "🎉";
+  const {
+    welcomeTitle,
+    welcomeDescription,
+    welcomeButtonText,
+    thankYouTitle,
+    thankYouDescription,
+    thankYouEmoji,
+  } = useMemo(
+    () => ({
+      welcomeTitle: welcomeScreen.title || formTitle,
+      welcomeDescription: welcomeScreen.description || formDescription,
+      welcomeButtonText: welcomeScreen.buttonText || "Start",
+      thankYouTitle: thankYouScreen.title || "Thank you!",
+      thankYouDescription:
+        thankYouScreen.description ||
+        "Your response has been submitted successfully. We'll be in touch soon.",
+      thankYouEmoji: thankYouScreen.emoji || "🎉",
+    }),
+    [welcomeScreen, thankYouScreen, formTitle, formDescription],
+  );
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<Record<string, any>>(() => {
     const initialData: Record<string, any> = {};
@@ -133,43 +172,25 @@ function FlowPage({
   const isIntroScreen = currentStep === -1;
   const currentField = fields[currentStep];
 
-  const evaluateRule = (rule: ConditionalRule, value: any): boolean => {
-    const strValue = Array.isArray(value)
-      ? value.join(",")
-      : String(value ?? "");
-    const ruleValue = rule.value;
-    switch (rule.operator) {
-      case "equals":
-        return strValue === ruleValue;
-      case "not_equals":
-        return strValue !== ruleValue;
-      case "contains":
-        if (Array.isArray(value)) return value.includes(ruleValue);
-        return strValue.toLowerCase().includes(ruleValue.toLowerCase());
-      case "not_contains":
-        if (Array.isArray(value)) return !value.includes(ruleValue);
-        return !strValue.toLowerCase().includes(ruleValue.toLowerCase());
-      default:
-        return false;
-    }
-  };
-
-  const getNextStep = (fromStep: number): number | "SUBMIT" => {
-    const field = fields[fromStep];
-    if (field?.logic?.rules && field.logic.rules.length > 0) {
-      const value = formData[field.id];
-      for (const rule of field.logic.rules) {
-        if (rule.targetFieldId && evaluateRule(rule, value)) {
-          if (rule.targetFieldId === "SUBMIT") return "SUBMIT";
-          const targetIndex = fields.findIndex(
-            (f) => f.id === rule.targetFieldId,
-          );
-          if (targetIndex !== -1) return targetIndex;
+  const getNextStep = useCallback(
+    (fromStep: number): number | "SUBMIT" => {
+      const field = fields[fromStep];
+      if (field?.logic?.rules && field.logic.rules.length > 0) {
+        const value = formData[field.id];
+        for (const rule of field.logic.rules) {
+          if (rule.targetFieldId && evaluateRule(rule, value)) {
+            if (rule.targetFieldId === "SUBMIT") return "SUBMIT";
+            const targetIndex = fields.findIndex(
+              (f) => f.id === rule.targetFieldId,
+            );
+            if (targetIndex !== -1) return targetIndex;
+          }
         }
       }
-    }
-    return fromStep + 1;
-  };
+      return fromStep + 1;
+    },
+    [fields, formData],
+  );
 
   useEffect(() => {
     setCurrentStep(-1);
@@ -189,83 +210,55 @@ function FlowPage({
     return () => clearTimeout(timer);
   }, [currentStep, currentField]);
 
-  const handleFieldChange = (id: string, value: any) => {
+  const handleFieldChange = useCallback((id: string, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [id]: value,
     }));
-  };
+  }, []);
 
-  const handleFileUpload = async (fieldId: string, file: File) => {
-    if (!formId) {
-      setUploadError("File upload failed: form configuration error.");
-      return;
-    }
-
-    setUploadError(null);
-    setUploadingFields((prev) => new Set(prev).add(fieldId));
-    try {
-      const response = await uploadFile(formId, file);
-      handleFieldChange(fieldId, response.url);
-    } catch (err: any) {
-      setUploadError(
-        err.response?.data?.error ||
-          err.response?.data?.message ||
-          "File upload failed. Please try again.",
-      );
-    } finally {
-      setUploadingFields((prev) => {
-        const next = new Set(prev);
-        next.delete(fieldId);
-        return next;
-      });
-    }
-  };
-
-  const validateField = (field: FormField, value: any): string | null => {
-    if (field.required) {
-      if (field.type === "checkbox" && value !== true) {
-        return "This field is required";
+  const handleFileUpload = useCallback(
+    async (fieldId: string, file: File) => {
+      if (!formId) {
+        setUploadError("File upload failed: form configuration error.");
+        return;
       }
-      if (typeof value === "string" && value.trim() === "") {
-        return "This field is required";
-      }
-      if (value === undefined || value === null || value === "") {
-        return "This field is required";
-      }
-    }
 
-    if (field.type === "email" && value) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
-        return "Please enter a valid email address";
+      setUploadError(null);
+      setUploadingFields((prev) => new Set(prev).add(fieldId));
+      try {
+        const response = await uploadFile(formId, file);
+        handleFieldChange(fieldId, response.url);
+      } catch (err: any) {
+        setUploadError(
+          err.response?.data?.error ||
+            err.response?.data?.message ||
+            "File upload failed. Please try again.",
+        );
+      } finally {
+        setUploadingFields((prev) => {
+          const next = new Set(prev);
+          next.delete(fieldId);
+          return next;
+        });
       }
-    }
+    },
+    [formId, handleFieldChange],
+  );
 
-    if (field.type === "tel" && value) {
-      const phoneRegex = /^[0-9]{10}$/;
-      if (!phoneRegex.test(value)) {
-        return "Please enter a valid 10-digit phone number";
-      }
-    }
-
-    return null;
-  };
-
-  const canProceed = () => {
+  const canProceed = useCallback(() => {
     if (isIntroScreen) return true;
-    const field = currentField;
-    if (!field) return false;
-    if (uploadingFields.has(field.id)) return false;
-    return validateField(field, formData[field.id]) === null;
-  };
+    if (!currentField) return false;
+    if (uploadingFields.has(currentField.id)) return false;
+    return validateField(currentField, formData[currentField.id]) === null;
+  }, [isIntroScreen, currentField, uploadingFields, formData]);
 
-  const getValidationError = (): string | null => {
-    if (isIntroScreen || !currentField) return null;
-    return validateField(currentField, formData[currentField.id]);
-  };
+  const handleSubmit = useCallback(() => {
+    setIsSubmitted(true);
+    onSubmit?.(formData);
+  }, [onSubmit, formData]);
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     if (!canProceed() || isAnimating) return;
 
     setDirection("down");
@@ -290,9 +283,17 @@ function FlowPage({
       }
       setIsAnimating(false);
     }, 300);
-  };
+  }, [
+    canProceed,
+    isAnimating,
+    isIntroScreen,
+    getNextStep,
+    currentStep,
+    totalSteps,
+    handleSubmit,
+  ]);
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     if (isAnimating) return;
     if (navigationHistory.length === 0) return;
 
@@ -305,21 +306,22 @@ function FlowPage({
       setCurrentStep(prevStep);
       setIsAnimating(false);
     }, 300);
-  };
+  }, [isAnimating, navigationHistory]);
 
-  const handleSubmit = () => {
-    setIsSubmitted(true);
-    onSubmit?.(formData);
-  };
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        goToNext();
+      }
+    },
+    [goToNext],
+  );
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      goToNext();
-    }
-  };
-
-  const validationError = getValidationError();
+  const validationError = useMemo(() => {
+    if (isIntroScreen || !currentField) return null;
+    return validateField(currentField, formData[currentField.id]);
+  }, [isIntroScreen, currentField, formData]);
 
   const renderField = (field: FormField) => {
     switch (field.type) {
@@ -335,8 +337,8 @@ function FlowPage({
               title=""
               type={field.type}
               placeholder={field.placeholder}
-              maxLength={field.maxLength}
               value={formData[field.id] ?? ""}
+              subtitle={field.subtitle}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
             />
           </div>
@@ -353,7 +355,7 @@ function FlowPage({
                   key={option.value}
                   title={option.label}
                   checked={selectedValues.includes(option.value)}
-                  onChange={(checked) => {
+                  onChange={(checked: boolean) => {
                     const newValues = checked
                       ? [...selectedValues, option.value]
                       : selectedValues.filter(
@@ -385,8 +387,11 @@ function FlowPage({
           <div className="w-full max-w-lg">
             <Checkbox
               title={field.title}
+              subtitle={field.subtitle}
               checked={formData[field.id]}
-              onChange={(checked) => handleFieldChange(field.id, checked)}
+              onChange={(checked: boolean) =>
+                handleFieldChange(field.id, checked)
+              }
             />
           </div>
         );
@@ -400,6 +405,7 @@ function FlowPage({
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
               min={field.minDate}
               max={field.maxDate}
+              subtitle={field.subtitle}
             />
           </div>
         );
@@ -417,6 +423,7 @@ function FlowPage({
                   handleFileUpload(field.id, file);
                 }
               }}
+              subtitle={field.subtitle}
             />
           </div>
         );
@@ -514,7 +521,7 @@ function FlowPage({
           </h2>
 
           {currentField?.subtitle && (
-            <p className="text-lg text-gray-500 mb-8">
+            <p className="text-xl text-gray-500 mb-8">
               {currentField.subtitle}
             </p>
           )}

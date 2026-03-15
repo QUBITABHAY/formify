@@ -9,6 +9,7 @@ interface InputFieldProps {
   value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   autoFocus?: boolean;
+  subtitle?: string;
   disabled?: boolean;
 }
 
@@ -23,6 +24,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       value,
       onChange,
       autoFocus,
+      subtitle,
       disabled,
     },
     ref,
@@ -32,6 +34,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         <label className="text-sm font-normal text-gray-700 mb-2">
           {title}
         </label>
+        {subtitle && <p className="text-base text-gray-500 mb-2">{subtitle}</p>}
         <input
           ref={ref}
           type={type}

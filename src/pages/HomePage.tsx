@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Button from "../components/common/Button";
@@ -10,6 +10,37 @@ import { Icons } from "../components/common/icons";
 import { logoutUser } from "../store/slices/authSlice";
 import type { RootState, AppDispatch } from "../store/store";
 
+interface FeatureCardProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+const FeatureCard: React.FC<FeatureCardProps> = ({
+  title,
+  description,
+  icon,
+  className = "",
+  children,
+}) => (
+  <div
+    className={`bg-white rounded-3xl p-8 border border-gray-200 hover:border-gray-900 shadow-sm relative overflow-hidden group transition-colors duration-300 ${className}`}
+  >
+    <div className="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
+      {icon}
+    </div>
+    <h3 className="text-xl font-bold text-gray-900 mb-2 tracking-tight">
+      {title}
+    </h3>
+    <p className="text-gray-600 font-medium text-sm leading-relaxed">
+      {description}
+    </p>
+    {children}
+  </div>
+);
+
 function HomePage() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -17,39 +48,42 @@ function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleStartBuilding = () => {
+  const handleStartBuilding = useCallback(() => {
     if (!user?.id) {
       window.location.href = getGoogleAuthUrl();
       return;
     }
     setIsModalOpen(true);
-  };
+  }, [user?.id]);
 
-  const handleCreateForm = async (type: "single" | "flow") => {
-    if (!user?.id) {
-      window.location.href = getGoogleAuthUrl();
-      return;
-    }
-    try {
-      setLoading(true);
-      const newForm = await createForm({
-        name: `My ${type === "single" ? "Single Page" : "Flow"} Form`,
-        user_id: user.id,
-        schema: { type },
-      });
-      navigate(`/builder/${newForm.id}`);
-    } catch (error) {
-      console.error("Failed to create form", error);
-    } finally {
-      setLoading(false);
-      setIsModalOpen(false);
-    }
-  };
+  const handleCreateForm = useCallback(
+    async (type: "single" | "flow") => {
+      if (!user?.id) {
+        window.location.href = getGoogleAuthUrl();
+        return;
+      }
+      try {
+        setLoading(true);
+        const newForm = await createForm({
+          name: `My ${type === "single" ? "Single Page" : "Flow"} Form`,
+          user_id: user.id,
+          schema: { type },
+        });
+        navigate(`/builder/${newForm.id}`);
+      } catch (error) {
+        console.error("Failed to create form", error);
+      } finally {
+        setLoading(false);
+        setIsModalOpen(false);
+      }
+    },
+    [user?.id, navigate],
+  );
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     await dispatch(logoutUser());
     navigate("/");
-  };
+  }, [dispatch, navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 relative">
@@ -138,20 +172,12 @@ function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="col-span-1 md:col-span-2 bg-white rounded-3xl p-8 md:p-10 md:pb-0 border border-gray-200 hover:border-gray-300 shadow-sm relative overflow-hidden group transition-colors flex flex-col justify-between min-h-[400px]">
-              <div className="relative z-10 w-full mb-8">
-                <div className="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
-                  <Icons.CursorMove />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">
-                  Intuitive Drag & Drop
-                </h3>
-                <p className="text-gray-600 font-medium max-w-md">
-                  Create complex layouts in seconds. Add, reorder, and configure
-                  fields with a seamless interface designed for speed.
-                </p>
-              </div>
-
+            <FeatureCard
+              title="Intuitive Drag & Drop"
+              description="Create complex layouts in seconds. Add, reorder, and configure fields with a seamless interface designed for speed."
+              icon={<Icons.CursorMove />}
+              className="md:col-span-2 md:p-10 md:pb-0 min-h-[400px] flex flex-col justify-between"
+            >
               <div className="w-full bg-gray-50/80 rounded-t-xl border border-gray-200 border-b-0 p-5 pt-6 shadow-inner relative transform translate-y-4 group-hover:translate-y-2 transition-transform duration-500">
                 <div className="flex gap-4 opacity-90">
                   <div className="w-1/3 md:w-1/4 space-y-3">
@@ -181,7 +207,7 @@ function HomePage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </FeatureCard>
 
             <div className="col-span-1 bg-gray-900 rounded-3xl p-8 md:p-10 border border-black shadow-lg text-white relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 opacity-10 transform translate-x-1/4 -translate-y-1/4 group-hover:scale-110 transition-transform duration-700">
@@ -233,8 +259,10 @@ function HomePage() {
               </div>
             </div>
 
-            <div className="col-span-1 md:col-span-1 bg-white rounded-3xl p-8 border border-gray-200 hover:border-gray-900 shadow-sm relative overflow-hidden group transition-colors duration-300">
-              <div className="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
+            <FeatureCard
+              title="Conversational"
+              description="Ask one question at a time. Ideal for high-converting lead generation and onboarding flows."
+              icon={
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -248,41 +276,21 @@ function HomePage() {
                     d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                   />
                 </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2 tracking-tight">
-                Conversational
-              </h3>
-              <p className="text-gray-600 font-medium text-sm leading-relaxed">
-                Ask one question at a time. Ideal for high-converting lead
-                generation and onboarding flows.
-              </p>
-            </div>
+              }
+            />
 
-            <div className="col-span-1 md:col-span-1 bg-white rounded-3xl p-8 border border-gray-200 hover:border-green-500 shadow-sm relative overflow-hidden group transition-colors duration-300">
-              <div className="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center mb-6 text-gray-900 group-hover:bg-green-50 group-hover:text-green-600 transition-colors duration-300">
-                <Icons.Sheets />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2 tracking-tight">
-                Instant Sync
-              </h3>
-              <p className="text-gray-600 font-medium text-sm leading-relaxed">
-                Automatically send responses directly to Google Sheets in
-                real-time. Zero Zapier setup required.
-              </p>
-            </div>
+            <FeatureCard
+              title="Instant Sync"
+              description="Automatically send responses directly to Google Sheets in real-time. Zero Zapier setup required."
+              icon={<Icons.Sheets />}
+              className="hover:border-green-500"
+            />
 
-            <div className="col-span-1 md:col-span-1 bg-white rounded-3xl p-8 border border-gray-200 hover:border-gray-900 shadow-sm relative overflow-hidden group transition-colors duration-300">
-              <div className="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300">
-                <Icons.Chart />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2 tracking-tight">
-                Analytics Insights
-              </h3>
-              <p className="text-gray-600 font-medium text-sm leading-relaxed">
-                Track views, submissions, and drop-off points to optimize your
-                forms for maximum lead conversion.
-              </p>
-            </div>
+            <FeatureCard
+              title="Analytics Insights"
+              description="Track views, submissions, and drop-off points to optimize your forms for maximum lead conversion."
+              icon={<Icons.Chart />}
+            />
           </div>
         </section>
       </main>

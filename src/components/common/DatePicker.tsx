@@ -9,6 +9,7 @@ interface DatePickerProp {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   required?: boolean;
+  subtitle?: string;
 }
 
 function DatePicker({
@@ -20,6 +21,7 @@ function DatePicker({
   max,
   disabled = false,
   required = false,
+  subtitle,
 }: DatePickerProp) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,6 +43,7 @@ function DatePicker({
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
+      {subtitle && <p className="text-base text-gray-500 mb-2">{subtitle}</p>}
       <div
         className={`
           relative cursor-pointer

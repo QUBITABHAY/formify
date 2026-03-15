@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { submitResponse, getPublicForm } from "../services/api";
 import type { FormResponse } from "../services/apiTypes";
@@ -22,7 +22,6 @@ export default function PublicFormPage() {
         const data = await getPublicForm(formId);
         setForm(data);
       } catch (err) {
-        console.error(err);
         setError("Form not found or unavailable.");
       } finally {
         setLoading(false);
@@ -31,60 +30,62 @@ export default function PublicFormPage() {
     fetchForm();
   }, [formId]);
 
-  const handleSubmit = async (answers: Record<string, any>) => {
-    if (!form || !formId) return;
+  const handleSubmit = useCallback(
+    async (answers: Record<string, any>) => {
+      if (!form || !formId) return;
 
-    const schema = form.schema as any;
-    const formFields = (schema.fields as FormFieldConfig[]) || [];
+      const schema = form.schema as any;
+      const formFields = (schema.fields as FormFieldConfig[]) || [];
 
-    const missingFields: string[] = [];
-    formFields.forEach((field) => {
-      if (field.required) {
-        const value = answers[field.id];
-        if (
-          value === undefined ||
-          value === null ||
-          value === "" ||
-          (Array.isArray(value) && value.length === 0)
-        ) {
-          missingFields.push(field.title || field.id);
+      const missingFields: string[] = [];
+      formFields.forEach((field) => {
+        if (field.required) {
+          const value = answers[field.id];
+          if (
+            value === undefined ||
+            value === null ||
+            value === "" ||
+            (Array.isArray(value) && value.length === 0)
+          ) {
+            missingFields.push(field.title || field.id);
+          }
         }
+      });
+
+      if (missingFields.length > 0) {
+        setAlertMessage(
+          `Please fill in the required fields: ${missingFields.join(", ")}`,
+        );
+        return;
       }
-    });
 
-    if (missingFields.length > 0) {
-      setAlertMessage(
-        `Please fill in the required fields: ${missingFields.join(", ")}`,
+      const fieldIdToTitle = formFields.reduce(
+        (acc, field) => {
+          acc[field.id] = field.title || field.id;
+          return acc;
+        },
+        {} as Record<string, string>,
       );
-      return;
-    }
 
-    const fieldIdToTitle = formFields.reduce(
-      (acc, field) => {
-        acc[field.id] = field.title || field.id;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
+      const structuredAnswers = Object.entries(answers).reduce(
+        (acc, [fieldId, value]) => {
+          const title = fieldIdToTitle[fieldId] || fieldId;
+          acc[title] = value;
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
 
-    const structuredAnswers = Object.entries(answers).reduce(
-      (acc, [fieldId, value]) => {
-        const title = fieldIdToTitle[fieldId] || fieldId;
-        acc[title] = value;
-        return acc;
-      },
-      {} as Record<string, any>,
-    );
-
-    try {
-      await submitResponse(form.id, structuredAnswers, {});
-      setSubmitted(true);
-    } catch (err) {
-      console.error(err);
-      setAlertMessage("Failed to submit form. Please try again.");
-      throw err;
-    }
-  };
+      try {
+        await submitResponse(form.id, structuredAnswers, {});
+        setSubmitted(true);
+      } catch (err) {
+        setAlertMessage("Failed to submit form. Please try again.");
+        throw err;
+      }
+    },
+    [form, formId],
+  );
 
   if (loading) {
     return (
@@ -122,9 +123,14 @@ export default function PublicFormPage() {
     );
   }
 
-  const schema = form.schema as any;
-  const fields = (schema.fields as FormFieldConfig[]) || [];
-  const type = schema.type as "single" | "flow";
+  const { fields, type, schema } = useMemo(() => {
+    const s = form.schema as any;
+    return {
+      fields: (s.fields as FormFieldConfig[]) || [],
+      type: s.type as "single" | "flow",
+      schema: s,
+    };
+  }, [form.schema]);
 
   if (type === "flow") {
     return (

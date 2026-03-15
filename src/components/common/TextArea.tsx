@@ -8,6 +8,7 @@ interface TextAreaProps {
   rows?: number;
   maxLength?: number;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  subtitle?: string;
   disabled?: boolean;
 }
 
@@ -21,6 +22,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       rows = 4,
       maxLength,
       onChange,
+      subtitle,
       disabled,
     },
     ref,
@@ -30,6 +32,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         <label className="text-sm font-normal text-gray-700 mb-2">
           {title}
         </label>
+        {subtitle && <p className="text-base text-gray-500 mb-2">{subtitle}</p>}
         <textarea
           ref={ref}
           name={name}
