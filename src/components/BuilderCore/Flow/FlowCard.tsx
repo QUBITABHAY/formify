@@ -4,6 +4,7 @@ import type { FormFieldConfig } from "../shared/types";
 import InputField from "../../common/InputField";
 import TextArea from "../../common/TextArea";
 import Select from "../../common/Select";
+import { memo } from "react";
 import RadioButton from "../../common/RadioButton";
 import Checkbox from "../../common/Checkbox";
 import DatePicker from "../../common/DatePicker";
@@ -17,7 +18,7 @@ interface FlowCardProps {
   onDelete: () => void;
 }
 
-export default function FlowCard({
+const FlowCard = memo(function FlowCard({
   field,
   stepNumber,
   isSelected,
@@ -172,12 +173,12 @@ export default function FlowCard({
         {stepNumber}
       </div>
       <div className="ml-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-1">
+        <h3 className="text-xl font-bold text-gray-900 mb-2">
           {field.title}
           {field.required && <span className="text-red-500 ml-1">*</span>}
         </h3>
         {field.subtitle && (
-          <p className="text-sm text-gray-500 mb-4">{field.subtitle}</p>
+          <p className="text-base text-gray-500 mb-4">{field.subtitle}</p>
         )}
         <div className="pointer-events-none">{renderFieldPreview()}</div>
         <div className="mt-4 flex items-center gap-2">
@@ -198,4 +199,6 @@ export default function FlowCard({
       </div>
     </div>
   );
-}
+});
+
+export default FlowCard;

@@ -18,7 +18,6 @@ export default function AuthCallbackPage() {
         dispatch(setAuth({ user }));
         navigate("/dashboard", { replace: true });
       } catch (err) {
-        console.error("Failed to fetch user after OAuth:", err);
         setError("Authentication failed. Please try again.");
       }
     };

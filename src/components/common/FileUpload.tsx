@@ -8,6 +8,7 @@ interface FileUploadProps {
   disabled?: boolean;
   required?: boolean;
   isUploading?: boolean;
+  subtitle?: string;
   value?: string;
 }
 
@@ -19,6 +20,7 @@ function FileUpload({
   disabled = false,
   required = false,
   isUploading = false,
+  subtitle,
   value = "",
 }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -32,11 +34,12 @@ function FileUpload({
   return (
     <div className="flex flex-col w-full">
       {label && (
-        <label className="text-sm font-normal text-gray-700 mb-2">
+        <label className="text-sm font-normal text-gray-700 mb-2 block">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
+      {subtitle && <p className="text-base text-gray-500 mb-2">{subtitle}</p>}
       <div
         onClick={handleClick}
         className={`

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
@@ -7,6 +7,7 @@ import DatePicker from "../components/common/DatePicker";
 import FileUpload from "../components/common/FileUpload";
 import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
 import { uploadFile } from "../services/api";
+import { validateField } from "../utils/validation";
 
 interface SinglePageProps {
   formId?: string | number;
@@ -90,51 +91,20 @@ function SinglePage({
     setFormData(initialData);
   }, [fields]);
 
-  const handleFieldChange = (id: string, value: any) => {
+  const handleFieldChange = useCallback((id: string, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [id]: value,
     }));
-    if (errors[id]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[id];
-        return newErrors;
-      });
-    }
-  };
+    setErrors((prev) => {
+      if (!prev[id]) return prev;
+      const newErrors = { ...prev };
+      delete newErrors[id];
+      return newErrors;
+    });
+  }, []);
 
-  const validateField = (field: FormField, value: any): string | null => {
-    if (field.required) {
-      if (field.type === "checkbox" && value !== true) {
-        return "This field is required";
-      }
-      if (typeof value === "string" && value.trim() === "") {
-        return "This field is required";
-      }
-      if (value === undefined || value === null || value === "") {
-        return "This field is required";
-      }
-    }
-
-    if (field.type === "email" && value) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(value)) {
-        return "Please enter a valid email address";
-      }
-    }
-
-    if (field.type === "tel" && value) {
-      const phoneRegex = /^[0-9]{10}$/;
-      if (!phoneRegex.test(value)) {
-        return "Please enter a valid 10-digit phone number";
-      }
-    }
-
-    return null;
-  };
-
-  const validateAllFields = (): boolean => {
+  const validateAllFields = useCallback((): boolean => {
     const newErrors: Record<string, string> = {};
     let isValid = true;
 
@@ -148,37 +118,43 @@ function SinglePage({
 
     setErrors(newErrors);
     return isValid;
-  };
+  }, [fields, formData]);
 
-  const handleFileUpload = async (fieldId: string, file: File) => {
-    if (!formId) {
-      setErrors((prev) => ({ ...prev, [fieldId]: "File upload failed: form configuration error." }));
-      return;
-    }
+  const handleFileUpload = useCallback(
+    async (fieldId: string, file: File) => {
+      if (!formId) {
+        setErrors((prev) => ({
+          ...prev,
+          [fieldId]: "File upload failed: form configuration error.",
+        }));
+        return;
+      }
 
-    setUploadingFields((prev) => new Set(prev).add(fieldId));
-    try {
-      const response = await uploadFile(formId, file);
-      handleFieldChange(fieldId, response.url);
-    } catch (err: any) {
-      const errorMessage =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        "File upload failed. Please try again.";
-      setErrors((prev) => ({
-        ...prev,
-        [fieldId]: errorMessage,
-      }));
-    } finally {
-      setUploadingFields((prev) => {
-        const next = new Set(prev);
-        next.delete(fieldId);
-        return next;
-      });
-    }
-  };
+      setUploadingFields((prev) => new Set(prev).add(fieldId));
+      try {
+        const response = await uploadFile(formId, file);
+        handleFieldChange(fieldId, response.url);
+      } catch (err: any) {
+        const errorMessage =
+          err.response?.data?.error ||
+          err.response?.data?.message ||
+          "File upload failed. Please try again.";
+        setErrors((prev) => ({
+          ...prev,
+          [fieldId]: errorMessage,
+        }));
+      } finally {
+        setUploadingFields((prev) => {
+          const next = new Set(prev);
+          next.delete(fieldId);
+          return next;
+        });
+      }
+    },
+    [formId, handleFieldChange],
+  );
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (uploadingFields.size > 0) return;
     if (validateAllFields()) {
       try {
@@ -188,7 +164,7 @@ function SinglePage({
         setSubmitError("Form submission failed. Please try again.");
       }
     }
-  };
+  }, [uploadingFields.size, validateAllFields, onSubmit, formData]);
 
   const renderField = (field: FormField) => {
     switch (field.type) {
@@ -203,6 +179,7 @@ function SinglePage({
             placeholder={field.placeholder}
             maxLength={field.maxLength}
             value={formData[field.id] || ""}
+            subtitle={field.subtitle}
             onChange={(e) => handleFieldChange(field.id, e.target.value)}
           />
         );
@@ -216,6 +193,11 @@ function SinglePage({
               <label className="text-sm font-normal text-gray-700 mb-3 block">
                 {field.title}
                 {field.required && <span className="text-red-500 ml-1">*</span>}
+                {field.subtitle && (
+                  <p className="text-base text-gray-500 mt-1 mb-2">
+                    {field.subtitle}
+                  </p>
+                )}
               </label>
               <div className="flex flex-col gap-3">
                 {field.options?.map((option) => (
@@ -223,7 +205,7 @@ function SinglePage({
                     key={option.value}
                     title={option.label}
                     checked={selectedValues.includes(option.value)}
-                    onChange={(checked) => {
+                    onChange={(checked: boolean) => {
                       const newValues = checked
                         ? [...selectedValues, option.value]
                         : selectedValues.filter(
@@ -242,6 +224,11 @@ function SinglePage({
             <label className="text-sm font-normal text-gray-700 mb-3 block">
               {field.title}
               {field.required && <span className="text-red-500 ml-1">*</span>}
+              {field.subtitle && (
+                <p className="text-base text-gray-500 mt-1 mb-2">
+                  {field.subtitle}
+                </p>
+              )}
             </label>
             <div className="flex flex-col gap-3">
               {field.options?.map((option) => (
@@ -261,8 +248,11 @@ function SinglePage({
         return (
           <Checkbox
             title={field.title}
+            subtitle={field.subtitle}
             checked={formData[field.id] || false}
-            onChange={(checked) => handleFieldChange(field.id, checked)}
+            onChange={(checked: boolean) =>
+              handleFieldChange(field.id, checked)
+            }
           />
         );
       case "date":
@@ -271,6 +261,11 @@ function SinglePage({
             <label className="text-sm font-normal text-gray-700 mb-2 block">
               {field.title}
               {field.required && <span className="text-red-500 ml-1">*</span>}
+              {field.subtitle && (
+                <p className="text-base text-gray-500 mt-1 mb-2">
+                  {field.subtitle}
+                </p>
+              )}
             </label>
             <DatePicker
               label=""
@@ -288,6 +283,11 @@ function SinglePage({
             <label className="text-sm font-normal text-gray-700 mb-2 block">
               {field.title}
               {field.required && <span className="text-red-500 ml-1">*</span>}
+              {field.subtitle && (
+                <p className="text-base text-gray-500 mt-1 mb-2">
+                  {field.subtitle}
+                </p>
+              )}
             </label>
             <FileUpload
               label=""

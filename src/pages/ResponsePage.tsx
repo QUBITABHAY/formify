@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { getForm, getResponse } from "../services/api";
 import type { FormResponse, FormSubmission } from "../services/apiTypes";
 import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
+import FormattedAnswer from "../components/common/FormattedAnswer";
 
 export default function ResponsePage() {
   const { responseId } = useParams();
@@ -29,6 +30,10 @@ export default function ResponsePage() {
     fetchData();
   }, [responseId]);
 
+  const fields = useMemo(() => {
+    return (form?.schema?.fields as FormFieldConfig[]) || [];
+  }, [form?.schema?.fields]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -49,8 +54,6 @@ export default function ResponsePage() {
       </div>
     );
   }
-
-  const fields = (form.schema.fields as FormFieldConfig[]) || [];
 
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -92,34 +95,8 @@ export default function ResponsePage() {
                           <li key={idx}>{val}</li>
                         ))}
                       </ul>
-                    ) : answer?.toString() ? (
-                      (() => {
-                        const text = answer.toString();
-                        try {
-                          const url = new URL(text);
-                          if (url.protocol === "http:" || url.protocol === "https:") {
-                            return (
-                              <a
-                                href={text}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 underline break-all"
-                              >
-                                {text}
-                              </a>
-                            );
-                          }
-                        } catch {
-                          // not a URL
-                        }
-                        return <p>{text}</p>;
-                      })()
                     ) : (
-                      <p>
-                        <span className="text-gray-400 italic">
-                          No answer provided
-                        </span>
-                      </p>
+                      <FormattedAnswer answer={answer} />
                     )}
                   </div>
                 </div>

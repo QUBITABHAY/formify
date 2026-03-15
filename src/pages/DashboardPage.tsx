@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Modal from "../components/common/Modal";
@@ -21,13 +21,7 @@ export default function DashboardPage() {
   const [formToDelete, setFormToDelete] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user?.id) {
-      fetchForms();
-    }
-  }, [user]);
-
-  const fetchForms = async () => {
+  const fetchForms = useCallback(async () => {
     if (!user?.id) return;
     try {
       const data = await getForms(user.id);
@@ -37,40 +31,52 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
 
-  const handleCreateForm = async (type: "single" | "flow") => {
-    if (!user?.id) return;
-    try {
-      setCreating(true);
-      const newForm = await createForm({
-        name: `My ${type === "single" ? "Single Page" : "Flow"} Form`,
-        user_id: user.id,
-        schema: { type },
-      });
-      navigate(`/builder/${newForm.id}`);
-    } catch (error) {
-      console.error("Failed to create form", error);
-    } finally {
-      setCreating(false);
-      setIsModalOpen(false);
+  useEffect(() => {
+    if (user?.id) {
+      fetchForms();
     }
-  };
+  }, [user?.id, fetchForms]);
 
-  const handleDeleteClick = (e: React.MouseEvent, formId: number) => {
-    e.stopPropagation();
-    setFormToDelete(formId);
-    setDeleteError(null);
-    setIsDeleteModalOpen(true);
-  };
+  const handleCreateForm = useCallback(
+    async (type: "single" | "flow") => {
+      if (!user?.id) return;
+      try {
+        setCreating(true);
+        const newForm = await createForm({
+          name: `My ${type === "single" ? "Single Page" : "Flow"} Form`,
+          user_id: user.id,
+          schema: { type },
+        });
+        navigate(`/builder/${newForm.id}`);
+      } catch (error) {
+        console.error("Failed to create form", error);
+      } finally {
+        setCreating(false);
+        setIsModalOpen(false);
+      }
+    },
+    [user?.id, navigate],
+  );
 
-  const handleConfirmDelete = async () => {
+  const handleDeleteClick = useCallback(
+    (e: React.MouseEvent, formId: number) => {
+      e.stopPropagation();
+      setFormToDelete(formId);
+      setDeleteError(null);
+      setIsDeleteModalOpen(true);
+    },
+    [],
+  );
+
+  const handleConfirmDelete = useCallback(async () => {
     if (!formToDelete) return;
 
     try {
       setDeleting(formToDelete);
       await deleteForm(formToDelete);
-      setForms(forms.filter((f) => f.id !== formToDelete));
+      setForms((prev) => prev.filter((f) => f.id !== formToDelete));
       setIsDeleteModalOpen(false);
       setFormToDelete(null);
     } catch (error) {
@@ -78,7 +84,7 @@ export default function DashboardPage() {
     } finally {
       setDeleting(null);
     }
-  };
+  }, [formToDelete]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
@@ -143,10 +149,8 @@ export default function DashboardPage() {
                 onClick={() => navigate(`/builder/${form.id}`)}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="p-2 bg-gray-50 rounded-lg text-gray-900">
-                    <div className="p-2 bg-gray-50 rounded-lg text-gray-900 flex items-center justify-center">
-                      <Icons.Text />
-                    </div>
+                  <div className="p-2 bg-gray-50 rounded-lg text-gray-900 flex items-center justify-center">
+                    <Icons.Text />
                   </div>
                   <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
                     {form.schema?.type === "flow" ? "Flow" : "Single"}

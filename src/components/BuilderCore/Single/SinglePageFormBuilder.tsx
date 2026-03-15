@@ -1,33 +1,19 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  DndContext,
-  DragOverlay,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type DragStartEvent,
-} from "@dnd-kit/core";
-import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
 
 import FieldPalette from "../shared/FieldPalette";
 import FieldEditor from "../shared/FieldEditor";
 import PreviewModal from "../shared/PreviewModal";
 import ShareModal from "../../common/ShareModal";
 import SinglePageCanvas from "./SinglePageCanvas";
-import { updateForm, publishForm, unpublishForm } from "../../../services/api";
+import { updateForm } from "../../../services/api";
 import logo from "../../../assets/logo.svg";
 
-import type { FormFieldConfig, FieldTemplate } from "../shared/types";
+import type { FormFieldConfig } from "../shared/types";
 import { Icons } from "../../common/icons";
 import Modal from "../../common/Modal";
-
-function generateId(): string {
-  return `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
+import { useFormBuilder } from "../shared/useFormBuilder";
 
 interface SinglePageFormBuilderProps {
   formId?: number;
@@ -49,29 +35,13 @@ export default function SinglePageFormBuilder({
   initialShareUrl,
 }: SinglePageFormBuilderProps) {
   const navigate = useNavigate();
-  const [fields, setFields] = useState<FormFieldConfig[]>(initialFields);
-  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [showPreview, setShowPreview] = useState(false);
-
   const [formTitle, setFormTitle] = useState(initialTitle);
   const [formDescription, setFormDescription] = useState(initialDescription);
   const [formBanner, setFormBanner] = useState(initialBanner);
-  const [isSaving, setIsSaving] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [isPublishing, setIsPublishing] = useState(false);
-  const [isPublished, setIsPublished] = useState(initialIsPublished);
-  const [shareUrl, setShareUrl] = useState<string>(initialShareUrl ?? "");
-  const [showUnpublishConfirm, setShowUnpublishConfirm] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSaveForm = async () => {
-    if (!formId) {
-      setErrorMessage("Form ID not found. Cannot save.");
-      return;
-    }
-    try {
-      setIsSaving(true);
+  const onSave = useCallback(
+    async (fields: FormFieldConfig[]) => {
+      if (!formId) return false;
       const schema = {
         type: "single",
         fields,
@@ -85,115 +55,52 @@ export default function SinglePageFormBuilder({
         schema,
       });
       return true;
-    } catch (error) {
-      setErrorMessage("Failed to save form. Please try again.");
-      return false;
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handlePublish = async () => {
-    if (!formId) return;
-
-    const saved = await handleSaveForm();
-    if (!saved) return;
-
-    try {
-      setIsPublishing(true);
-      const result = await publishForm(formId);
-      setIsPublished(result.status === "published");
-      if (result.share_url) {
-        setShareUrl(result.share_url);
-      }
-      setShowShareModal(true);
-    } catch (error) {
-      setErrorMessage("Failed to publish form.");
-    } finally {
-      setIsPublishing(false);
-    }
-  };
-
-  const handleUnpublish = async () => {
-    if (!formId) return;
-    setShowUnpublishConfirm(false);
-
-    try {
-      const result = await unpublishForm(formId);
-      setIsPublished(result.status === "published");
-    } catch {
-      setErrorMessage("Failed to unpublish form.");
-    }
-  };
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  const selectedField = fields.find((f) => f.id === selectedFieldId) || null;
-  const selectedScreen = selectedFieldId === "HEADER" ? "HEADER" : null;
-
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
-  }, []);
-
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-    setActiveId(null);
-
-    if (!over) return;
-    const activeData = active.data.current;
-    if (activeData?.type === "palette-item") {
-      const template = activeData.template as FieldTemplate;
-      const newField: FormFieldConfig = {
-        id: generateId(),
-        type: template.type,
-        title: template.defaultConfig.title || "Untitled Field",
-        subtitle: template.defaultConfig.subtitle,
-        placeholder: template.defaultConfig.placeholder,
-        maxLength: template.defaultConfig.maxLength,
-        options: template.defaultConfig.options,
-        defaultValue: template.defaultConfig.defaultValue,
-        required: false,
-      };
-      setFields((prev) => [...prev, newField]);
-      setSelectedFieldId(newField.id);
-      return;
-    }
-
-    if (active.id !== over.id) {
-      setFields((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        if (oldIndex !== -1 && newIndex !== -1) {
-          return arrayMove(items, oldIndex, newIndex);
-        }
-        return items;
-      });
-    }
-  }, []);
-
-  const handleUpdateField = useCallback(
-    (updates: Partial<FormFieldConfig>) => {
-      if (!selectedFieldId || selectedScreen) return;
-      setFields((prev) =>
-        prev.map((f) => (f.id === selectedFieldId ? { ...f, ...updates } : f)),
-      );
     },
-    [selectedFieldId, selectedScreen],
+    [formId, formTitle, formDescription, formBanner],
   );
 
-  const handleDeleteField = useCallback((id: string) => {
-    setFields((prev) => prev.filter((f) => f.id !== id));
-    setSelectedFieldId((prev) => (prev === id ? null : prev));
-  }, []);
+  const {
+    fields,
+    selectedFieldId,
+    setSelectedFieldId,
+    activeId,
+    showPreview,
+    setShowPreview,
+    isSaving,
+    showShareModal,
+    setShowShareModal,
+    isPublishing,
+    isPublished,
+    shareUrl,
+    showUnpublishConfirm,
+    setShowUnpublishConfirm,
+    errorMessage,
+    setErrorMessage,
+    sensors,
+    handleDragStart,
+    handleDragEnd,
+    handleUpdateField,
+    handleDeleteField,
+    handleSave,
+    handlePublish,
+    handleUnpublish,
+  } = useFormBuilder({
+    formId,
+    initialFields,
+    initialIsPublished,
+    initialShareUrl,
+    onSave,
+  });
+
+  const selectedField = useMemo(
+    () => fields.find((f) => f.id === selectedFieldId) || null,
+    [fields, selectedFieldId],
+  );
+
+  const selectedScreen = useMemo(
+    () => (selectedFieldId === "HEADER" ? "HEADER" : null),
+    [selectedFieldId],
+  );
 
   const handleUpdateFormMetadata = useCallback(
     (updates: { title?: string; description?: string; banner?: string }) => {
@@ -246,7 +153,7 @@ export default function SinglePageFormBuilder({
             Preview
           </button>
           <button
-            onClick={handleSaveForm}
+            onClick={handleSave}
             disabled={isSaving}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >

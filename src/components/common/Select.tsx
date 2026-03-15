@@ -12,6 +12,7 @@ interface SelectProps {
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   placeholder?: string;
+  subtitle?: string;
   disabled?: boolean;
 }
 
@@ -24,6 +25,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
       value,
       onChange,
       placeholder = "Select an option",
+      subtitle,
       disabled,
     },
     ref,
@@ -33,6 +35,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         <label className="text-sm font-normal text-gray-700 mb-2">
           {title}
         </label>
+        {subtitle && <p className="text-base text-gray-500 mb-2">{subtitle}</p>}
         <div className="relative">
           <select
             ref={ref}

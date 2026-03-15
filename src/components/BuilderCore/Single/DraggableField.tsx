@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { FormFieldConfig } from "../shared/types";
@@ -16,7 +17,7 @@ interface DraggableFieldProps {
   onDelete: () => void;
 }
 
-export default function DraggableField({
+const DraggableField = memo(function DraggableField({
   field,
   isSelected,
   onClick,
@@ -47,6 +48,7 @@ export default function DraggableField({
             title={field.title}
             type={field.type}
             placeholder={field.placeholder}
+            subtitle={field.subtitle}
             disabled={true}
           />
         );
@@ -56,14 +58,20 @@ export default function DraggableField({
             title={field.title}
             placeholder={field.placeholder}
             rows={3}
+            subtitle={field.subtitle}
             disabled={true}
           />
         );
       case "radio":
         return (
           <div>
-            <label className="text-sm font-normal text-gray-700 mb-2 block">
+            <label className="text-sm font-normal text-gray-700 mb-1 block">
               {field.title}
+              {field.subtitle && (
+                <p className="text-xs text-gray-500 mt-1 mb-2">
+                  {field.subtitle}
+                </p>
+              )}
             </label>
             <div className="flex flex-col gap-2">
               {field.options?.map((opt, i) => (
@@ -78,13 +86,14 @@ export default function DraggableField({
           </div>
         );
       case "checkbox":
-        return <Checkbox title={field.title} />;
+        return <Checkbox title={field.title} subtitle={field.subtitle} />;
       case "select":
         return (
           <Select
             title={field.title}
             options={field.options || []}
             placeholder="Select an option..."
+            subtitle={field.subtitle}
             disabled={true}
           />
         );
@@ -94,11 +103,18 @@ export default function DraggableField({
             label={field.title}
             min={field.minDate}
             max={field.maxDate}
+            subtitle={field.subtitle}
             disabled={true}
           />
         );
       case "file":
-        return <FileUpload label={field.title} disabled={true} />;
+        return (
+          <FileUpload
+            label={field.title}
+            subtitle={field.subtitle}
+            disabled={true}
+          />
+        );
       default:
         return null;
     }
@@ -150,19 +166,7 @@ export default function DraggableField({
         </svg>
       </button>
 
-      <div className="ml-8 mr-8 pointer-events-none">
-        {field.type === "radio" && (
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {field.title}
-          </label>
-        )}
-
-        {field.subtitle && (
-          <p className="text-xs text-gray-500 mb-2">{field.subtitle}</p>
-        )}
-
-        {renderFieldInput()}
-      </div>
+      <div className="ml-8 mr-8 pointer-events-none">{renderFieldInput()}</div>
 
       <div className="mt-3 ml-8 flex items-center gap-2">
         <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
@@ -176,4 +180,6 @@ export default function DraggableField({
       </div>
     </div>
   );
-}
+});
+
+export default DraggableField;

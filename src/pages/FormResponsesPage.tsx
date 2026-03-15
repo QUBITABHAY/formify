@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getForm, getFormResponses, deleteResponse } from "../services/api";
 import type { FormResponse, FormResponsesResult } from "../services/apiTypes";
 import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
 import { Icons } from "../components/common/icons";
 import GoogleSheetsModal from "../components/common/GoogleSheetsModal";
-import Papa from "papaparse";
 import Button from "../components/common/Button";
 import Modal from "../components/common/Modal";
+import { formatAnswer, formatDate, formatTime } from "../utils/formatters";
+import FormattedAnswer from "../components/common/FormattedAnswer";
 
 export default function FormResponsesPage() {
   const { formId } = useParams();
@@ -41,7 +42,8 @@ export default function FormResponsesPage() {
     fetchData();
   }, [formId]);
 
-  const handleExportCSV = () => {
+  const handleExportCSV = useCallback(async () => {
+    const Papa = (await import("papaparse")).default;
     if (!form || !responsesData) return;
 
     const fields = ((form.schema as any).fields as FormFieldConfig[]) || [];
@@ -75,7 +77,7 @@ export default function FormResponsesPage() {
     link.download = `${form?.name}_response.csv`;
     link.click();
     URL.revokeObjectURL(url);
-  };
+  }, [form, responsesData]);
 
   if (loading) {
     return (
@@ -95,19 +97,6 @@ export default function FormResponsesPage() {
 
   const fields = ((form.schema as any).fields as FormFieldConfig[]) || [];
   const responses = responsesData.responses;
-
-  const formatAnswer = (answer: any) => {
-    if (
-      answer === undefined ||
-      answer === null ||
-      answer.toString().trim() === ""
-    )
-      return "Not Available";
-    if (Array.isArray(answer) && answer.length === 0) return "Not Available";
-    if (Array.isArray(answer)) return answer.join(", ");
-    if (typeof answer === "boolean") return answer ? "Yes" : "No";
-    return answer.toString();
-  };
 
   const handleDeleteResponse = async (responseId: number) => {
     setDeleteConfirmId(null);
@@ -218,41 +207,21 @@ export default function FormResponsesPage() {
                       {fields.map((field) => {
                         const answer =
                           response.data[field.title] ?? response.data[field.id];
-                        const formatted = formatAnswer(answer);
-                        let isUrl = false;
-                        try {
-                          const u = new URL(formatted);
-                          isUrl = u.protocol === "http:" || u.protocol === "https:";
-                        } catch {
-                          // not a URL
-                        }
                         return (
                           <td
                             key={field.id}
                             className="px-4 py-3 text-sm text-gray-700 max-w-xs truncate"
-                            title={formatted}
+                            title={formatAnswer(answer)}
                           >
-                            {isUrl ? (
-                              <a
-                                href={formatted}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 underline"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {formatted}
-                              </a>
-                            ) : (
-                              formatted
-                            )}
+                            <FormattedAnswer answer={answer} />
                           </td>
                         );
                       })}
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(response.created_at).toLocaleDateString()}
+                        {formatDate(response.created_at)}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(response.created_at).toLocaleTimeString()}
+                        {formatTime(response.created_at)}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm">
                         <button
