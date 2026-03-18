@@ -87,6 +87,22 @@ export default function PublicFormPage() {
     [form, formId],
   );
 
+  const { fields, type, schema } = useMemo(() => {
+    if (!form || !form.schema) {
+      return {
+        fields: [],
+        type: "single" as const,
+        schema: {} as any,
+      };
+    }
+    const s = form.schema as any;
+    return {
+      fields: (s.fields as FormFieldConfig[]) || [],
+      type: (s.type as "single" | "flow") || "single",
+      schema: s,
+    };
+  }, [form]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -122,15 +138,6 @@ export default function PublicFormPage() {
       </div>
     );
   }
-
-  const { fields, type, schema } = useMemo(() => {
-    const s = form.schema as any;
-    return {
-      fields: (s.fields as FormFieldConfig[]) || [],
-      type: s.type as "single" | "flow",
-      schema: s,
-    };
-  }, [form.schema]);
 
   if (type === "flow") {
     return (
