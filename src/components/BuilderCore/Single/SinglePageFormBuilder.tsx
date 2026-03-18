@@ -90,6 +90,12 @@ export default function SinglePageFormBuilder({
     initialIsPublished,
     initialShareUrl,
     onSave,
+    validateBeforeSave: () => {
+      if (!formTitle.trim()) {
+        return "Form title is required.";
+      }
+      return null;
+    },
   });
 
   const selectedField = useMemo(

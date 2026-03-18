@@ -15,7 +15,9 @@ const normalizeFieldType = (type: unknown): string => {
   if (typeof type !== "string") return "text";
 
   const normalized = type.trim().toLowerCase();
-  if (["long text", "longtext", "long-text", "long_text"].includes(normalized)) {
+  if (
+    ["long text", "longtext", "long-text", "long_text"].includes(normalized)
+  ) {
     return "textarea";
   }
   if (normalized === "dropdown") {
@@ -371,18 +373,20 @@ function SinglePage({
     <div className="flex flex-col items-center min-h-screen bg-gray-50 py-10 px-4 md:px-6">
       <div className="w-full max-w-3xl mx-auto relative">
         <div className="bg-white shadow-xl rounded-lg overflow-hidden border border-gray-100">
-          <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-100">
-            <img
-              src={formBanner}
-              alt="Form Banner"
-              className="w-full h-full object-cover block"
-            />
-          </div>
+          {formBanner ? (
+            <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-100">
+              <img
+                src={formBanner}
+                alt="Form Banner"
+                className="w-full h-full object-cover block"
+              />
+            </div>
+          ) : null}
           <div className="p-8">
             <h1 className="text-3xl font-semibold text-gray-900 mb-3">
               {formTitle}
             </h1>
-            <p className="text-gray-600 text-lg leading-relaxed max-w-2xl">
+            <p className="text-gray-600 text-lg leading-relaxed max-w-2xl whitespace-pre-line">
               {formDescription}
             </p>
             <div className="mt-5 flex items-center gap-2 text-sm text-red-700">

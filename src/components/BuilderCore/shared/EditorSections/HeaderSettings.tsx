@@ -1,5 +1,5 @@
 interface HeaderSettingsProps {
-  formMetadata: { title: string; description: string; banner: string };
+  formMetadata: { title: string; description: string; banner?: string };
   onUpdateMetadata: (updates: {
     title?: string;
     description?: string;

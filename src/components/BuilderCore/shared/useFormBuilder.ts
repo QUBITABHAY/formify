@@ -21,6 +21,7 @@ interface UseFormBuilderProps {
   initialIsPublished: boolean;
   initialShareUrl?: string | null;
   onSave?: (fields: FormFieldConfig[]) => Promise<boolean>;
+  validateBeforeSave?: () => string | null;
 }
 
 export function useFormBuilder({
@@ -29,6 +30,7 @@ export function useFormBuilder({
   initialIsPublished,
   initialShareUrl,
   onSave,
+  validateBeforeSave,
 }: UseFormBuilderProps) {
   const [fields, setFields] = useState<FormFieldConfig[]>(initialFields);
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
@@ -110,6 +112,13 @@ export function useFormBuilder({
 
   const handleSave = useCallback(async () => {
     if (!onSave) return false;
+
+    const validationMessage = validateBeforeSave?.();
+    if (validationMessage) {
+      setErrorMessage(validationMessage);
+      return false;
+    }
+
     setIsSaving(true);
     try {
       const success = await onSave(fields);
@@ -117,7 +126,7 @@ export function useFormBuilder({
     } finally {
       setIsSaving(false);
     }
-  }, [onSave, fields]);
+  }, [onSave, fields, validateBeforeSave]);
 
   const handlePublish = useCallback(async () => {
     if (!formId) return;

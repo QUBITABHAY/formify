@@ -497,7 +497,7 @@ function FlowPage({
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             {thankYouTitle} {thankYouEmoji}
           </h1>
-          <p className="text-xl text-gray-600 max-w-md mx-auto">
+          <p className="text-xl text-gray-600 max-w-md mx-auto whitespace-pre-line">
             {thankYouDescription}
           </p>
         </div>
@@ -517,7 +517,7 @@ function FlowPage({
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
             {welcomeTitle}
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mb-12 leading-relaxed">
+          <p className="text-xl md:text-2xl text-gray-600 mb-12 leading-relaxed whitespace-pre-line">
             {welcomeDescription}
           </p>
           <div className="flex justify-center">

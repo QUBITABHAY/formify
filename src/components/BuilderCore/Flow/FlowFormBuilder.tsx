@@ -103,6 +103,12 @@ export default function FlowFormBuilder({
     initialIsPublished,
     initialShareUrl,
     onSave,
+    validateBeforeSave: () => {
+      if (!welcomeScreen.title.trim()) {
+        return "Form title is required.";
+      }
+      return null;
+    },
   });
 
   const selectedField = useMemo(

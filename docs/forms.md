@@ -14,7 +14,7 @@ Traditional single-page form layout where all fields are displayed at once.
 | --------------- | ----------------------------------- | ------------------------------- |
 | formTitle       | string                              | Form title displayed at the top |
 | formDescription | string                              | Form description/subtitle       |
-| formBanner      | string                              | URL for the banner image        |
+| formBanner      | string                              | URL for the banner image (optional) |
 | fields          | FormField[]                         | Array of form fields to render  |
 | onSubmit        | (data: Record<string, any>) => void | Callback when form is submitted |
 
@@ -23,6 +23,8 @@ Traditional single-page form layout where all fields are displayed at once.
 - All fields visible on one page
 - Single submit button at the bottom
 - Simple and straightforward
+- Preserves multiline descriptions (line breaks entered in builder are rendered)
+- Prevents save/publish when the form title is empty
 
 ---
 
@@ -63,6 +65,8 @@ Typeform-style layout with one question at a time and smooth transitions.
 - **Conditional Logic:** Branching paths based on user answers
 - Built-in validation and required field checks
 - Custom welcome and thank you screens
+- Preserves multiline welcome and thank-you descriptions
+- Prevents save/publish when the form title is empty
 
 ---
 
@@ -73,7 +77,17 @@ Both layouts use the same field structure:
 ```typescript
 interface FormField {
   id: string;
-  type: "text" | "number" | "email" | "tel" | "radio" | "checkbox";
+  type:
+    | "text"
+    | "number"
+    | "email"
+    | "tel"
+    | "radio"
+    | "checkbox"
+    | "textarea"
+    | "select"
+    | "date"
+    | "file";
   title: string;
   subtitle?: string;
   placeholder?: string;

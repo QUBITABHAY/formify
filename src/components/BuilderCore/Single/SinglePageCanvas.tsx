@@ -47,21 +47,27 @@ export default function SinglePageCanvas({
             ${selectedFieldId === "HEADER" ? "ring-2 ring-gray-900 border-gray-900" : "border-gray-100 hover:border-gray-900"}
           `}
         >
-          <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-100 relative group-hover:opacity-95 transition-opacity">
-            <img
-              src={formBanner}
-              alt="Form Banner"
-              className="w-full h-full object-cover block"
-            />
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all font-medium text-transparent group-hover:text-white">
-              Click to Edit Header
+          {formBanner ? (
+            <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-100 relative group-hover:opacity-95 transition-opacity">
+              <img
+                src={formBanner}
+                alt="Form Banner"
+                className="w-full h-full object-cover block"
+              />
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all font-medium text-transparent group-hover:text-white">
+                Click to Edit Header
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="w-full h-16 bg-gray-50 border-b border-gray-100 flex items-center justify-center text-sm text-gray-400">
+              No banner image
+            </div>
+          )}
           <div className="p-8">
             <h1 className="text-3xl font-semibold text-gray-900 mb-3">
               {formTitle}
             </h1>
-            <p className="text-gray-600 text-lg leading-relaxed max-w-2xl">
+            <p className="text-gray-600 text-lg leading-relaxed max-w-2xl whitespace-pre-line">
               {formDescription}
             </p>
             <div className="mt-5 flex items-center gap-2 text-sm text-red-700">
