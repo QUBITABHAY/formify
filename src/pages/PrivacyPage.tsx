@@ -29,7 +29,7 @@ const PrivacyPage: React.FC = () => {
 
         <div className="max-w-none text-gray-600">
           <p className="text-sm border-b border-gray-100 pb-8 mb-8 text-gray-400 font-medium">
-            Last updated: March 03, 2026
+            Last updated: March 18, 2026
           </p>
 
           <p className="leading-relaxed mb-6">
@@ -133,6 +133,49 @@ const PrivacyPage: React.FC = () => {
               , including the Limited Use requirements.
             </li>
           </ul>
+
+          <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">
+            Google User Data Sharing, Transfer, and Disclosure
+          </h2>
+          <p className="leading-relaxed mb-6">
+            We do not sell Google user data. We only share, transfer, or
+            disclose Google user data in the following limited cases:
+          </p>
+          <ul className="list-disc pl-6 space-y-3 mb-8">
+            <li className="leading-relaxed">
+              <strong className="text-gray-900">With your direction:</strong> If
+              you enable Google Sheets integration, form response data is sent
+              to the Google Sheet you selected.
+            </li>
+            <li className="leading-relaxed">
+              <strong className="text-gray-900">Service providers:</strong> We
+              may process Google user data through trusted subprocessors (such
+              as cloud hosting, logging, and security providers) solely to
+              operate, secure, and maintain Formify, under contractual
+              confidentiality and data protection obligations.
+            </li>
+            <li className="leading-relaxed">
+              <strong className="text-gray-900">Legal requirements:</strong> We
+              may disclose data if required to comply with applicable law,
+              regulation, legal process, or enforceable governmental request.
+            </li>
+            <li className="leading-relaxed">
+              <strong className="text-gray-900">Business transfers:</strong> If
+              Formify is involved in a merger, acquisition, financing due
+              diligence, reorganization, bankruptcy, receivership, sale of
+              assets, or transition of service to another provider, Google user
+              data may be transferred as part of that transaction, subject to
+              this Privacy Policy and applicable law.
+            </li>
+          </ul>
+          <p className="leading-relaxed mb-6">
+            We do not use Google user data for advertising purposes and do not
+            allow humans to read Google user data except: (a) when we have your
+            affirmative agreement for specific support or troubleshooting, (b)
+            when required for security purposes (such as abuse investigations),
+            (c) when required by law, or (d) for internal operations as
+            permitted by the Google API Services User Data Policy.
+          </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">
             Data Security and Retention
