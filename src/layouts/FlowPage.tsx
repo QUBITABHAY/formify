@@ -12,12 +12,27 @@ import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
 import DatePicker from "../components/common/DatePicker";
 import FileUpload from "../components/common/FileUpload";
+import Select from "../components/common/Select";
+import TextArea from "../components/common/TextArea";
 import type {
   FormFieldConfig as FormField,
   ConditionalRule,
 } from "../components/BuilderCore/shared/types";
 import { uploadFile } from "../services/api";
 import { validateField } from "../utils/validation";
+
+const normalizeFieldType = (type: unknown): string => {
+  if (typeof type !== "string") return "text";
+
+  const normalized = type.trim().toLowerCase();
+  if (["long text", "longtext", "long-text", "long_text"].includes(normalized)) {
+    return "textarea";
+  }
+  if (normalized === "dropdown") {
+    return "select";
+  }
+  return normalized;
+};
 
 const evaluateRule = (rule: ConditionalRule, value: any): boolean => {
   const strValue = Array.isArray(value) ? value.join(",") : String(value ?? "");
@@ -324,7 +339,9 @@ function FlowPage({
   }, [isIntroScreen, currentField, formData]);
 
   const renderField = (field: FormField) => {
-    switch (field.type) {
+    const fieldType = normalizeFieldType(field.type);
+
+    switch (fieldType) {
       case "text":
       case "email":
       case "tel":
@@ -335,9 +352,22 @@ function FlowPage({
               key={field.id}
               ref={inputRef}
               title=""
-              type={field.type}
+              type={fieldType}
               placeholder={field.placeholder}
               value={formData[field.id] ?? ""}
+              subtitle={field.subtitle}
+              onChange={(e) => handleFieldChange(field.id, e.target.value)}
+            />
+          </div>
+        );
+      case "textarea":
+        return (
+          <div className="w-full max-w-lg">
+            <TextArea
+              title=""
+              placeholder={field.placeholder}
+              value={formData[field.id] ?? ""}
+              maxLength={field.maxLength}
               subtitle={field.subtitle}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
             />
@@ -424,6 +454,19 @@ function FlowPage({
                 }
               }}
               subtitle={field.subtitle}
+            />
+          </div>
+        );
+      case "select":
+        return (
+          <div className="w-full max-w-lg">
+            <Select
+              title=""
+              options={field.options || []}
+              value={formData[field.id] || ""}
+              onChange={(e) => handleFieldChange(field.id, e.target.value)}
+              subtitle={field.subtitle}
+              placeholder={field.placeholder || "Select an option"}
             />
           </div>
         );
