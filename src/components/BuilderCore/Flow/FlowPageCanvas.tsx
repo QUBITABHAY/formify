@@ -55,7 +55,9 @@ export default function FlowPageCanvas({
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             {welcomeScreen.title}
           </h2>
-          <p className="text-gray-600 mb-4">{welcomeScreen.description}</p>
+          <p className="text-gray-600 mb-4 whitespace-pre-line">
+            {welcomeScreen.description}
+          </p>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium">
             {welcomeScreen.buttonText}
             <svg
@@ -151,7 +153,9 @@ export default function FlowPageCanvas({
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               {thankYouScreen.title} {thankYouScreen.emoji}
             </h2>
-            <p className="text-gray-600">{thankYouScreen.description}</p>
+            <p className="text-gray-600 whitespace-pre-line">
+              {thankYouScreen.description}
+            </p>
           </div>
         </div>
       </div>

@@ -20,7 +20,7 @@ interface FieldEditorProps {
   thankYouScreen: ThankYouScreenConfig;
   onUpdateWelcome: (updates: Partial<WelcomeScreenConfig>) => void;
   onUpdateThankYou: (updates: Partial<ThankYouScreenConfig>) => void;
-  formMetadata: { title: string; description: string; banner: string };
+  formMetadata: { title: string; description: string; banner?: string };
   onUpdateMetadata: (updates: {
     title?: string;
     description?: string;

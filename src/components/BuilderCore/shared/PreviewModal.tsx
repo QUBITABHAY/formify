@@ -16,7 +16,7 @@ interface PreviewModalProps {
   thankYouScreen: ThankYouScreenConfig;
   formTitle: string;
   formDescription: string;
-  formBanner: string;
+  formBanner?: string;
 }
 
 export default function PreviewModal({
