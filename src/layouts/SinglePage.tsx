@@ -5,9 +5,24 @@ import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
 import DatePicker from "../components/common/DatePicker";
 import FileUpload from "../components/common/FileUpload";
+import Select from "../components/common/Select";
+import TextArea from "../components/common/TextArea";
 import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
 import { uploadFile } from "../services/api";
 import { validateField } from "../utils/validation";
+
+const normalizeFieldType = (type: unknown): string => {
+  if (typeof type !== "string") return "text";
+
+  const normalized = type.trim().toLowerCase();
+  if (["long text", "longtext", "long-text", "long_text"].includes(normalized)) {
+    return "textarea";
+  }
+  if (normalized === "dropdown") {
+    return "select";
+  }
+  return normalized;
+};
 
 interface SinglePageProps {
   formId?: string | number;
@@ -167,7 +182,9 @@ function SinglePage({
   }, [uploadingFields.size, validateAllFields, onSubmit, formData]);
 
   const renderField = (field: FormField) => {
-    switch (field.type) {
+    const fieldType = normalizeFieldType(field.type);
+
+    switch (fieldType) {
       case "text":
       case "email":
       case "tel":
@@ -175,7 +192,18 @@ function SinglePage({
         return (
           <InputField
             title={field.title}
-            type={field.type}
+            type={fieldType}
+            placeholder={field.placeholder}
+            maxLength={field.maxLength}
+            value={formData[field.id] || ""}
+            subtitle={field.subtitle}
+            onChange={(e) => handleFieldChange(field.id, e.target.value)}
+          />
+        );
+      case "textarea":
+        return (
+          <TextArea
+            title={field.title}
             placeholder={field.placeholder}
             maxLength={field.maxLength}
             value={formData[field.id] || ""}
@@ -302,6 +330,17 @@ function SinglePage({
               }}
             />
           </div>
+        );
+      case "select":
+        return (
+          <Select
+            title={field.title}
+            options={field.options || []}
+            value={formData[field.id] || ""}
+            onChange={(e) => handleFieldChange(field.id, e.target.value)}
+            subtitle={field.subtitle}
+            placeholder={field.placeholder || "Select an option"}
+          />
         );
       default:
         return null;
