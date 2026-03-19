@@ -12,7 +12,8 @@ export type FieldType =
   | "textarea"
   | "select"
   | "date"
-  | "file";
+  | "file"
+  | "page_break";
 
 export interface FieldOption {
   label: string;

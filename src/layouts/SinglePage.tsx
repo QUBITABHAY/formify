@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
@@ -9,7 +9,7 @@ import Select from "../components/common/Select";
 import TextArea from "../components/common/TextArea";
 import type {
   FormFieldConfig as FormField,
-  ThankYouScreenConfig
+  ThankYouScreenConfig,
 } from "../components/BuilderCore/shared/types";
 import { uploadFile } from "../services/api";
 import { validateField } from "../utils/validation";
@@ -104,10 +104,33 @@ function SinglePage({
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [uploadingFields, setUploadingFields] = useState<Set<string>>(
     new Set(),
   );
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const pages = useMemo(() => {
+    const p: FormField[][] = [[]];
+    fields.forEach((field) => {
+      if (field.type === "page_break") {
+        if (p[p.length - 1].length > 0) {
+          p.push([]);
+        }
+      } else {
+        p[p.length - 1].push(field);
+      }
+    });
+    return p.filter((page) => page.length > 0);
+  }, [fields]);
+
+  const currentFields = useMemo(
+    () => pages[currentPageIndex] || [],
+    [pages, currentPageIndex],
+  );
+  const isFirstPage = currentPageIndex === 0;
+  const isLastPage = currentPageIndex === pages.length - 1;
+  const progress = ((currentPageIndex + 1) / pages.length) * 100;
 
   useEffect(() => {
     const initialData: Record<string, unknown> = {};
@@ -130,21 +153,24 @@ function SinglePage({
     });
   }, []);
 
-  const validateAllFields = useCallback((): boolean => {
-    const newErrors: Record<string, string> = {};
-    let isValid = true;
+  const validatePageFields = useCallback(
+    (pageFields: FormField[]): boolean => {
+      const newErrors: Record<string, string> = {};
+      let isValid = true;
 
-    fields.forEach((field) => {
-      const error = validateField(field, formData[field.id]);
-      if (error) {
-        newErrors[field.id] = error;
-        isValid = false;
-      }
-    });
+      pageFields.forEach((field) => {
+        const error = validateField(field, formData[field.id]);
+        if (error) {
+          newErrors[field.id] = error;
+          isValid = false;
+        }
+      });
 
-    setErrors(newErrors);
-    return isValid;
-  }, [fields, formData]);
+      setErrors((prev) => ({ ...prev, ...newErrors }));
+      return isValid;
+    },
+    [formData],
+  );
 
   const handleFileUpload = useCallback(
     async (fieldId: string, file: File) => {
@@ -161,7 +187,9 @@ function SinglePage({
         const response = await uploadFile(formId, file);
         handleFieldChange(fieldId, response.url);
       } catch (err) {
-        const errorData = err as { response?: { data?: { error?: string; message?: string } } };
+        const errorData = err as {
+          response?: { data?: { error?: string; message?: string } };
+        };
         const errorMessage =
           errorData.response?.data?.error ||
           errorData.response?.data?.message ||
@@ -181,19 +209,34 @@ function SinglePage({
     [formId, handleFieldChange],
   );
 
-  const handleReset = useCallback(() => {
-    const initialData: Record<string, unknown> = {};
-    fields.forEach((field) => {
-      initialData[field.id] = field.defaultValue || "";
+  const handleClearPage = useCallback(() => {
+    const newData = { ...formData };
+    const newErrors = { ...errors };
+    currentFields.forEach((field) => {
+      newData[field.id] = field.defaultValue || "";
+      delete newErrors[field.id];
     });
-    setFormData(initialData);
-    setErrors({});
+    setFormData(newData);
+    setErrors(newErrors);
     setSubmitError(null);
-  }, [fields]);
+  }, [formData, errors, currentFields]);
+
+  const handleNext = useCallback(() => {
+    if (uploadingFields.size > 0) return;
+    if (validatePageFields(currentFields)) {
+      setCurrentPageIndex((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [uploadingFields.size, validatePageFields, currentFields]);
+
+  const handleBack = useCallback(() => {
+    setCurrentPageIndex((prev) => Math.max(0, prev - 1));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   const handleSubmit = useCallback(async () => {
     if (uploadingFields.size > 0) return;
-    if (validateAllFields()) {
+    if (validatePageFields(currentFields)) {
       try {
         await onSubmit?.(formData);
         setIsSubmitted(true);
@@ -201,7 +244,13 @@ function SinglePage({
         setSubmitError("Form submission failed. Please try again.");
       }
     }
-  }, [uploadingFields.size, validateAllFields, onSubmit, formData]);
+  }, [
+    uploadingFields.size,
+    validatePageFields,
+    currentFields,
+    onSubmit,
+    formData,
+  ]);
 
   const renderField = (field: FormField) => {
     const fieldType = normalizeFieldType(field.type);
@@ -416,8 +465,25 @@ function SinglePage({
           </div>
         </div>
 
+        {pages.length > 1 && (
+          <div className="mt-8 mb-4">
+            <div className="flex justify-between text-sm text-gray-500 mb-2">
+              <span>
+                Page {currentPageIndex + 1} of {pages.length}
+              </span>
+              <span>{Math.round(progress)}% complete</span>
+            </div>
+            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gray-900 transition-all duration-300 ease-out"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
+
         <div className="mt-6 space-y-4">
-          {fields.map((field) => (
+          {currentFields.map((field: FormField) => (
             <div
               key={field.id}
               className={`bg-white rounded-lg border shadow-md transition-shadow duration-150 ${
@@ -436,17 +502,37 @@ function SinglePage({
           ))}
         </div>
 
-        <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full sm:w-auto">
+            {!isFirstPage && (
+              <Button
+                title="Back"
+                onClick={handleBack}
+                bgColor="bg-white hover:bg-gray-50"
+                textColor="text-gray-700"
+                className="border-2 border-gray-200 px-6 py-3 text-base md:text-lg shadow-md justify-center"
+              />
+            )}
+            {isLastPage ? (
+              <Button
+                title={
+                  uploadingFields.size > 0 ? "Uploading..." : "Submit Form"
+                }
+                onClick={handleSubmit}
+                disabled={uploadingFields.size > 0}
+                bgColor={`${uploadingFields.size > 0 ? "bg-gray-400" : "bg-gray-900 hover:bg-black"} justify-center px-6 py-3 text-base md:text-lg shadow-lg shadow-gray-200`}
+              />
+            ) : (
+              <Button
+                title="Next"
+                onClick={handleNext}
+                disabled={uploadingFields.size > 0}
+                bgColor="bg-gray-900 hover:bg-black justify-center px-8 py-3 text-base md:text-lg shadow-lg"
+              />
+            )}
             <Button
-              title={uploadingFields.size > 0 ? "Uploading..." : "Submit Form"}
-              onClick={handleSubmit}
-              disabled={uploadingFields.size > 0}
-              bgColor={`${uploadingFields.size > 0 ? "bg-gray-400" : "bg-gray-900 hover:bg-black"} justify-center px-6 py-3 text-base md:text-lg shadow-lg shadow-gray-200`}
-            />
-            <Button
-              title="Clear Form"
-              onClick={handleReset}
+              title="Clear"
+              onClick={handleClearPage}
               disabled={uploadingFields.size > 0}
               bgColor="bg-white hover:bg-gray-50"
               textColor="text-gray-700"

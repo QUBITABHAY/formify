@@ -239,6 +239,7 @@ export default function SinglePageFormBuilder({
         </DndContext>
 
         <FieldEditor
+          key={selectedFieldId || "none"}
           field={selectedField}
           onUpdate={handleUpdateField}
           mode="single"
