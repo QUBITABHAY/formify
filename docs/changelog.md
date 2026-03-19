@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - Added a new form builder editor with new settings sections, validation utilities, and improved response formatting.
 - Added customizable "Thank You" screen for the Single Page Builder to match Flow Builder capabilities.
 - Added automated code formatting and linting via `.pre-commit-config.yaml` hooks.
+- Added "Clear Form" button to the Single Page layout to allow users to reset all form fields.
 
 ### Fixed
 

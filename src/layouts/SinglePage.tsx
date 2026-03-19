@@ -181,6 +181,16 @@ function SinglePage({
     [formId, handleFieldChange],
   );
 
+  const handleReset = useCallback(() => {
+    const initialData: Record<string, unknown> = {};
+    fields.forEach((field) => {
+      initialData[field.id] = field.defaultValue || "";
+    });
+    setFormData(initialData);
+    setErrors({});
+    setSubmitError(null);
+  }, [fields]);
+
   const handleSubmit = useCallback(async () => {
     if (uploadingFields.size > 0) return;
     if (validateAllFields()) {
@@ -426,14 +436,24 @@ function SinglePage({
           ))}
         </div>
 
-        <div className="mt-8 flex items-center gap-4">
-          <Button
-            title={uploadingFields.size > 0 ? "Uploading..." : "Submit Form"}
-            onClick={handleSubmit}
-            disabled={uploadingFields.size > 0}
-            bgColor={`${uploadingFields.size > 0 ? "bg-gray-400" : "bg-gray-900 hover:bg-black"} justify-center px-6 py-3 text-base md:text-lg shadow-lg shadow-gray-200`}
-          />
-          <span className="text-sm text-gray-500">
+        <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <Button
+              title={uploadingFields.size > 0 ? "Uploading..." : "Submit Form"}
+              onClick={handleSubmit}
+              disabled={uploadingFields.size > 0}
+              bgColor={`${uploadingFields.size > 0 ? "bg-gray-400" : "bg-gray-900 hover:bg-black"} justify-center px-6 py-3 text-base md:text-lg shadow-lg shadow-gray-200`}
+            />
+            <Button
+              title="Clear Form"
+              onClick={handleReset}
+              disabled={uploadingFields.size > 0}
+              bgColor="bg-white hover:bg-gray-50"
+              textColor="text-gray-700"
+              className="border-2 border-gray-200 px-6 py-3 text-base md:text-lg shadow-md justify-center"
+            />
+          </div>
+          <span className="text-sm text-gray-500 whitespace-nowrap">
             Never share passwords or sensitive info.
           </span>
         </div>
