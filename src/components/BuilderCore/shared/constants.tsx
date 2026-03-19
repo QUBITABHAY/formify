@@ -99,4 +99,12 @@ export const FIELD_TEMPLATES: FieldTemplate[] = [
       title: "Upload File",
     },
   },
+  {
+    type: "page_break",
+    label: "Page Break",
+    icon: <Icons.PageBreak />,
+    defaultConfig: {
+      title: "New Page",
+    },
+  },
 ];

@@ -294,4 +294,25 @@ export const Icons = {
       <path fill="#fff" d="M13 23h10v10H13z" opacity=".2" />
     </svg>
   ),
+  PageBreak: () => (
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 10h16M4 14h16M4 18h16M4 6h16"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 12l3-3 3 3m-3-3v12"
+      />
+    </svg>
+  ),
 };

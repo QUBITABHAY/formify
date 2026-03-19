@@ -115,6 +115,18 @@ const DraggableField = memo(function DraggableField({
             disabled={true}
           />
         );
+      case "page_break":
+        return (
+          <div className="flex items-center gap-4 py-4">
+            <div className="flex-1 h-px bg-gray-300 border-t border-dashed border-gray-400"></div>
+            <div className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full border border-gray-200 shadow-sm">
+              <span className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                Page Break
+              </span>
+            </div>
+            <div className="flex-1 h-px bg-gray-300 border-t border-dashed border-gray-400"></div>
+          </div>
+        );
       default:
         return null;
     }
@@ -168,16 +180,18 @@ const DraggableField = memo(function DraggableField({
 
       <div className="ml-8 mr-8 pointer-events-none">{renderFieldInput()}</div>
 
-      <div className="mt-3 ml-8 flex items-center gap-2">
-        <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
-          {field.type}
-        </span>
-        {field.required && (
-          <span className="inline-block px-2 py-1 text-xs bg-red-50 text-red-600 rounded">
-            Required
+      {field.type !== "page_break" && (
+        <div className="mt-3 ml-8 flex items-center gap-2">
+          <span className="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
+            {field.type}
           </span>
-        )}
-      </div>
+          {field.required && (
+            <span className="inline-block px-2 py-1 text-xs bg-red-50 text-red-600 rounded">
+              Required
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 });

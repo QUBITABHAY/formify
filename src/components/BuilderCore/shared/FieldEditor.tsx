@@ -86,7 +86,7 @@ const FieldEditor = memo(function FieldEditor({
     );
   }
 
-  if (!field) {
+  if (!field || field.type === "page_break") {
     return (
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col items-center justify-center h-full text-gray-500 p-6 text-center">
         <div className="mb-4 p-4 bg-gray-50 rounded-full">
@@ -104,9 +104,13 @@ const FieldEditor = memo(function FieldEditor({
             />
           </svg>
         </div>
-        <p className="text-sm font-medium">Select a field to edit</p>
+        <p className="text-sm font-medium">
+          {!field ? "Select a field to edit" : "Page Break"}
+        </p>
         <p className="text-xs text-gray-400 mt-1">
-          Click any field to edit its properties
+          {!field
+            ? "Click any field to edit its properties"
+            : "This element marks a new page. No settings available."}
         </p>
       </div>
     );
