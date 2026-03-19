@@ -7,7 +7,10 @@ import DatePicker from "../components/common/DatePicker";
 import FileUpload from "../components/common/FileUpload";
 import Select from "../components/common/Select";
 import TextArea from "../components/common/TextArea";
-import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
+import type {
+  FormFieldConfig as FormField,
+  ThankYouScreenConfig
+} from "../components/BuilderCore/shared/types";
 import { uploadFile } from "../services/api";
 import { validateField } from "../utils/validation";
 
@@ -32,6 +35,7 @@ interface SinglePageProps {
   formDescription?: string;
   formBanner?: string;
   fields?: FormField[];
+  thankYouScreen?: ThankYouScreenConfig;
   onSubmit?: (data: Record<string, unknown>) => void;
 }
 
@@ -89,6 +93,11 @@ function SinglePage({
   formDescription = "Please fill out the details below.",
   formBanner = "https://picsum.photos/800/200",
   fields = defaultFields,
+  thankYouScreen = {
+    title: "Your response has been recorded",
+    description: "Thank you for submitting the form.",
+    emoji: "🎉",
+  },
   onSubmit,
   formId,
 }: SinglePageProps) {
@@ -355,11 +364,14 @@ function SinglePage({
           <div className="bg-white shadow-xl rounded-lg overflow-hidden border border-gray-100">
             <div className="h-2 bg-gray-900"></div>
             <div className="p-8 text-center">
+              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">{thankYouScreen.emoji}</span>
+              </div>
               <h1 className="text-3xl font-semibold text-gray-900 mb-3">
-                Your response has been recorded
+                {thankYouScreen.title}
               </h1>
-              <p className="text-gray-600 text-lg mb-8">
-                Thank you for submitting the form.
+              <p className="text-gray-600 text-lg mb-8 whitespace-pre-line">
+                {thankYouScreen.description}
               </p>
             </div>
           </div>

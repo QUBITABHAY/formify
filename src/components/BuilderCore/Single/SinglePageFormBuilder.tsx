@@ -10,7 +10,7 @@ import SinglePageCanvas from "./SinglePageCanvas";
 import { updateForm } from "../../../services/api";
 import logo from "../../../assets/logo.svg";
 
-import type { FormFieldConfig } from "../shared/types";
+import type { FormFieldConfig, ThankYouScreenConfig } from "../shared/types";
 import { Icons } from "../../common/icons";
 import Modal from "../../common/Modal";
 import { useFormBuilder } from "../shared/useFormBuilder";
@@ -21,6 +21,7 @@ interface SinglePageFormBuilderProps {
   initialTitle?: string;
   initialDescription?: string;
   initialBanner?: string;
+  initialThankYou?: ThankYouScreenConfig;
   initialIsPublished?: boolean;
   initialShareUrl?: string | null;
 }
@@ -31,6 +32,12 @@ export default function SinglePageFormBuilder({
   initialTitle = "Registration Form",
   initialDescription = "Please fill out the details below.",
   initialBanner = "https://picsum.photos/800/200",
+  initialThankYou = {
+    title: "Thank you!",
+    description:
+      "Your response has been submitted successfully. We'll be in touch soon.",
+    emoji: "🎉",
+  },
   initialIsPublished = false,
   initialShareUrl,
 }: SinglePageFormBuilderProps) {
@@ -38,6 +45,8 @@ export default function SinglePageFormBuilder({
   const [formTitle, setFormTitle] = useState(initialTitle);
   const [formDescription, setFormDescription] = useState(initialDescription);
   const [formBanner, setFormBanner] = useState(initialBanner);
+  const [thankYouScreen, setThankYouScreen] =
+    useState<ThankYouScreenConfig>(initialThankYou);
 
   const onSave = useCallback(
     async (fields: FormFieldConfig[]) => {
@@ -48,6 +57,7 @@ export default function SinglePageFormBuilder({
         formTitle,
         formDescription,
         formBanner,
+        thankYouScreen,
       };
       await updateForm(formId, {
         name: formTitle,
@@ -56,7 +66,7 @@ export default function SinglePageFormBuilder({
       });
       return true;
     },
-    [formId, formTitle, formDescription, formBanner],
+    [formId, formTitle, formDescription, formBanner, thankYouScreen],
   );
 
   const {
@@ -104,7 +114,12 @@ export default function SinglePageFormBuilder({
   );
 
   const selectedScreen = useMemo(
-    () => (selectedFieldId === "HEADER" ? "HEADER" : null),
+    () =>
+      selectedFieldId === "HEADER"
+        ? "HEADER"
+        : selectedFieldId === "THANKYOU"
+          ? "THANKYOU"
+          : null,
     [selectedFieldId],
   );
 
@@ -114,6 +129,13 @@ export default function SinglePageFormBuilder({
       if (updates.description !== undefined)
         setFormDescription(updates.description);
       if (updates.banner !== undefined) setFormBanner(updates.banner);
+    },
+    [],
+  );
+
+  const handleUpdateThankYou = useCallback(
+    (updates: Partial<ThankYouScreenConfig>) => {
+      setThankYouScreen((prev) => ({ ...prev, ...updates }));
     },
     [],
   );
@@ -198,10 +220,11 @@ export default function SinglePageFormBuilder({
             selectedFieldId={selectedFieldId}
             onSelectField={setSelectedFieldId}
             onDeleteField={handleDeleteField}
-            formTitle={formTitle}
             formDescription={formDescription}
             formBanner={formBanner}
+            thankYouScreen={thankYouScreen}
             onSelectHeader={() => setSelectedFieldId("HEADER")}
+            onSelectThankYou={() => setSelectedFieldId("THANKYOU")}
           />
 
           <DragOverlay>
@@ -227,9 +250,9 @@ export default function SinglePageFormBuilder({
           }}
           onUpdateMetadata={handleUpdateFormMetadata}
           welcomeScreen={{ title: "", description: "", buttonText: "" }}
-          thankYouScreen={{ title: "", description: "", emoji: "" }}
+          thankYouScreen={thankYouScreen}
           onUpdateWelcome={() => {}}
-          onUpdateThankYou={() => {}}
+          onUpdateThankYou={handleUpdateThankYou}
         />
       </div>
 
@@ -242,7 +265,7 @@ export default function SinglePageFormBuilder({
         formDescription={formDescription}
         formBanner={formBanner}
         welcomeScreen={{ title: "", description: "", buttonText: "" }}
-        thankYouScreen={{ title: "", description: "", emoji: "" }}
+        thankYouScreen={thankYouScreen}
       />
       {formId && (
         <ShareModal

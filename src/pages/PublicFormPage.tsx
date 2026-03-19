@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { submitResponse, getPublicForm } from "../services/api";
 import type { FormResponse } from "../services/apiTypes";
-import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
+import type { FormFieldConfig, ThankYouScreenConfig } from "../components/BuilderCore/shared/types";
 import FlowPage from "../layouts/FlowPage";
 import SinglePage from "../layouts/SinglePage";
 import Modal from "../components/common/Modal";
@@ -178,12 +178,16 @@ export default function PublicFormPage() {
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       {submitted ? (
         <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">🎉</span>
+          <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">
+              {(schema.thankYouScreen as ThankYouScreenConfig | undefined)?.emoji || "🎉"}
+            </span>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Thank You!</h2>
-          <p className="text-gray-600">
-            Your submission has been received successfully.
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            {(schema.thankYouScreen as ThankYouScreenConfig | undefined)?.title || "Thank You!"}
+          </h2>
+          <p className="text-gray-600 whitespace-pre-line">
+            {(schema.thankYouScreen as ThankYouScreenConfig | undefined)?.description || "Your submission has been received successfully."}
           </p>
         </div>
       ) : (
@@ -192,6 +196,7 @@ export default function PublicFormPage() {
           formDescription={form.description}
           formBanner={schema.formBanner as string | undefined}
           fields={fields}
+          thankYouScreen={schema.thankYouScreen as ThankYouScreenConfig | undefined}
           onSubmit={handleSubmit}
           formId={form.id}
         />

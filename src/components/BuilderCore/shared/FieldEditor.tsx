@@ -58,8 +58,8 @@ const FieldEditor = memo(function FieldEditor({
   }
 
   if (
-    (selectedScreen === "WELCOME" || selectedScreen === "THANKYOU") &&
-    mode === "flow"
+    (selectedScreen === "WELCOME" && mode === "flow") ||
+    selectedScreen === "THANKYOU"
   ) {
     return (
       <div className="w-80 bg-white border-l border-gray-200 flex flex-col h-full overflow-y-auto">

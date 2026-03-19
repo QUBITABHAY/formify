@@ -4,7 +4,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import DraggableField from "./DraggableField";
-import type { FormFieldConfig } from "../shared/types";
+import type { FormFieldConfig, ThankYouScreenConfig } from "../shared/types";
 
 interface SinglePageCanvasProps {
   fields: FormFieldConfig[];
@@ -14,7 +14,9 @@ interface SinglePageCanvasProps {
   formTitle?: string;
   formDescription?: string;
   formBanner?: string;
+  thankYouScreen: ThankYouScreenConfig;
   onSelectHeader?: () => void;
+  onSelectThankYou: () => void;
 }
 
 export default function SinglePageCanvas({
@@ -25,7 +27,9 @@ export default function SinglePageCanvas({
   formTitle = "Registration Form",
   formDescription = "Please fill out the details below.",
   formBanner = "https://picsum.photos/800/200",
+  thankYouScreen,
   onSelectHeader,
+  onSelectThankYou,
 }: SinglePageCanvasProps) {
   const { setNodeRef } = useDroppable({
     id: "form-canvas",
@@ -98,6 +102,42 @@ export default function SinglePageCanvas({
             )}
           </div>
         </SortableContext>
+
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelectThankYou();
+          }}
+          className={`
+            bg-white shadow-xl rounded-lg border transition-all cursor-pointer group p-8 text-center
+            ${selectedFieldId === "THANKYOU" ? "ring-2 ring-gray-900 border-gray-900" : "border-gray-100 hover:border-gray-900"}
+          `}
+        >
+          <div className="w-16 h-16 mx-auto mb-4 bg-gray-50 rounded-full flex items-center justify-center">
+            <svg
+              className="w-8 h-8 text-gray-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            {thankYouScreen.title} {thankYouScreen.emoji}
+          </h2>
+          <p className="text-gray-600 whitespace-pre-line max-w-2xl mx-auto">
+            {thankYouScreen.description}
+          </p>
+          <div className="mt-4 text-xs text-gray-400">
+            Submission Success Page
+          </div>
+        </div>
       </div>
     </div>
   );
