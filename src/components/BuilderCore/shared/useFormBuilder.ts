@@ -142,7 +142,7 @@ export function useFormBuilder({
         setShareUrl(result.share_url);
       }
       setShowShareModal(true);
-    } catch (error) {
+    } catch {
       setErrorMessage("Failed to publish form.");
     } finally {
       setIsPublishing(false);

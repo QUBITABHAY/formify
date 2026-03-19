@@ -34,7 +34,7 @@ const normalizeFieldType = (type: unknown): string => {
   return normalized;
 };
 
-const evaluateRule = (rule: ConditionalRule, value: any): boolean => {
+const evaluateRule = (rule: ConditionalRule, value: unknown): boolean => {
   const strValue = Array.isArray(value) ? value.join(",") : String(value ?? "");
   const ruleValue = rule.value;
   switch (rule.operator) {
@@ -70,7 +70,7 @@ interface FlowPageProps {
   formTitle?: string;
   formDescription?: string;
   fields?: FormField[];
-  onSubmit?: (data: Record<string, any>) => void;
+  onSubmit?: (data: Record<string, unknown>) => void;
   accentColor?: string;
   welcomeScreen?: WelcomeScreenProps;
   thankYouScreen?: ThankYouScreenProps;
@@ -165,8 +165,8 @@ function FlowPage({
     [welcomeScreen, thankYouScreen, formTitle, formDescription],
   );
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<Record<string, any>>(() => {
-    const initialData: Record<string, any> = {};
+  const [formData, setFormData] = useState<Record<string, unknown>>(() => {
+    const initialData: Record<string, unknown> = {};
     fields.forEach((field) => {
       initialData[field.id] = field.defaultValue;
     });
@@ -225,7 +225,7 @@ function FlowPage({
     return () => clearTimeout(timer);
   }, [currentStep, currentField]);
 
-  const handleFieldChange = useCallback((id: string, value: any) => {
+  const handleFieldChange = useCallback((id: string, value: unknown) => {
     setFormData((prev) => ({
       ...prev,
       [id]: value,
@@ -244,10 +244,11 @@ function FlowPage({
       try {
         const response = await uploadFile(formId, file);
         handleFieldChange(fieldId, response.url);
-      } catch (err: any) {
+      } catch (err) {
+        const errorData = err as { response?: { data?: { error?: string; message?: string } } };
         setUploadError(
-          err.response?.data?.error ||
-            err.response?.data?.message ||
+          errorData.response?.data?.error ||
+            errorData.response?.data?.message ||
             "File upload failed. Please try again.",
         );
       } finally {
@@ -354,7 +355,7 @@ function FlowPage({
               title=""
               type={fieldType}
               placeholder={field.placeholder}
-              value={formData[field.id] ?? ""}
+              value={(formData[field.id] as string | number | undefined) ?? ""}
               subtitle={field.subtitle}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
             />
@@ -366,7 +367,7 @@ function FlowPage({
             <TextArea
               title=""
               placeholder={field.placeholder}
-              value={formData[field.id] ?? ""}
+              value={(formData[field.id] as string) ?? ""}
               maxLength={field.maxLength}
               subtitle={field.subtitle}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
@@ -375,9 +376,7 @@ function FlowPage({
         );
       case "radio":
         if (field.multiSelect) {
-          const selectedValues = Array.isArray(formData[field.id])
-            ? formData[field.id]
-            : [];
+          const selectedValues = (formData[field.id] as string[]) || [];
           return (
             <div className="flex flex-col gap-3 w-full max-w-lg">
               {field.options?.map((option) => (
@@ -418,7 +417,7 @@ function FlowPage({
             <Checkbox
               title={field.title}
               subtitle={field.subtitle}
-              checked={formData[field.id]}
+              checked={formData[field.id] as boolean}
               onChange={(checked: boolean) =>
                 handleFieldChange(field.id, checked)
               }
@@ -431,7 +430,7 @@ function FlowPage({
             <DatePicker
               label=""
               name={field.id}
-              value={formData[field.id] || ""}
+              value={(formData[field.id] as string) || ""}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
               min={field.minDate}
               max={field.maxDate}
@@ -445,7 +444,7 @@ function FlowPage({
             <FileUpload
               label=""
               name={field.id}
-              value={formData[field.id] || ""}
+              value={(formData[field.id] as string) || ""}
               isUploading={uploadingFields.has(field.id)}
               onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -463,7 +462,7 @@ function FlowPage({
             <Select
               title=""
               options={field.options || []}
-              value={formData[field.id] || ""}
+              value={(formData[field.id] as string) || ""}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
               subtitle={field.subtitle}
               placeholder={field.placeholder || "Select an option"}

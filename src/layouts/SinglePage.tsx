@@ -7,7 +7,10 @@ import DatePicker from "../components/common/DatePicker";
 import FileUpload from "../components/common/FileUpload";
 import Select from "../components/common/Select";
 import TextArea from "../components/common/TextArea";
-import type { FormFieldConfig as FormField } from "../components/BuilderCore/shared/types";
+import type {
+  FormFieldConfig as FormField,
+  ThankYouScreenConfig
+} from "../components/BuilderCore/shared/types";
 import { uploadFile } from "../services/api";
 import { validateField } from "../utils/validation";
 
@@ -32,7 +35,8 @@ interface SinglePageProps {
   formDescription?: string;
   formBanner?: string;
   fields?: FormField[];
-  onSubmit?: (data: Record<string, any>) => void;
+  thankYouScreen?: ThankYouScreenConfig;
+  onSubmit?: (data: Record<string, unknown>) => void;
 }
 
 const defaultFields: FormField[] = [
@@ -89,10 +93,15 @@ function SinglePage({
   formDescription = "Please fill out the details below.",
   formBanner = "https://picsum.photos/800/200",
   fields = defaultFields,
+  thankYouScreen = {
+    title: "Your response has been recorded",
+    description: "Thank you for submitting the form.",
+    emoji: "🎉",
+  },
   onSubmit,
   formId,
 }: SinglePageProps) {
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [uploadingFields, setUploadingFields] = useState<Set<string>>(
@@ -101,14 +110,14 @@ function SinglePage({
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
-    const initialData: Record<string, any> = {};
+    const initialData: Record<string, unknown> = {};
     fields.forEach((field) => {
       initialData[field.id] = field.defaultValue || "";
     });
     setFormData(initialData);
   }, [fields]);
 
-  const handleFieldChange = useCallback((id: string, value: any) => {
+  const handleFieldChange = useCallback((id: string, value: unknown) => {
     setFormData((prev) => ({
       ...prev,
       [id]: value,
@@ -151,10 +160,11 @@ function SinglePage({
       try {
         const response = await uploadFile(formId, file);
         handleFieldChange(fieldId, response.url);
-      } catch (err: any) {
+      } catch (err) {
+        const errorData = err as { response?: { data?: { error?: string; message?: string } } };
         const errorMessage =
-          err.response?.data?.error ||
-          err.response?.data?.message ||
+          errorData.response?.data?.error ||
+          errorData.response?.data?.message ||
           "File upload failed. Please try again.";
         setErrors((prev) => ({
           ...prev,
@@ -177,7 +187,7 @@ function SinglePage({
       try {
         await onSubmit?.(formData);
         setIsSubmitted(true);
-      } catch (err) {
+      } catch {
         setSubmitError("Form submission failed. Please try again.");
       }
     }
@@ -197,7 +207,7 @@ function SinglePage({
             type={fieldType}
             placeholder={field.placeholder}
             maxLength={field.maxLength}
-            value={formData[field.id] || ""}
+            value={(formData[field.id] as string | number | undefined) || ""}
             subtitle={field.subtitle}
             onChange={(e) => handleFieldChange(field.id, e.target.value)}
           />
@@ -208,16 +218,14 @@ function SinglePage({
             title={field.title}
             placeholder={field.placeholder}
             maxLength={field.maxLength}
-            value={formData[field.id] || ""}
+            value={(formData[field.id] as string) || ""}
             subtitle={field.subtitle}
             onChange={(e) => handleFieldChange(field.id, e.target.value)}
           />
         );
       case "radio":
         if (field.multiSelect) {
-          const selectedValues = Array.isArray(formData[field.id])
-            ? formData[field.id]
-            : [];
+          const selectedValues = (formData[field.id] as string[]) || [];
           return (
             <div>
               <label className="text-sm font-normal text-gray-700 mb-3 block">
@@ -279,7 +287,7 @@ function SinglePage({
           <Checkbox
             title={field.title}
             subtitle={field.subtitle}
-            checked={formData[field.id] || false}
+            checked={(formData[field.id] as boolean) || false}
             onChange={(checked: boolean) =>
               handleFieldChange(field.id, checked)
             }
@@ -300,7 +308,7 @@ function SinglePage({
             <DatePicker
               label=""
               name={field.id}
-              value={formData[field.id] || ""}
+              value={(formData[field.id] as string) || ""}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
               min={field.minDate}
               max={field.maxDate}
@@ -322,7 +330,7 @@ function SinglePage({
             <FileUpload
               label=""
               name={field.id}
-              value={formData[field.id] || ""}
+              value={(formData[field.id] as string) || ""}
               isUploading={uploadingFields.has(field.id)}
               onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -338,7 +346,7 @@ function SinglePage({
           <Select
             title={field.title}
             options={field.options || []}
-            value={formData[field.id] || ""}
+            value={(formData[field.id] as string) || ""}
             onChange={(e) => handleFieldChange(field.id, e.target.value)}
             subtitle={field.subtitle}
             placeholder={field.placeholder || "Select an option"}
@@ -356,11 +364,14 @@ function SinglePage({
           <div className="bg-white shadow-xl rounded-lg overflow-hidden border border-gray-100">
             <div className="h-2 bg-gray-900"></div>
             <div className="p-8 text-center">
+              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">{thankYouScreen.emoji}</span>
+              </div>
               <h1 className="text-3xl font-semibold text-gray-900 mb-3">
-                Your response has been recorded
+                {thankYouScreen.title}
               </h1>
-              <p className="text-gray-600 text-lg mb-8">
-                Thank you for submitting the form.
+              <p className="text-gray-600 text-lg mb-8 whitespace-pre-line">
+                {thankYouScreen.description}
               </p>
             </div>
           </div>

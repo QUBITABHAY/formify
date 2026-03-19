@@ -14,10 +14,10 @@ export default function AuthCallbackPage() {
     const fetchUser = async () => {
       try {
         const response = await getCurrentUser();
-        const user = (response as any).user || response;
+        const user = (response as { user?: unknown }).user || response;
         dispatch(setAuth({ user }));
         navigate("/dashboard", { replace: true });
-      } catch (err) {
+      } catch {
         setError("Authentication failed. Please try again.");
       }
     };

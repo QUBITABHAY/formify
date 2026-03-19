@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { FormMode } from "./types";
+import type { FormMode, WelcomeScreenConfig, ThankYouScreenConfig, FormFieldConfig } from "./types";
 import FlowFormBuilder from "../Flow/FlowFormBuilder";
 import SinglePageFormBuilder from "../Single/SinglePageFormBuilder";
 import { getForm } from "../../../services/api";
@@ -50,16 +50,16 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
         {mode === "flow" ? (
           <FlowFormBuilder
             formId={formId}
-            initialFields={formData?.schema?.fields as any}
-            initialWelcome={formData?.schema?.welcomeScreen as any}
-            initialThankYou={formData?.schema?.thankYouScreen as any}
+            initialFields={formData?.schema?.fields as FormFieldConfig[]}
+            initialWelcome={formData?.schema?.welcomeScreen as WelcomeScreenConfig}
+            initialThankYou={formData?.schema?.thankYouScreen as ThankYouScreenConfig}
             initialIsPublished={formData?.status === "published"}
             initialShareUrl={formData?.share_url}
           />
         ) : (
           <SinglePageFormBuilder
             formId={formId}
-            initialFields={formData?.schema?.fields as any}
+            initialFields={formData?.schema?.fields as FormFieldConfig[]}
             initialTitle={formData?.name}
             initialDescription={formData?.description}
             initialBanner={formData?.schema?.formBanner as string}

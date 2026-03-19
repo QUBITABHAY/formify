@@ -46,7 +46,7 @@ export default function FormResponsesPage() {
     const Papa = (await import("papaparse")).default;
     if (!form || !responsesData) return;
 
-    const fields = ((form.schema as any).fields as FormFieldConfig[]) || [];
+    const fields = (form.schema as { fields?: FormFieldConfig[] }).fields || [];
     const responses = responsesData.responses;
 
     if (!responses.length) return;
@@ -58,12 +58,12 @@ export default function FormResponsesPage() {
 
       fields.forEach((field) => {
         const answer = response.data[field.title] ?? response.data[field.id];
-        row[field.title] = formatAnswer(answer);
+        row[field.title] = formatAnswer(answer, field.type);
       });
 
       const createdAt = new Date(response.created_at);
-      row["Submission Date"] = createdAt.toLocaleDateString();
-      row["Submission Time"] = createdAt.toLocaleTimeString();
+      row["Submission Date"] = formatDate(createdAt);
+      row["Submission Time"] = formatTime(createdAt);
 
       return row;
     });
@@ -95,7 +95,7 @@ export default function FormResponsesPage() {
     );
   }
 
-  const fields = ((form.schema as any).fields as FormFieldConfig[]) || [];
+  const fields = (form.schema as { fields?: FormFieldConfig[] }).fields || [];
   const responses = responsesData.responses;
 
   const handleDeleteResponse = async (responseId: number) => {
@@ -108,7 +108,7 @@ export default function FormResponsesPage() {
         count: responsesData!.count - 1,
         responses: responsesData!.responses.filter((r) => r.id !== responseId),
       });
-    } catch (error) {
+    } catch {
       setErrorMessage("Failed to delete response. Please try again.");
     } finally {
       setDeleting(null);
@@ -211,9 +211,12 @@ export default function FormResponsesPage() {
                           <td
                             key={field.id}
                             className="px-4 py-3 text-sm text-gray-700 max-w-xs truncate"
-                            title={formatAnswer(answer)}
+                            title={formatAnswer(answer, field.type)}
                           >
-                            <FormattedAnswer answer={answer} />
+                            <FormattedAnswer
+                              answer={answer}
+                              fieldType={field.type}
+                            />
                           </td>
                         );
                       })}
