@@ -59,6 +59,7 @@ export function BasicFieldSettings({
           </label>
           <input
             type="number"
+            min="1"
             value={field.maxLength || ""}
             onChange={(e) =>
               onUpdate({
