@@ -7,13 +7,17 @@ export function isHttpUrl(str: string): boolean {
   }
 }
 
-export function formatAnswer(answer: any): string {
+export function formatAnswer(answer: any, fieldType?: string): string {
   if (
     answer === undefined ||
     answer === null ||
     answer.toString().trim() === ""
   ) {
     return "Not Available";
+  }
+
+  if (fieldType === "date") {
+    return formatDate(answer);
   }
 
   if (Array.isArray(answer)) {
@@ -30,10 +34,18 @@ export function formatAnswer(answer: any): string {
 
 export function formatDate(dateStr: string | Date): string {
   const date = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
-  return date.toLocaleDateString("en-IN");
+  return date.toLocaleDateString(undefined, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 }
 
 export function formatTime(dateStr: string | Date): string {
   const date = typeof dateStr === "string" ? new Date(dateStr) : dateStr;
-  return date.toLocaleTimeString("en-IN");
+  return date.toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 }

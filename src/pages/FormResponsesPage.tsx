@@ -58,12 +58,12 @@ export default function FormResponsesPage() {
 
       fields.forEach((field) => {
         const answer = response.data[field.title] ?? response.data[field.id];
-        row[field.title] = formatAnswer(answer);
+        row[field.title] = formatAnswer(answer, field.type);
       });
 
       const createdAt = new Date(response.created_at);
-      row["Submission Date"] = createdAt.toLocaleDateString();
-      row["Submission Time"] = createdAt.toLocaleTimeString();
+      row["Submission Date"] = formatDate(createdAt);
+      row["Submission Time"] = formatTime(createdAt);
 
       return row;
     });
@@ -211,9 +211,12 @@ export default function FormResponsesPage() {
                           <td
                             key={field.id}
                             className="px-4 py-3 text-sm text-gray-700 max-w-xs truncate"
-                            title={formatAnswer(answer)}
+                            title={formatAnswer(answer, field.type)}
                           >
-                            <FormattedAnswer answer={answer} />
+                            <FormattedAnswer
+                              answer={answer}
+                              fieldType={field.type}
+                            />
                           </td>
                         );
                       })}

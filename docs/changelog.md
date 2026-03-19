@@ -16,3 +16,5 @@ All notable changes to this project will be documented in this file.
 - Fixed `long text` / `longtext` / `long-text` / `long_text` field rendering by mapping these aliases to `textarea` and rendering `TextArea` in both layouts.
 - Fixed multiline description rendering by preserving line breaks (`\n`) in Single and Flow builder canvases and public form layouts.
 - Fixed form save/publish validation to block empty titles and show a warning message (`Form title is required.`) in both Flow and Single builders.
+- Updated date and time formatting across the application (Dashboard, Form Responses, and Individual Response pages) to be locale-aware and use double-digit representation (e.g., `03/03/2026`).
+- Enhanced `formatAnswer` utility to properly format date-type form responses in both UI displays and CSV exports.

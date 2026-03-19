@@ -8,6 +8,7 @@ import { createForm, getForms, deleteForm } from "../services/api";
 import type { FormResponse } from "../services/apiTypes";
 import type { RootState } from "../store/store";
 import logo from "../assets/logo.svg";
+import { formatDate } from "../utils/formatters";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -164,7 +165,7 @@ export default function DashboardPage() {
                 </p>
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100 text-sm text-gray-500">
                   <span>
-                    {new Date(form.created_at).toLocaleDateString("en-IN")}
+                    {formatDate(form.created_at)}
                   </span>
                   <div className="flex items-center gap-4">
                     <span

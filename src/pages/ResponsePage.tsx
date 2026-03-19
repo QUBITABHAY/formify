@@ -4,6 +4,7 @@ import { getForm, getResponse } from "../services/api";
 import type { FormResponse, FormSubmission } from "../services/apiTypes";
 import type { FormFieldConfig } from "../components/BuilderCore/shared/types";
 import FormattedAnswer from "../components/common/FormattedAnswer";
+import { formatDate, formatTime } from "../utils/formatters";
 
 export default function ResponsePage() {
   const { responseId } = useParams();
@@ -67,7 +68,7 @@ export default function ResponsePage() {
                 Submitted
               </span>
               <span className="mx-2">•</span>
-              <span>{new Date(response.created_at).toLocaleString()}</span>
+              <span>{formatDate(response.created_at)} {formatTime(response.created_at)}</span>
             </div>
           </div>
 
@@ -96,7 +97,10 @@ export default function ResponsePage() {
                         ))}
                       </ul>
                     ) : (
-                      <FormattedAnswer answer={answer} />
+                      <FormattedAnswer
+                        answer={answer}
+                        fieldType={field.type}
+                      />
                     )}
                   </div>
                 </div>
