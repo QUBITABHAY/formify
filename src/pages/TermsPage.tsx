@@ -95,12 +95,12 @@ const TermsPage: React.FC = () => {
             Limitation of Liability
           </h2>
           <p className="leading-relaxed mb-6">
-            Formify is provided "as is" and "as available". The Company assumes
-            no responsibility or liability for the content of the forms created
-            by users, nor the data collected through those forms. We do not
-            guarantee uninterrupted access to the Service. Formify shall not be
-            liable for any indirect, incidental, special, or consequential
-            damages resulting from your use of the Service.
+            Formify is provided &quot;as is&quot; and &quot;as available&quot;.
+            The Company assumes no responsibility or liability for the content
+            of the forms created by users, nor the data collected through those
+            forms. We do not guarantee uninterrupted access to the Service.
+            Formify shall not be liable for any indirect, incidental, special,
+            or consequential damages resulting from your use of the Service.
           </p>
 
           <h2 className="text-2xl font-bold text-gray-900 mt-10 mb-4">

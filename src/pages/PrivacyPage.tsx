@@ -120,8 +120,8 @@ const PrivacyPage: React.FC = () => {
               Google Sheet.
             </li>
             <li className="leading-relaxed">
-              Formify's use of information received from Google APIs will adhere
-              to the{" "}
+              Formify&apos;s use of information received from Google APIs will
+              adhere to the{" "}
               <a
                 href="https://developers.google.com/terms/api-services-user-data-policy"
                 className="text-indigo-600 hover:underline"

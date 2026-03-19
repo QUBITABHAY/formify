@@ -145,7 +145,7 @@ export default function GoogleSheetsModal({
                   placeholder="My Form – Responses"
                 />
                 <p className="-mt-1 text-xs text-gray-400">
-                  Defaults to "Form Name – Responses"
+                  Defaults to &quot;Form Name &ndash; Responses&quot;
                 </p>
 
                 {spreadsheetUrl && (

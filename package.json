@@ -17,6 +17,7 @@
     "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.13.4",
+    "eslint-plugin-react": "^7.37.5",
     "mapbox-gl": "^3.18.1",
     "papaparse": "^5.5.3",
     "react": "^19.2.3",
