@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Added a new form builder editor with new settings sections, validation utilities, and improved response formatting.
+- Added customizable "Thank You" screen for the Single Page Builder to match Flow Builder capabilities.
+- Added automated code formatting and linting via `.pre-commit-config.yaml` hooks.
 
 ### Fixed
 
@@ -18,3 +20,5 @@ All notable changes to this project will be documented in this file.
 - Fixed form save/publish validation to block empty titles and show a warning message (`Form title is required.`) in both Flow and Single builders.
 - Updated date and time formatting across the application (Dashboard, Form Responses, and Individual Response pages) to be locale-aware and use double-digit representation (e.g., `03/03/2026`).
 - Enhanced `formatAnswer` utility to properly format date-type form responses in both UI displays and CSV exports.
+- Fixed multiple TypeScript and React-specific linting errors (`@typescript-eslint/no-explicit-any`, `react/display-name`, etc.).
+- Added `min="1"` to `maxLength` input in `BasicFieldSettings` to prevent invalid length values.
