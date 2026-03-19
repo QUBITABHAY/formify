@@ -7,16 +7,16 @@ export function isHttpUrl(str: string): boolean {
   }
 }
 
-export function formatAnswer(answer: any, fieldType?: string): string {
+export function formatAnswer(answer: unknown, fieldType?: string): string {
   if (
     answer === undefined ||
     answer === null ||
-    answer.toString().trim() === ""
+    String(answer).trim() === ""
   ) {
     return "Not Available";
   }
 
-  if (fieldType === "date") {
+  if (fieldType === "date" && (typeof answer === "string" || answer instanceof Date)) {
     return formatDate(answer);
   }
 
@@ -29,7 +29,7 @@ export function formatAnswer(answer: any, fieldType?: string): string {
     return answer ? "Yes" : "No";
   }
 
-  return answer.toString();
+  return String(answer);
 }
 
 export function formatDate(dateStr: string | Date): string {

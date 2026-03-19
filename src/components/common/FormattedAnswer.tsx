@@ -2,7 +2,7 @@ import React from "react";
 import { formatAnswer, isHttpUrl } from "../../utils/formatters";
 
 interface FormattedAnswerProps {
-  answer: any;
+  answer: unknown;
   fieldType?: string;
   className?: string;
   linkClassName?: string;

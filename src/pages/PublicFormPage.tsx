@@ -21,7 +21,7 @@ export default function PublicFormPage() {
         if (!formId) return;
         const data = await getPublicForm(formId);
         setForm(data);
-      } catch (err) {
+      } catch {
         setError("Form not found or unavailable.");
       } finally {
         setLoading(false);
@@ -31,10 +31,10 @@ export default function PublicFormPage() {
   }, [formId]);
 
   const handleSubmit = useCallback(
-    async (answers: Record<string, any>) => {
+    async (answers: Record<string, unknown>) => {
       if (!form || !formId) return;
 
-      const schema = form.schema as any;
+      const schema = form.schema as Record<string, unknown>;
       const formFields = (schema.fields as FormFieldConfig[]) || [];
 
       const missingFields: string[] = [];
@@ -73,11 +73,11 @@ export default function PublicFormPage() {
           acc[title] = value;
           return acc;
         },
-        {} as Record<string, any>,
+        {} as Record<string, unknown>,
       );
 
       try {
-        await submitResponse(form.id, structuredAnswers, {});
+        await submitResponse(form.id, structuredAnswers as Record<string, string | string[]>, {});
         setSubmitted(true);
       } catch (err) {
         setAlertMessage("Failed to submit form. Please try again.");
@@ -92,10 +92,10 @@ export default function PublicFormPage() {
       return {
         fields: [],
         type: "single" as const,
-        schema: {} as any,
+        schema: {} as Record<string, unknown>,
       };
     }
-    const s = form.schema as any;
+    const s = form.schema as Record<string, unknown>;
     return {
       fields: (s.fields as FormFieldConfig[]) || [],
       type: (s.type as "single" | "flow") || "single",
@@ -190,7 +190,7 @@ export default function PublicFormPage() {
         <SinglePage
           formTitle={form.name}
           formDescription={form.description}
-          formBanner={schema.formBanner}
+          formBanner={schema.formBanner as string | undefined}
           fields={fields}
           onSubmit={handleSubmit}
           formId={form.id}

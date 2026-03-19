@@ -27,8 +27,8 @@ export default function DashboardPage() {
     try {
       const data = await getForms(user.id);
       setForms(data);
-    } catch (error) {
-      console.error("Failed to fetch forms", error);
+    } catch {
+      console.error("Failed to fetch forms");
     } finally {
       setLoading(false);
     }
@@ -80,7 +80,7 @@ export default function DashboardPage() {
       setForms((prev) => prev.filter((f) => f.id !== formToDelete));
       setIsDeleteModalOpen(false);
       setFormToDelete(null);
-    } catch (error) {
+    } catch {
       setDeleteError("Failed to delete form. Please try again.");
     } finally {
       setDeleting(null);

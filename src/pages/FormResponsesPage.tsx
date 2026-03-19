@@ -46,7 +46,7 @@ export default function FormResponsesPage() {
     const Papa = (await import("papaparse")).default;
     if (!form || !responsesData) return;
 
-    const fields = ((form.schema as any).fields as FormFieldConfig[]) || [];
+    const fields = (form.schema as { fields?: FormFieldConfig[] }).fields || [];
     const responses = responsesData.responses;
 
     if (!responses.length) return;
@@ -95,7 +95,7 @@ export default function FormResponsesPage() {
     );
   }
 
-  const fields = ((form.schema as any).fields as FormFieldConfig[]) || [];
+  const fields = (form.schema as { fields?: FormFieldConfig[] }).fields || [];
   const responses = responsesData.responses;
 
   const handleDeleteResponse = async (responseId: number) => {
@@ -108,7 +108,7 @@ export default function FormResponsesPage() {
         count: responsesData!.count - 1,
         responses: responsesData!.responses.filter((r) => r.id !== responseId),
       });
-    } catch (error) {
+    } catch {
       setErrorMessage("Failed to delete response. Please try again.");
     } finally {
       setDeleting(null);

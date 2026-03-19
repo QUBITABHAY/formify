@@ -49,9 +49,10 @@ export default function GoogleSheetsModal({
       setSheetId(result.form.google_sheet_id);
       setSheetName(result.form.google_sheet_name);
       setSpreadsheetUrl(result.spreadsheet_url);
-    } catch (err: any) {
+    } catch (err) {
+      const errorData = err as { response?: { data?: { error?: string } } };
       setError(
-        err?.response?.data?.error ??
+        errorData?.response?.data?.error ??
           "Failed to create sheet. Please try again.",
       );
     } finally {
@@ -68,8 +69,9 @@ export default function GoogleSheetsModal({
       setSheetId(null);
       setSheetName(null);
       setSpreadsheetUrl(null);
-    } catch (err: any) {
-      setError(err?.response?.data?.error ?? "Failed to unlink sheet.");
+    } catch (err) {
+      const errorData = err as { response?: { data?: { error?: string } } };
+      setError(errorData?.response?.data?.error ?? "Failed to unlink sheet.");
     } finally {
       setIsUnlinking(false);
     }
