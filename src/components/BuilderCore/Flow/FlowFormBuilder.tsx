@@ -213,7 +213,7 @@ export default function FlowFormBuilder({
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <FieldPalette />
+          <FieldPalette mode="flow" />
 
           <FlowPageCanvas
             fields={fields}

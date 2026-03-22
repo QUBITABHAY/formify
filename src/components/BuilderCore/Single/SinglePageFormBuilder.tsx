@@ -213,7 +213,7 @@ export default function SinglePageFormBuilder({
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <FieldPalette />
+          <FieldPalette mode="single" />
 
           <SinglePageCanvas
             fields={fields}
