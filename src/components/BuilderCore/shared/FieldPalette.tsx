@@ -1,6 +1,6 @@
 import { useDraggable } from "@dnd-kit/core";
 import { FIELD_TEMPLATES } from "./constants";
-import type { FieldTemplate } from "./types";
+import type { FieldTemplate, FormMode } from "./types";
 
 interface DraggablePaletteItemProps {
   template: FieldTemplate;
@@ -35,7 +35,16 @@ function DraggablePaletteItem({ template }: DraggablePaletteItemProps) {
   );
 }
 
-export default function FieldPalette() {
+interface FieldPaletteProps {
+  mode?: FormMode;
+}
+
+export default function FieldPalette({ mode = "single" }: FieldPaletteProps) {
+  const filteredTemplates =
+    mode === "flow"
+      ? FIELD_TEMPLATES.filter((t) => t.type !== "page_break")
+      : FIELD_TEMPLATES;
+
   return (
     <div className="w-64 bg-gray-50 border-r border-gray-200 p-4 overflow-y-auto">
       <h2 className="text-lg font-semibold text-gray-800 mb-2">Form Fields</h2>
@@ -43,7 +52,7 @@ export default function FieldPalette() {
         Drag fields to build your form
       </p>
       <div className="space-y-2">
-        {FIELD_TEMPLATES.map((template) => (
+        {filteredTemplates.map((template) => (
           <DraggablePaletteItem key={template.type} template={template} />
         ))}
       </div>
