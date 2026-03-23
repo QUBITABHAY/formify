@@ -10,6 +10,7 @@ interface TextAreaProps {
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   subtitle?: string;
   disabled?: boolean;
+  autoFocus?: boolean;
 }
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
@@ -24,6 +25,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       onChange,
       subtitle,
       disabled,
+      autoFocus,
     },
     ref,
   ) => {
@@ -41,6 +43,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           rows={rows}
           maxLength={maxLength}
           disabled={disabled}
+          autoFocus={autoFocus}
           className="p-3 border-b border-gray-300 focus:outline-none focus:border-gray-900 bg-transparent resize-none"
           placeholder={placeholder}
         />
