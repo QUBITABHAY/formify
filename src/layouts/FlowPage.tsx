@@ -5,6 +5,7 @@ import {
   useCallback,
   useMemo,
   type KeyboardEvent,
+  type MutableRefObject,
 } from "react";
 import InputField from "../components/common/InputField";
 import Checkbox from "../components/common/Checkbox";
@@ -181,7 +182,7 @@ function FlowPage({
   );
   const [uploadError, setUploadError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
   const totalSteps = fields.length;
   const isIntroScreen = currentStep === -1;
@@ -217,7 +218,7 @@ function FlowPage({
     const timer = setTimeout(() => {
       if (
         currentField &&
-        ["text", "email", "tel", "number"].includes(currentField.type)
+        ["text", "email", "tel", "number", "textarea"].includes(currentField.type)
       ) {
         inputRef.current?.focus();
       }
@@ -351,7 +352,7 @@ function FlowPage({
           <div className="w-full max-w-lg">
             <InputField
               key={field.id}
-              ref={inputRef}
+              ref={inputRef as MutableRefObject<HTMLInputElement>}
               title=""
               type={fieldType}
               placeholder={field.placeholder}
@@ -365,6 +366,7 @@ function FlowPage({
         return (
           <div className="w-full max-w-lg">
             <TextArea
+              ref={inputRef as MutableRefObject<HTMLTextAreaElement>}
               title=""
               placeholder={field.placeholder}
               value={(formData[field.id] as string) ?? ""}

@@ -28,3 +28,4 @@ All notable changes to this project will be documented in this file.
 - **Per-Page Clear Logic**: Refined the "Clear" button to only reset fields on the current page for multipage forms.
 - **Selection Stability**: Stabilized field settings by adding unique editor keys, ensuring the panel correctly re-initializes on selection.
 - **Builder Interaction**: Enhanced field clickability by adding `pointer-events-none` to previews, enabling full-surface selection.
+- **Long Text Auto-Focus**: Fixed missing auto-focus for "Long Text" fields in Flow mode by updating the `FlowPage` layout and `TextArea` component.
