@@ -74,6 +74,34 @@ A textarea component support forwardRef.
 - `disabled`: boolean (optional)
 - **Ref**: Supports `forwardRef`
 
+## DatePicker
+
+A highly customizable dropdown calendar component replacing the native browser `<input type="date">`.
+
+- `label`: string (required)
+- `name`: string (optional)
+- `value`: string (optional)
+- `min`: string (optional)
+- `max`: string (optional)
+- `onChange`: (e: React.ChangeEvent<HTMLInputElement>) => void (optional)
+- `disabled`: boolean (optional)
+- `required`: boolean (optional)
+- `subtitle`: string (optional)
+
+## TimePicker
+
+An interactive time selection component using transparent CSS overlays and DOM mutations for a superior clicking experience.
+
+- `label`: string (required)
+- `name`: string (optional)
+- `value`: string (optional)
+- `min`: string (optional)
+- `max`: string (optional)
+- `onChange`: (e: React.ChangeEvent<HTMLInputElement>) => void (optional)
+- `disabled`: boolean (optional)
+- `required`: boolean (optional)
+- `subtitle`: string (optional)
+
 ## Icons
 
 A collection of SVG icons exported as the `Icons` object.
@@ -91,6 +119,8 @@ A collection of SVG icons exported as the `Icons` object.
   - `Icons.Eye`
   - `Icons.ArrowLeft`
   - `Icons.Logic`
+  - `Icons.Calendar`
+  - `Icons.Clock`
 
 ---
 
@@ -139,7 +169,7 @@ Modal component for previewing forms using `FlowPage` or `SinglePage` layouts.
 Core type definitions:
 
 - `FormMode` — `"single" | "flow"`
-- `FieldType` — `"text" | "number" | "email" | "tel" | "radio" | "checkbox" | "textarea" | "select"`
+- `FieldType` — `"text" | "number" | "email" | "tel" | "radio" | "checkbox" | "textarea" | "select" | "date" | "time" | "file"`
 - `FormFieldConfig` — Field configuration interface (now includes optional `logic`)
 - `ConditionalRule` — Logic rule definition (`operator`, `value`, `targetFieldId`)
 - `FieldLogic` — Container for field rules

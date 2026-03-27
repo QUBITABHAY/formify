@@ -16,3 +16,9 @@ repos:
         types_or: [javascript, jsx, ts, tsx]
         pass_filenames: false
         stages: [pre-commit]
+
+      - id: build
+        name: Build
+        entry: npm run build
+        language: system
+        pass_filenames: false

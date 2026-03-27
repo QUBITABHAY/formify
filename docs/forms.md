@@ -10,13 +10,13 @@ Traditional single-page form layout where all fields are displayed at once.
 
 ### Props
 
-| Prop            | Type                                | Description                     |
-| --------------- | ----------------------------------- | ------------------------------- |
-| formTitle       | string                              | Form title displayed at the top |
-| formDescription | string                              | Form description/subtitle       |
+| Prop            | Type                                | Description                         |
+| --------------- | ----------------------------------- | ----------------------------------- |
+| formTitle       | string                              | Form title displayed at the top     |
+| formDescription | string                              | Form description/subtitle           |
 | formBanner      | string                              | URL for the banner image (optional) |
-| fields          | FormField[]                         | Array of form fields to render  |
-| onSubmit        | (data: Record<string, any>) => void | Callback when form is submitted |
+| fields          | FormField[]                         | Array of form fields to render      |
+| onSubmit        | (data: Record<string, any>) => void | Callback when form is submitted     |
 
 ### Features
 
@@ -87,11 +87,16 @@ interface FormField {
     | "textarea"
     | "select"
     | "date"
+    | "time"
     | "file";
   title: string;
   subtitle?: string;
   placeholder?: string;
   maxLength?: number;
+  minDate?: string;
+  maxDate?: string;
+  minTime?: string;
+  maxTime?: string;
   options?: { label: string; value: string }[];
   defaultValue?: string | boolean;
   /* Flow-only: Conditional branching */
