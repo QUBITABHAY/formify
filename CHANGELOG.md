@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Release 0.0.2]
+
+### Added
+
+- **Time Picker Field**: Introduced a fully functional "Time" field type with support across single page forms, flow builder, and previews.
+- **Time & Date Constraints**: Added editable `minTime`, `maxTime`, `minDate`, and `maxDate` constraints directly within the Builder settings sidebar with easy "Clear" buttons.
+- **SEO Optimizations**: Integrated comprehensive SEO tags, OpenGraph (`og:`) properties, and Twitter Card schemas directly into `index.html`.
+
+### Fixed
+
+- **Custom DatePicker UI**: Re-architected `DatePicker.tsx` to utilize a tailor-made, interactive dropdown calendar instead of native browser popups.
+
 ## [Release 0.0.1]
 
 ### Added

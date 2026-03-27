@@ -139,29 +139,77 @@ const FieldEditor = memo(function FieldEditor({
               Date Constraints
             </label>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Minimum Date
-              </label>
+              <div className="flex justify-between items-center mb-1">
+                <label className="block text-xs font-medium text-gray-500">
+                  Minimum Date
+                </label>
+                {field.minDate && (
+                  <button
+                    type="button"
+                    onClick={() => onUpdate({ minDate: undefined })}
+                    className="text-xs text-red-500 hover:text-red-700 transition-colors bg-transparent border-none p-0 cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
               <input
-                type="date"
+                type={field.minDate ? "date" : "text"}
+                placeholder="dd/mm/yyyy"
                 value={field.minDate || ""}
                 onChange={(e) =>
                   onUpdate({ minDate: e.target.value || undefined })
                 }
-                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 focus:border-gray-300 outline-none transition-all text-sm"
+                onFocus={(e) => {
+                  e.target.type = "date";
+                  try { e.target.showPicker?.(); } catch { /* ignore */ }
+                }}
+                onBlur={(e) => {
+                  if (!e.target.value) e.target.type = "text";
+                }}
+                onClick={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  if (target.type === "text") target.type = "date";
+                  try { target.showPicker?.(); } catch { /* ignore */ }
+                }}
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 focus:border-gray-300 outline-none transition-all text-sm cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">
-                Maximum Date
-              </label>
+              <div className="flex justify-between items-center mb-1">
+                <label className="block text-xs font-medium text-gray-500">
+                  Maximum Date
+                </label>
+                {field.maxDate && (
+                  <button
+                    type="button"
+                    onClick={() => onUpdate({ maxDate: undefined })}
+                    className="text-xs text-red-500 hover:text-red-700 transition-colors bg-transparent border-none p-0 cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
               <input
-                type="date"
+                type={field.maxDate ? "date" : "text"}
+                placeholder="dd/mm/yyyy"
                 value={field.maxDate || ""}
                 onChange={(e) =>
                   onUpdate({ maxDate: e.target.value || undefined })
                 }
-                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 focus:border-gray-300 outline-none transition-all text-sm"
+                onFocus={(e) => {
+                  e.target.type = "date";
+                  try { e.target.showPicker?.(); } catch { /* ignore */ }
+                }}
+                onBlur={(e) => {
+                  if (!e.target.value) e.target.type = "text";
+                }}
+                onClick={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  if (target.type === "text") target.type = "date";
+                  try { target.showPicker?.(); } catch { /* ignore */ }
+                }}
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 focus:border-gray-300 outline-none transition-all text-sm cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               />
             </div>
           </div>
