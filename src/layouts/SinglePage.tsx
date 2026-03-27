@@ -4,6 +4,7 @@ import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
 import DatePicker from "../components/common/DatePicker";
+import TimePicker from "../components/common/TimePicker";
 import FileUpload from "../components/common/FileUpload";
 import Select from "../components/common/Select";
 import TextArea from "../components/common/TextArea";
@@ -371,6 +372,28 @@ function SinglePage({
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
               min={field.minDate}
               max={field.maxDate}
+            />
+          </div>
+        );
+      case "time":
+        return (
+          <div>
+            <label className="text-sm font-normal text-gray-700 mb-2 block">
+              {field.title}
+              {field.required && <span className="text-red-500 ml-1">*</span>}
+              {field.subtitle && (
+                <p className="text-base text-gray-500 mt-1 mb-2">
+                  {field.subtitle}
+                </p>
+              )}
+            </label>
+            <TimePicker
+              label=""
+              name={field.id}
+              value={(formData[field.id] as string) || ""}
+              onChange={(e) => handleFieldChange(field.id, e.target.value)}
+              min={field.minTime}
+              max={field.maxTime}
             />
           </div>
         );

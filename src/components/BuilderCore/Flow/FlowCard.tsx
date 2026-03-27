@@ -8,6 +8,7 @@ import { memo } from "react";
 import RadioButton from "../../common/RadioButton";
 import Checkbox from "../../common/Checkbox";
 import DatePicker from "../../common/DatePicker";
+import TimePicker from "../../common/TimePicker";
 import FileUpload from "../../common/FileUpload";
 
 interface FlowCardProps {
@@ -108,6 +109,17 @@ const FlowCard = memo(function FlowCard({
               label=""
               min={field.minDate}
               max={field.maxDate}
+              disabled={true}
+            />
+          </div>
+        );
+      case "time":
+        return (
+          <div className="w-full max-w-md">
+            <TimePicker
+              label=""
+              min={field.minTime}
+              max={field.maxTime}
               disabled={true}
             />
           </div>

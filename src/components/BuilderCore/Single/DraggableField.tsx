@@ -8,6 +8,7 @@ import Select from "../../common/Select";
 import RadioButton from "../../common/RadioButton";
 import Checkbox from "../../common/Checkbox";
 import DatePicker from "../../common/DatePicker";
+import TimePicker from "../../common/TimePicker";
 import FileUpload from "../../common/FileUpload";
 
 interface DraggableFieldProps {
@@ -103,6 +104,16 @@ const DraggableField = memo(function DraggableField({
             label={field.title}
             min={field.minDate}
             max={field.maxDate}
+            subtitle={field.subtitle}
+            disabled={true}
+          />
+        );
+      case "time":
+        return (
+          <TimePicker
+            label={field.title}
+            min={field.minTime}
+            max={field.maxTime}
             subtitle={field.subtitle}
             disabled={true}
           />
