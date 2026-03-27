@@ -7,7 +7,7 @@ A powerful, modern form builder that combines the best of Google Forms, Zoho For
 - **Dual-Mode Builder**: Create forms in either "Single Page" or "Flow" (Typeform-style) layouts.
 - **Customizable Success Screen**: Personalize the "Thank You" experience with custom titles, descriptions, and emojis.
 - **Google Sheets Integration**: Automatically sync form responses to a linked Google Spreadsheet.
-- **Rich Field Types**: Support for Text, TextArea, Radio, Checkbox, Select, Date, and File Upload.
+- **Rich Field Types**: Support for Text, TextArea, Radio, Checkbox, Select, Date, Time, and File Upload.
 - **Advanced Validation**: Real-time validation for required fields, character limits, and file types.
 - **Locale-Aware Formatting**: Intelligent date and time formatting across all management pages.
 - **Data Export**: Export responses to CSV for easy analysis.

@@ -92,6 +92,14 @@ export const FIELD_TEMPLATES: FieldTemplate[] = [
     },
   },
   {
+    type: "time",
+    label: "Time",
+    icon: <Icons.Clock />,
+    defaultConfig: {
+      title: "Time",
+    },
+  },
+  {
     type: "file",
     label: "File Upload",
     icon: <Icons.Upload />,

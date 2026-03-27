@@ -74,6 +74,81 @@ export function BasicFieldSettings({
         </div>
       )}
 
+      {field.type === "time" && (
+        <div className="flex gap-3">
+          <div className="flex-1">
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-sm font-medium text-gray-700">
+                Min Time
+              </label>
+              {field.minTime && (
+                <button
+                  type="button"
+                  onClick={() => onUpdate({ minTime: undefined })}
+                  className="text-xs text-red-500 hover:text-red-700 transition-colors bg-transparent border-none p-0 cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <input
+              type={field.minTime ? "time" : "text"}
+              placeholder="hh : mm a"
+              value={field.minTime || ""}
+              onChange={(e) => onUpdate({ minTime: e.target.value })}
+              onFocus={(e) => {
+                e.target.type = "time";
+                try { e.target.showPicker?.(); } catch { /* ignore */ }
+              }}
+              onBlur={(e) => {
+                if (!e.target.value) e.target.type = "text";
+              }}
+              onClick={(e) => {
+                const target = e.target as HTMLInputElement;
+                if (target.type === "text") target.type = "time";
+                try { target.showPicker?.(); } catch { /* ignore */ }
+              }}
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 transition-all cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+            />
+          </div>
+          <div className="flex-1">
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-sm font-medium text-gray-700">
+                Max Time
+              </label>
+              {field.maxTime && (
+                <button
+                  type="button"
+                  onClick={() => onUpdate({ maxTime: undefined })}
+                  className="text-xs text-red-500 hover:text-red-700 transition-colors bg-transparent border-none p-0 cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <input
+              type={field.maxTime ? "time" : "text"}
+              placeholder="hh : mm a"
+              value={field.maxTime || ""}
+              onChange={(e) => onUpdate({ maxTime: e.target.value })}
+              onFocus={(e) => {
+                e.target.type = "time";
+                try { e.target.showPicker?.(); } catch { /* ignore */ }
+              }}
+              onBlur={(e) => {
+                if (!e.target.value) e.target.type = "text";
+              }}
+              onClick={(e) => {
+                const target = e.target as HTMLInputElement;
+                if (target.type === "text") target.type = "time";
+                try { target.showPicker?.(); } catch { /* ignore */ }
+              }}
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 transition-all cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
         <input
           type="checkbox"

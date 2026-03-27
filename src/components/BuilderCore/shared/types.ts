@@ -13,7 +13,8 @@ export type FieldType =
   | "select"
   | "date"
   | "file"
-  | "page_break";
+  | "page_break"
+  | "time";
 
 export interface FieldOption {
   label: string;
@@ -45,6 +46,8 @@ export interface FormFieldConfig {
   multiSelect?: boolean;
   minDate?: string;
   maxDate?: string;
+  minTime?: string;
+  maxTime?: string;
   logic?: FieldLogic;
 }
 

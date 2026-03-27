@@ -12,6 +12,7 @@ import Checkbox from "../components/common/Checkbox";
 import RadioButton from "../components/common/RadioButton";
 import Button from "../components/common/Button";
 import DatePicker from "../components/common/DatePicker";
+import TimePicker from "../components/common/TimePicker";
 import FileUpload from "../components/common/FileUpload";
 import Select from "../components/common/Select";
 import TextArea from "../components/common/TextArea";
@@ -436,6 +437,20 @@ function FlowPage({
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
               min={field.minDate}
               max={field.maxDate}
+              subtitle={field.subtitle}
+            />
+          </div>
+        );
+      case "time":
+        return (
+          <div className="w-full max-w-lg">
+            <TimePicker
+              label=""
+              name={field.id}
+              value={(formData[field.id] as string) || ""}
+              onChange={(e) => handleFieldChange(field.id, e.target.value)}
+              min={field.minTime}
+              max={field.maxTime}
               subtitle={field.subtitle}
             />
           </div>
