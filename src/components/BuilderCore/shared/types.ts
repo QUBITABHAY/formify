@@ -43,7 +43,7 @@ export interface FormFieldConfig {
   placeholder?: string;
   maxLength?: number;
   options?: FieldOption[];
-  defaultValue?: string | boolean | string[];
+  defaultValue?: string | boolean | number | string[];
   name?: string;
   required?: boolean;
   multiSelect?: boolean;

@@ -88,6 +88,7 @@ interface FormField {
     | "select"
     | "date"
     | "time"
+    | "rating"
     | "file";
   title: string;
   subtitle?: string;
@@ -97,8 +98,10 @@ interface FormField {
   maxDate?: string;
   minTime?: string;
   maxTime?: string;
+  maxRating?: number;
+  ratingSymbol?: "star" | "heart" | "smile" | "thumb";
   options?: { label: string; value: string }[];
-  defaultValue?: string | boolean;
+  defaultValue?: string | boolean | number;
   /* Flow-only: Conditional branching */
   logic?: {
     rules: {
