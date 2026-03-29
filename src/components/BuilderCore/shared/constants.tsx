@@ -115,4 +115,13 @@ export const FIELD_TEMPLATES: FieldTemplate[] = [
       title: "New Page",
     },
   },
+  {
+    type: "rating",
+    label: "Rating",
+    icon: <Icons.Star />,
+    defaultConfig: {
+      title: "Rate your experience",
+      maxRating: 5,
+    },
+  },
 ];

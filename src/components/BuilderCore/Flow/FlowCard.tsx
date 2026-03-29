@@ -10,6 +10,7 @@ import Checkbox from "../../common/Checkbox";
 import DatePicker from "../../common/DatePicker";
 import TimePicker from "../../common/TimePicker";
 import FileUpload from "../../common/FileUpload";
+import Rating from "../../common/Rating";
 
 interface FlowCardProps {
   field: FormFieldConfig;
@@ -128,6 +129,17 @@ const FlowCard = memo(function FlowCard({
         return (
           <div className="w-full max-w-md">
             <FileUpload label="" disabled={true} />
+          </div>
+        );
+      case "rating":
+        return (
+          <div className="w-full max-w-md">
+            <Rating
+              label=""
+              maxRating={field.maxRating}
+              ratingSymbol={field.ratingSymbol}
+              disabled={true}
+            />
           </div>
         );
       default:

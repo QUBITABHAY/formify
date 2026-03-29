@@ -14,7 +14,10 @@ export type FieldType =
   | "date"
   | "file"
   | "page_break"
-  | "time";
+  | "time"
+  | "rating";
+
+export type RatingSymbol = "star" | "heart" | "smile" | "thumb";
 
 export interface FieldOption {
   label: string;
@@ -48,6 +51,8 @@ export interface FormFieldConfig {
   maxDate?: string;
   minTime?: string;
   maxTime?: string;
+  maxRating?: number;
+  ratingSymbol?: RatingSymbol;
   logic?: FieldLogic;
 }
 

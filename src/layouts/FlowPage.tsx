@@ -16,6 +16,7 @@ import TimePicker from "../components/common/TimePicker";
 import FileUpload from "../components/common/FileUpload";
 import Select from "../components/common/Select";
 import TextArea from "../components/common/TextArea";
+import Rating from "../components/common/Rating";
 import type {
   FormFieldConfig as FormField,
   ConditionalRule,
@@ -483,6 +484,18 @@ function FlowPage({
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
               subtitle={field.subtitle}
               placeholder={field.placeholder || "Select an option"}
+            />
+          </div>
+        );
+      case "rating":
+        return (
+          <div className="w-full max-w-lg">
+            <Rating
+              label=""
+              maxRating={field.maxRating}
+              ratingSymbol={field.ratingSymbol}
+              value={(formData[field.id] as number) || 0}
+              onChange={(val: number) => handleFieldChange(field.id, val)}
             />
           </div>
         );

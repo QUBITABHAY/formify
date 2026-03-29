@@ -10,6 +10,7 @@ import Checkbox from "../../common/Checkbox";
 import DatePicker from "../../common/DatePicker";
 import TimePicker from "../../common/TimePicker";
 import FileUpload from "../../common/FileUpload";
+import Rating from "../../common/Rating";
 
 interface DraggableFieldProps {
   field: FormFieldConfig;
@@ -123,6 +124,16 @@ const DraggableField = memo(function DraggableField({
           <FileUpload
             label={field.title}
             subtitle={field.subtitle}
+            disabled={true}
+          />
+        );
+      case "rating":
+        return (
+          <Rating
+            label={field.title}
+            subtitle={field.subtitle}
+            maxRating={field.maxRating}
+            ratingSymbol={field.ratingSymbol}
             disabled={true}
           />
         );

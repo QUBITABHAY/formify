@@ -71,12 +71,8 @@ export function useFormBuilder({
         id: generateId(),
         type: template.type,
         title: template.defaultConfig.title || "Untitled Field",
-        subtitle: template.defaultConfig.subtitle,
-        placeholder: template.defaultConfig.placeholder,
-        maxLength: template.defaultConfig.maxLength,
-        options: template.defaultConfig.options,
-        defaultValue: template.defaultConfig.defaultValue,
         required: false,
+        ...template.defaultConfig,
       };
       setFields((prev) => [...prev, newField]);
       setSelectedFieldId(newField.id);
