@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - **Rating Field**: Introduced a new "Rating" field type with support for multiple symbols (Stars, Hearts, Smiles, Thumbs Up) and customizable maximum ratings (up to 10).
+- **Rating Configuration**: Updated the builder's rating settings to use a dropdown selection (3-10) instead of a manual number field for better user experience.
 - **Enhanced Icons**: Added `Star`, `Heart`, `Smile`, and `Thumb` SVG icons to the common icon collection.
 - **Symbol Selection**: Integrated a symbol selector in the Builder settings sidebar for personalized feedback experiences.
 

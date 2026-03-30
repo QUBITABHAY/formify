@@ -108,7 +108,7 @@ A feedback component supporting multiple symbols and customizable maximum rating
 
 - `label`: string (optional)
 - `subtitle`: string (optional)
-- `maxRating`: number (optional) — Total number of symbols (default: `5`)
+- `maxRating`: number (optional) — Total number of symbols, generally between 3 and 10 in the builder (default: `5`)
 - `ratingSymbol`: `'star' | 'heart' | 'smile' | 'thumb'` (optional) — Symbol type (default: `'star'`)
 - `value`: number (optional) — Current rating value (1 to `maxRating`)
 - `onChange`: (value: number) => void (optional) — Rating change handler

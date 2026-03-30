@@ -223,18 +223,21 @@ const FieldEditor = memo(function FieldEditor({
             </label>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">
-                Maximum Stars (1-10)
+                Maximum Rating (3-10)
               </label>
-              <input
-                type="number"
-                min={1}
-                max={10}
+              <select
                 value={field.maxRating || 5}
                 onChange={(e) =>
                   onUpdate({ maxRating: parseInt(e.target.value) || 5 })
                 }
-                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 outline-none transition-all text-sm"
-              />
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 outline-none transition-all text-sm bg-white"
+              >
+                {[3, 4, 5, 6, 7, 8, 9, 10].map((num: number) => (
+                  <option key={num} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1">
