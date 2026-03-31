@@ -102,6 +102,18 @@ An interactive time selection component using transparent CSS overlays and DOM m
 - `required`: boolean (optional)
 - `subtitle`: string (optional)
 
+## Rating
+
+A feedback component supporting multiple symbols and customizable maximum ratings.
+
+- `label`: string (optional)
+- `subtitle`: string (optional)
+- `maxRating`: number (optional) — Total number of symbols, generally between 3 and 10 in the builder (default: `5`)
+- `ratingSymbol`: `'star' | 'heart' | 'smile' | 'thumb'` (optional) — Symbol type (default: `'star'`)
+- `value`: number (optional) — Current rating value (1 to `maxRating`)
+- `onChange`: (value: number) => void (optional) — Rating change handler
+- `disabled`: boolean (optional)
+
 ## Icons
 
 A collection of SVG icons exported as the `Icons` object.
@@ -121,6 +133,10 @@ A collection of SVG icons exported as the `Icons` object.
   - `Icons.Logic`
   - `Icons.Calendar`
   - `Icons.Clock`
+  - `Icons.Star`
+  - `Icons.Heart`
+  - `Icons.Smile`
+  - `Icons.Thumb`
 
 ---
 
@@ -169,7 +185,7 @@ Modal component for previewing forms using `FlowPage` or `SinglePage` layouts.
 Core type definitions:
 
 - `FormMode` — `"single" | "flow"`
-- `FieldType` — `"text" | "number" | "email" | "tel" | "radio" | "checkbox" | "textarea" | "select" | "date" | "time" | "file"`
+- `FieldType` — `"text" | "number" | "email" | "tel" | "radio" | "checkbox" | "textarea" | "select" | "date" | "time" | "rating" | "file"`
 - `FormFieldConfig` — Field configuration interface (now includes optional `logic`)
 - `ConditionalRule` — Logic rule definition (`operator`, `value`, `targetFieldId`)
 - `FieldLogic` — Container for field rules

@@ -4,6 +4,7 @@ import type {
   WelcomeScreenConfig,
   ThankYouScreenConfig,
   FormMode,
+  RatingSymbol,
 } from "./types";
 import { ScreenEditor } from "./EditorSections/ScreenEditor";
 import { HeaderSettings } from "./EditorSections/HeaderSettings";
@@ -211,6 +212,49 @@ const FieldEditor = memo(function FieldEditor({
                 }}
                 className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 focus:border-gray-300 outline-none transition-all text-sm cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               />
+            </div>
+          </div>
+        )}
+
+        {field.type === "rating" && (
+          <div className="pt-4 border-t border-gray-100 space-y-4">
+             <label className="block text-sm font-medium text-gray-700">
+              Rating Configuration
+            </label>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">
+                Maximum Rating (3-10)
+              </label>
+              <select
+                value={field.maxRating || 5}
+                onChange={(e) =>
+                  onUpdate({ maxRating: parseInt(e.target.value) || 5 })
+                }
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 outline-none transition-all text-sm bg-white"
+              >
+                {[3, 4, 5, 6, 7, 8, 9, 10].map((num: number) => (
+                  <option key={num} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">
+                Rating Symbol
+              </label>
+              <select
+                value={field.ratingSymbol || "star"}
+                onChange={(e) =>
+                  onUpdate({ ratingSymbol: e.target.value as RatingSymbol })
+                }
+                className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 outline-none transition-all text-sm bg-white"
+              >
+                <option value="star">Stars</option>
+                <option value="heart">Hearts</option>
+                <option value="smile">Smiles</option>
+                <option value="thumb">Thumbs Up</option>
+              </select>
             </div>
           </div>
         )}

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Release 0.0.3]
+
+### Added
+
+- **Rating Field**: Introduced a new "Rating" field type with support for multiple symbols (Stars, Hearts, Smiles, Thumbs Up) and customizable maximum ratings (up to 10).
+- **Rating Configuration**: Updated the builder's rating settings to use a dropdown selection (3-10) instead of a manual number field for better user experience.
+- **Enhanced Icons**: Added `Star`, `Heart`, `Smile`, and `Thumb` SVG icons to the common icon collection.
+- **Symbol Selection**: Integrated a symbol selector in the Builder settings sidebar for personalized feedback experiences.
+
+### Fixed
+
+- **Builder Stability**: Improved field creation logic in `useFormBuilder` to automatically spread all default configurations when dragging new fields.
+- **Title Synchronization**: Fixed a rendering bug in the single page builder where the form title edited in the sidebar was not live-syncing to the central canvas layout.
+
 ## [Release 0.0.2]
 
 ### Added

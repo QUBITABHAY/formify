@@ -220,6 +220,7 @@ export default function SinglePageFormBuilder({
             selectedFieldId={selectedFieldId}
             onSelectField={setSelectedFieldId}
             onDeleteField={handleDeleteField}
+            formTitle={formTitle}
             formDescription={formDescription}
             formBanner={formBanner}
             thankYouScreen={thankYouScreen}

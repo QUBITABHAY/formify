@@ -42,7 +42,9 @@ export default function PreviewModal({
       | "radio"
       | "checkbox"
       | "date"
-      | "file",
+      | "file"
+      | "time"
+      | "rating",
     title: field.title,
     subtitle: field.subtitle,
     placeholder: field.placeholder,
@@ -54,6 +56,10 @@ export default function PreviewModal({
     multiSelect: field.multiSelect,
     minDate: field.minDate,
     maxDate: field.maxDate,
+    minTime: field.minTime,
+    maxTime: field.maxTime,
+    maxRating: field.maxRating,
+    ratingSymbol: field.ratingSymbol,
     logic: field.logic,
   }));
 

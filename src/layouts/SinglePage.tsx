@@ -8,6 +8,7 @@ import TimePicker from "../components/common/TimePicker";
 import FileUpload from "../components/common/FileUpload";
 import Select from "../components/common/Select";
 import TextArea from "../components/common/TextArea";
+import Rating from "../components/common/Rating";
 import type {
   FormFieldConfig as FormField,
   ThankYouScreenConfig,
@@ -432,6 +433,17 @@ function SinglePage({
             onChange={(e) => handleFieldChange(field.id, e.target.value)}
             subtitle={field.subtitle}
             placeholder={field.placeholder || "Select an option"}
+          />
+        );
+      case "rating":
+        return (
+          <Rating
+            label={field.title}
+            subtitle={field.subtitle}
+            maxRating={field.maxRating}
+            ratingSymbol={field.ratingSymbol}
+            value={(formData[field.id] as number) || 0}
+            onChange={(val: number) => handleFieldChange(field.id, val)}
           />
         );
       default:
