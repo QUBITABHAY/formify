@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [Release 0.0.3]
 
 ### Added
 
@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - **Builder Stability**: Improved field creation logic in `useFormBuilder` to automatically spread all default configurations when dragging new fields.
+- **Title Synchronization**: Fixed a rendering bug in the single page builder where the form title edited in the sidebar was not live-syncing to the central canvas layout.
 
 ## [Release 0.0.2]
 
