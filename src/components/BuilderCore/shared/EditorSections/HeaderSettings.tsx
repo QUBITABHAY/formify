@@ -5,11 +5,15 @@ interface HeaderSettingsProps {
     description?: string;
     banner?: string;
   }) => void;
+  isQuiz?: boolean;
+  onToggleQuiz?: (value: boolean) => void;
 }
 
 export function HeaderSettings({
   formMetadata,
   onUpdateMetadata,
+  isQuiz = false,
+  onToggleQuiz,
 }: HeaderSettingsProps) {
   return (
     <div className="p-4 space-y-5">
@@ -47,6 +51,45 @@ export function HeaderSettings({
           placeholder="https://example.com/image.jpg"
         />
       </div>
+
+      {onToggleQuiz && (
+        <div className="pt-4 border-t border-gray-100">
+          <button
+            type="button"
+            onClick={() => onToggleQuiz(!isQuiz)}
+            className={`w-full flex items-start gap-3 p-3 rounded-lg border-2 transition-all text-left ${
+              isQuiz
+                ? "border-gray-900 bg-gray-50"
+                : "border-gray-200 bg-white hover:border-gray-300"
+            }`}
+          >
+            <div className="mt-0.5 shrink-0">
+              <div
+                className={`w-10 h-6 rounded-full transition-colors relative ${
+                  isQuiz ? "bg-gray-900" : "bg-gray-300"
+                }`}
+              >
+                <div
+                  className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+                    isQuiz ? "translate-x-5" : "translate-x-1"
+                  }`}
+                />
+              </div>
+            </div>
+            <div>
+              <p
+                className={`text-sm font-semibold ${isQuiz ? "text-gray-900" : "text-gray-700"}`}
+              >
+                Quiz Mode
+              </p>
+              <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                Assign correct answers & point values to questions. Respondents
+                see their score on submit.
+              </p>
+            </div>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

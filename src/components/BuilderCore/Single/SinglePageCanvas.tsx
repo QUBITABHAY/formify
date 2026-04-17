@@ -17,6 +17,7 @@ interface SinglePageCanvasProps {
   thankYouScreen: ThankYouScreenConfig;
   onSelectHeader?: () => void;
   onSelectThankYou: () => void;
+  isQuiz?: boolean;
 }
 
 export default function SinglePageCanvas({
@@ -30,6 +31,7 @@ export default function SinglePageCanvas({
   thankYouScreen,
   onSelectHeader,
   onSelectThankYou,
+  isQuiz = false,
 }: SinglePageCanvasProps) {
   const { setNodeRef } = useDroppable({
     id: "form-canvas",
@@ -97,6 +99,7 @@ export default function SinglePageCanvas({
                   isSelected={selectedFieldId === field.id}
                   onClick={() => onSelectField(field.id)}
                   onDelete={() => onDeleteField(field.id)}
+                  isQuiz={isQuiz}
                 />
               ))
             )}

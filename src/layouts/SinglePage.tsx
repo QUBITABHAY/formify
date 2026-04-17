@@ -12,9 +12,11 @@ import Rating from "../components/common/Rating";
 import type {
   FormFieldConfig as FormField,
   ThankYouScreenConfig,
+  QuizResult,
 } from "../components/BuilderCore/shared/types";
 import { uploadFile } from "../services/api";
 import { validateField } from "../utils/validation";
+import { isAnswerCorrect } from "../components/BuilderCore/shared/quizUtils";
 
 const normalizeFieldType = (type: unknown): string => {
   if (typeof type !== "string") return "text";
@@ -39,6 +41,7 @@ interface SinglePageProps {
   fields?: FormField[];
   thankYouScreen?: ThankYouScreenConfig;
   onSubmit?: (data: Record<string, unknown>) => void;
+  isQuiz?: boolean;
 }
 
 const defaultFields: FormField[] = [
@@ -102,6 +105,7 @@ function SinglePage({
   },
   onSubmit,
   formId,
+  isQuiz = false,
 }: SinglePageProps) {
   const [formData, setFormData] = useState<Record<string, unknown>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -111,6 +115,7 @@ function SinglePage({
     new Set(),
   );
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
 
   const pages = useMemo(() => {
     const p: FormField[][] = [[]];
@@ -137,7 +142,13 @@ function SinglePage({
   useEffect(() => {
     const initialData: Record<string, unknown> = {};
     fields.forEach((field) => {
-      initialData[field.id] = field.defaultValue || "";
+      if (field.type === "radio" && field.multiSelect) {
+        initialData[field.id] = Array.isArray(field.defaultValue)
+          ? field.defaultValue
+          : [];
+      } else {
+        initialData[field.id] = field.defaultValue || "";
+      }
     });
     setFormData(initialData);
   }, [fields]);
@@ -215,7 +226,11 @@ function SinglePage({
     const newData = { ...formData };
     const newErrors = { ...errors };
     currentFields.forEach((field) => {
-      newData[field.id] = field.defaultValue || "";
+      if (field.type === "radio" && field.multiSelect) {
+        newData[field.id] = [];
+      } else {
+        newData[field.id] = field.defaultValue || "";
+      }
       delete newErrors[field.id];
     });
     setFormData(newData);
@@ -241,6 +256,37 @@ function SinglePage({
     if (validatePageFields(currentFields)) {
       try {
         await onSubmit?.(formData);
+
+        // Compute quiz score if quiz mode is enabled
+        if (isQuiz) {
+          const scorableFields = fields.filter(
+            (f) => f.correctAnswer !== undefined && f.points !== undefined,
+          );
+          let totalScore = 0;
+          let maxScore = 0;
+          const fieldResults = scorableFields.map((f) => {
+            const pts = f.points ?? 1;
+            maxScore += pts;
+            const userAnswer = formData[f.id] as string | string[] | undefined;
+            const isCorrect = isAnswerCorrect(
+              userAnswer,
+              f.correctAnswer as string | string[] | undefined,
+            );
+            const earned = isCorrect ? pts : 0;
+            totalScore += earned;
+            return {
+              fieldId: f.id,
+              title: f.title,
+              correct: isCorrect,
+              earnedPoints: earned,
+              maxPoints: pts,
+              userAnswer,
+              correctAnswer: f.correctAnswer,
+            };
+          });
+          setQuizResult({ score: totalScore, maxScore, fieldResults });
+        }
+
         setIsSubmitted(true);
       } catch {
         setSubmitError("Form submission failed. Please try again.");
@@ -252,6 +298,8 @@ function SinglePage({
     currentFields,
     onSubmit,
     formData,
+    isQuiz,
+    fields,
   ]);
 
   const renderField = (field: FormField) => {
@@ -452,6 +500,168 @@ function SinglePage({
   };
 
   if (isSubmitted) {
+    if (isQuiz && quizResult) {
+      const percentage =
+        quizResult.maxScore > 0
+          ? Math.round((quizResult.score / quizResult.maxScore) * 100)
+          : 0;
+      const passed = percentage >= 50;
+      return (
+        <div className="flex flex-col min-h-screen bg-gray-50 py-10 px-4 md:px-6">
+          <div className="w-full max-w-3xl mx-auto space-y-4">
+            <div className="bg-white shadow-xl rounded-lg overflow-hidden border border-gray-100">
+              <div className="h-2 bg-gray-900" />
+              <div className="p-8 text-center">
+                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-5">
+                  <span className="text-4xl">{passed ? "🎉" : "💪"}</span>
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                  {thankYouScreen?.title ??
+                    (passed ? "Great job!" : "Keep practicing!")}
+                </h1>
+                <p className="text-gray-500 mb-6">
+                  {thankYouScreen?.description ??
+                    (passed
+                      ? "You've successfully completed the quiz."
+                      : "Review your answers below to learn more.")}
+                </p>
+
+                <div className="flex items-center justify-center gap-6 mb-6">
+                  <div className="text-center">
+                    <p className="text-5xl font-black text-gray-900">
+                      {percentage}%
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {quizResult.score} / {quizResult.maxScore} points
+                    </p>
+                  </div>
+                </div>
+
+                <div className="w-full max-w-xs mx-auto h-2 bg-gray-100 rounded-full overflow-hidden mb-2">
+                  <div
+                    className="h-full bg-gray-900 rounded-full transition-all duration-700"
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {quizResult.fieldResults.length > 0 && (
+              <div className="bg-white shadow-sm rounded-lg border border-gray-100 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <h2 className="text-base font-semibold text-gray-800">
+                    Question Breakdown
+                  </h2>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  {quizResult.fieldResults.map((r) => {
+                    const qField = fields.find((f) => f.id === r.fieldId);
+                    const getLabel = (val: string | string[] | undefined) => {
+                      if (
+                        val === undefined ||
+                        val === null ||
+                        val === "" ||
+                        (Array.isArray(val) && val.length === 0)
+                      )
+                        return "-";
+                      if (!qField?.options) return String(val);
+
+                      const values = Array.isArray(val) ? val : [String(val)];
+                      const labels = values.map(
+                        (v) =>
+                          qField.options?.find((o) => o.value === v)?.label ??
+                          v,
+                      );
+                      return labels.join(", ");
+                    };
+                    return (
+                      <div
+                        key={r.fieldId}
+                        className="px-6 py-4 flex items-start gap-4"
+                      >
+                        <div
+                          className={`mt-0.5 w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+                            r.correct ? "bg-green-100" : "bg-red-100"
+                          }`}
+                        >
+                          {r.correct ? (
+                            <svg
+                              className="w-4 h-4 text-green-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2.5}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className="w-4 h-4 text-red-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2.5}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-800 mb-1">
+                            {r.title}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Your answer:{" "}
+                            <span
+                              className={
+                                r.correct
+                                  ? "text-green-700 font-medium"
+                                  : "text-red-600 font-medium"
+                              }
+                            >
+                              {getLabel(r.userAnswer)}
+                            </span>
+                          </p>
+                          {!r.correct && (
+                            <p className="text-xs text-gray-500">
+                              Correct answer:{" "}
+                              <span className="text-green-700 font-medium">
+                                {getLabel(r.correctAnswer)}
+                              </span>
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <span
+                            className={`text-sm font-semibold ${
+                              r.correct ? "text-gray-900" : "text-gray-400"
+                            }`}
+                          >
+                            {r.earnedPoints}/{r.maxPoints}
+                          </span>
+                          <p className="text-xs text-gray-400">pts</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-col min-h-screen bg-gray-50 py-10 px-4 md:px-6">
         <div className="w-full max-w-3xl mx-auto">

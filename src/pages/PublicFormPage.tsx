@@ -12,7 +12,6 @@ export default function PublicFormPage() {
   const [form, setForm] = useState<FormResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -78,7 +77,6 @@ export default function PublicFormPage() {
 
       try {
         await submitResponse(form.id, structuredAnswers as Record<string, string | string[]>, {});
-        setSubmitted(true);
       } catch (err) {
         setAlertMessage("Failed to submit form. Please try again.");
         throw err;
@@ -176,31 +174,16 @@ export default function PublicFormPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      {submitted ? (
-        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">
-              {(schema.thankYouScreen as ThankYouScreenConfig | undefined)?.emoji || "🎉"}
-            </span>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {(schema.thankYouScreen as ThankYouScreenConfig | undefined)?.title || "Thank You!"}
-          </h2>
-          <p className="text-gray-600 whitespace-pre-line">
-            {(schema.thankYouScreen as ThankYouScreenConfig | undefined)?.description || "Your submission has been received successfully."}
-          </p>
-        </div>
-      ) : (
-        <SinglePage
-          formTitle={form.name}
-          formDescription={form.description}
-          formBanner={schema.formBanner as string | undefined}
-          fields={fields}
-          thankYouScreen={schema.thankYouScreen as ThankYouScreenConfig | undefined}
-          onSubmit={handleSubmit}
-          formId={form.id}
-        />
-      )}
+      <SinglePage
+        formTitle={form.name}
+        formDescription={form.description}
+        formBanner={schema.formBanner as string | undefined}
+        fields={fields}
+        thankYouScreen={schema.thankYouScreen as ThankYouScreenConfig | undefined}
+        onSubmit={handleSubmit}
+        formId={form.id}
+        isQuiz={(schema.isQuiz as boolean | undefined) ?? false}
+      />
       <Modal
         isOpen={alertMessage !== null}
         onClose={() => setAlertMessage(null)}

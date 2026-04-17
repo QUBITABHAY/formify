@@ -6,6 +6,7 @@ interface ScreenEditorProps {
   onUpdateWelcome: (updates: Partial<WelcomeScreenConfig>) => void;
   thankYouScreen: ThankYouScreenConfig;
   onUpdateThankYou: (updates: Partial<ThankYouScreenConfig>) => void;
+  isQuiz?: boolean;
 }
 
 export function ScreenEditor({
@@ -14,6 +15,7 @@ export function ScreenEditor({
   onUpdateWelcome,
   thankYouScreen,
   onUpdateThankYou,
+  isQuiz = false,
 }: ScreenEditorProps) {
   if (selectedScreen === "WELCOME") {
     return (
@@ -59,7 +61,7 @@ export function ScreenEditor({
     <div className="p-4 space-y-5">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Title
+          {isQuiz ? "Result Title" : "Title"}
         </label>
         <input
           type="text"
@@ -70,7 +72,7 @@ export function ScreenEditor({
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Description
+          {isQuiz ? "Result Description" : "Description"}
         </label>
         <textarea
           rows={3}

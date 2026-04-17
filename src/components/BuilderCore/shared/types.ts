@@ -54,6 +54,25 @@ export interface FormFieldConfig {
   maxRating?: number;
   ratingSymbol?: RatingSymbol;
   logic?: FieldLogic;
+
+  correctAnswer?: string | string[];
+  points?: number;
+}
+
+export interface QuizFieldResult {
+  fieldId: string;
+  title: string;
+  correct: boolean;
+  earnedPoints: number;
+  maxPoints: number;
+  userAnswer: string | string[] | undefined;
+  correctAnswer: string | string[] | undefined;
+}
+
+export interface QuizResult {
+  score: number;
+  maxScore: number;
+  fieldResults: QuizFieldResult[];
 }
 
 export interface FieldTemplate {

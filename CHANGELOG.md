@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Release 0.1.0]
+
+### Added
+
+- **Auto-save Navigation**: Implemented automatic form saving and validation when clicking the Back button in the builder to prevent accidental data loss.
+- **Quiz Engine**: Introduced a comprehensive Quiz Mode allowing creators to score forms, assign point values (0-100), and mark specific fields (Radio, Select) as correct/incorrect.
+- **Score Results Screen**: Added a dynamic thank-you screen for quizzes that breaks down attempts with a total score, passing percentage, and visual indications of correct vs. incorrect answers.
+- **Grade Analytics**: Enhanced the Form Responses table to automatically calculate, compute, and display respondent scores on their submissions.
+
 ## [Release 0.0.3]
 
 ### Added

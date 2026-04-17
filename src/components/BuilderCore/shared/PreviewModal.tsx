@@ -17,6 +17,7 @@ interface PreviewModalProps {
   formTitle: string;
   formDescription: string;
   formBanner?: string;
+  isQuiz?: boolean;
 }
 
 export default function PreviewModal({
@@ -29,6 +30,7 @@ export default function PreviewModal({
   formTitle,
   formDescription,
   formBanner,
+  isQuiz = false,
 }: PreviewModalProps) {
   if (!isOpen) return null;
 
@@ -61,6 +63,8 @@ export default function PreviewModal({
     maxRating: field.maxRating,
     ratingSymbol: field.ratingSymbol,
     logic: field.logic,
+    correctAnswer: field.correctAnswer,
+    points: field.points,
   }));
 
   return (
@@ -111,6 +115,8 @@ export default function PreviewModal({
                 formBanner={formBanner}
                 fields={layoutFields}
                 onSubmit={() => {}}
+                thankYouScreen={thankYouScreen}
+                isQuiz={isQuiz}
               />
             </div>
           )}
