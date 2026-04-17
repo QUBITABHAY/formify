@@ -24,6 +24,7 @@ interface SinglePageFormBuilderProps {
   initialThankYou?: ThankYouScreenConfig;
   initialIsPublished?: boolean;
   initialShareUrl?: string | null;
+  initialIsQuiz?: boolean;
 }
 
 export default function SinglePageFormBuilder({
@@ -40,11 +41,13 @@ export default function SinglePageFormBuilder({
   },
   initialIsPublished = false,
   initialShareUrl,
+  initialIsQuiz = false,
 }: SinglePageFormBuilderProps) {
   const navigate = useNavigate();
   const [formTitle, setFormTitle] = useState(initialTitle);
   const [formDescription, setFormDescription] = useState(initialDescription);
   const [formBanner, setFormBanner] = useState(initialBanner);
+  const [isQuiz, setIsQuiz] = useState(initialIsQuiz);
   const [thankYouScreen, setThankYouScreen] =
     useState<ThankYouScreenConfig>(initialThankYou);
 
@@ -58,6 +61,7 @@ export default function SinglePageFormBuilder({
         formDescription,
         formBanner,
         thankYouScreen,
+        isQuiz,
       };
       await updateForm(formId, {
         name: formTitle,
@@ -66,7 +70,7 @@ export default function SinglePageFormBuilder({
       });
       return true;
     },
-    [formId, formTitle, formDescription, formBanner, thankYouScreen],
+    [formId, formTitle, formDescription, formBanner, thankYouScreen, isQuiz],
   );
 
   const {
@@ -226,6 +230,7 @@ export default function SinglePageFormBuilder({
             thankYouScreen={thankYouScreen}
             onSelectHeader={() => setSelectedFieldId("HEADER")}
             onSelectThankYou={() => setSelectedFieldId("THANKYOU")}
+            isQuiz={isQuiz}
           />
 
           <DragOverlay>
@@ -255,6 +260,8 @@ export default function SinglePageFormBuilder({
           thankYouScreen={thankYouScreen}
           onUpdateWelcome={() => {}}
           onUpdateThankYou={handleUpdateThankYou}
+          isQuiz={isQuiz}
+          onToggleQuiz={setIsQuiz}
         />
       </div>
 
@@ -268,6 +275,7 @@ export default function SinglePageFormBuilder({
         formBanner={formBanner}
         welcomeScreen={{ title: "", description: "", buttonText: "" }}
         thankYouScreen={thankYouScreen}
+        isQuiz={isQuiz}
       />
       {formId && (
         <ShareModal

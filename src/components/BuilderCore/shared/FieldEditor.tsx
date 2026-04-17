@@ -11,6 +11,8 @@ import { HeaderSettings } from "./EditorSections/HeaderSettings";
 import { BasicFieldSettings } from "./EditorSections/BasicFieldSettings";
 import { OptionsEditor } from "./EditorSections/OptionsEditor";
 import { LogicEditor } from "./EditorSections/LogicEditor";
+import { QuizAnswerSettings } from "./EditorSections/QuizAnswerSettings";
+import { isQuizSupportedField } from "./quizUtils";
 
 interface FieldEditorProps {
   field: FormFieldConfig | null;
@@ -28,6 +30,8 @@ interface FieldEditorProps {
     banner?: string;
   }) => void;
   allFields?: FormFieldConfig[];
+  isQuiz?: boolean;
+  onToggleQuiz?: (value: boolean) => void;
 }
 
 const FieldEditor = memo(function FieldEditor({
@@ -42,6 +46,8 @@ const FieldEditor = memo(function FieldEditor({
   formMetadata,
   onUpdateMetadata,
   allFields = [],
+  isQuiz = false,
+  onToggleQuiz,
 }: FieldEditorProps) {
   if (selectedScreen === "HEADER" && mode === "single") {
     return (
@@ -53,6 +59,8 @@ const FieldEditor = memo(function FieldEditor({
         <HeaderSettings
           formMetadata={formMetadata}
           onUpdateMetadata={onUpdateMetadata}
+          isQuiz={isQuiz}
+          onToggleQuiz={onToggleQuiz}
         />
       </div>
     );
@@ -82,6 +90,7 @@ const FieldEditor = memo(function FieldEditor({
           onUpdateWelcome={onUpdateWelcome}
           thankYouScreen={thankYouScreen}
           onUpdateThankYou={onUpdateThankYou}
+          isQuiz={isQuiz}
         />
       </div>
     );
@@ -163,7 +172,11 @@ const FieldEditor = memo(function FieldEditor({
                 }
                 onFocus={(e) => {
                   e.target.type = "date";
-                  try { e.target.showPicker?.(); } catch { /* ignore */ }
+                  try {
+                    e.target.showPicker?.();
+                  } catch {
+                    /* ignore */
+                  }
                 }}
                 onBlur={(e) => {
                   if (!e.target.value) e.target.type = "text";
@@ -171,7 +184,11 @@ const FieldEditor = memo(function FieldEditor({
                 onClick={(e) => {
                   const target = e.target as HTMLInputElement;
                   if (target.type === "text") target.type = "date";
-                  try { target.showPicker?.(); } catch { /* ignore */ }
+                  try {
+                    target.showPicker?.();
+                  } catch {
+                    /* ignore */
+                  }
                 }}
                 className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 focus:border-gray-300 outline-none transition-all text-sm cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               />
@@ -200,7 +217,11 @@ const FieldEditor = memo(function FieldEditor({
                 }
                 onFocus={(e) => {
                   e.target.type = "date";
-                  try { e.target.showPicker?.(); } catch { /* ignore */ }
+                  try {
+                    e.target.showPicker?.();
+                  } catch {
+                    /* ignore */
+                  }
                 }}
                 onBlur={(e) => {
                   if (!e.target.value) e.target.type = "text";
@@ -208,7 +229,11 @@ const FieldEditor = memo(function FieldEditor({
                 onClick={(e) => {
                   const target = e.target as HTMLInputElement;
                   if (target.type === "text") target.type = "date";
-                  try { target.showPicker?.(); } catch { /* ignore */ }
+                  try {
+                    target.showPicker?.();
+                  } catch {
+                    /* ignore */
+                  }
                 }}
                 className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-300 focus:border-gray-300 outline-none transition-all text-sm cursor-pointer [&::-webkit-calendar-picker-indicator]:cursor-pointer"
               />
@@ -218,7 +243,7 @@ const FieldEditor = memo(function FieldEditor({
 
         {field.type === "rating" && (
           <div className="pt-4 border-t border-gray-100 space-y-4">
-             <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700">
               Rating Configuration
             </label>
             <div>
@@ -257,6 +282,10 @@ const FieldEditor = memo(function FieldEditor({
               </select>
             </div>
           </div>
+        )}
+
+        {isQuiz && isQuizSupportedField(field.type) && (
+          <QuizAnswerSettings field={field} onUpdate={onUpdate} />
         )}
 
         {mode === "flow" && (

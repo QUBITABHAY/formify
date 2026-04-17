@@ -171,7 +171,13 @@ function FlowPage({
   const [formData, setFormData] = useState<Record<string, unknown>>(() => {
     const initialData: Record<string, unknown> = {};
     fields.forEach((field) => {
-      initialData[field.id] = field.defaultValue;
+      if (field.type === "radio" && field.multiSelect) {
+        initialData[field.id] = Array.isArray(field.defaultValue)
+          ? field.defaultValue
+          : [];
+      } else {
+        initialData[field.id] = field.defaultValue;
+      }
     });
     return initialData;
   });

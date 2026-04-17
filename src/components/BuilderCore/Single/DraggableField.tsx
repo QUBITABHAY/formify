@@ -17,6 +17,7 @@ interface DraggableFieldProps {
   isSelected: boolean;
   onClick: () => void;
   onDelete: () => void;
+  isQuiz?: boolean;
 }
 
 const DraggableField = memo(function DraggableField({
@@ -24,6 +25,7 @@ const DraggableField = memo(function DraggableField({
   isSelected,
   onClick,
   onDelete,
+  isQuiz = false,
 }: DraggableFieldProps) {
   const {
     attributes,
@@ -210,6 +212,11 @@ const DraggableField = memo(function DraggableField({
           {field.required && (
             <span className="inline-block px-2 py-1 text-xs bg-red-50 text-red-600 rounded">
               Required
+            </span>
+          )}
+          {isQuiz && field.correctAnswer && (
+            <span className="inline-block px-2 py-1 text-xs bg-gray-900 text-white rounded font-medium">
+              ✓ {field.points ?? 1} pt{(field.points ?? 1) !== 1 ? "s" : ""}
             </span>
           )}
         </div>

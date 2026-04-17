@@ -9,6 +9,25 @@ import Button from "../components/common/Button";
 import Modal from "../components/common/Modal";
 import { formatAnswer, formatDate, formatTime } from "../utils/formatters";
 import FormattedAnswer from "../components/common/FormattedAnswer";
+import { isAnswerCorrect } from "../components/BuilderCore/shared/quizUtils";
+
+function computeQuizScore(
+  fields: FormFieldConfig[],
+  responseData: Record<string, unknown>,
+): { score: number; maxScore: number } {
+  let score = 0;
+  let maxScore = 0;
+  fields.forEach((f) => {
+    if (f.correctAnswer === undefined || f.points === undefined) return;
+    maxScore += f.points;
+    const answer = responseData[f.title] ?? responseData[f.id];
+    if (
+      isAnswerCorrect(answer, f.correctAnswer as string | string[] | undefined)
+    )
+      score += f.points;
+  });
+  return { score, maxScore };
+}
 
 export default function FormResponsesPage() {
   const { formId } = useParams();
@@ -97,6 +116,7 @@ export default function FormResponsesPage() {
 
   const fields = (form.schema as { fields?: FormFieldConfig[] }).fields || [];
   const responses = responsesData.responses;
+  const isQuiz = !!(form.schema as { isQuiz?: boolean }).isQuiz;
 
   const handleDeleteResponse = async (responseId: number) => {
     setDeleteConfirmId(null);
@@ -187,6 +207,11 @@ export default function FormResponsesPage() {
                         {field.title}
                       </th>
                     ))}
+                    {isQuiz && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                        Score
+                      </th>
+                    )}
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                       Submission Date
                     </th>
@@ -220,6 +245,23 @@ export default function FormResponsesPage() {
                           </td>
                         );
                       })}
+                      {isQuiz &&
+                        (() => {
+                          const { score, maxScore } = computeQuizScore(
+                            fields,
+                            response.data,
+                          );
+                          return (
+                            <td className="px-4 py-3 whitespace-nowrap text-sm">
+                              <span className="font-semibold text-gray-900">
+                                {score}/{maxScore}
+                              </span>
+                              <span className="text-xs text-gray-400 ml-1">
+                                pts
+                              </span>
+                            </td>
+                          );
+                        })()}
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(response.created_at)}
                       </td>
