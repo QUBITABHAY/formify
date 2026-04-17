@@ -3,7 +3,7 @@
   "description": "Form Builder",
   "author": "qubitabhay",
   "private": true,
-  "version": "0.0.3",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
