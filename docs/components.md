@@ -74,6 +74,20 @@ A textarea component support forwardRef.
 - `disabled`: boolean (optional)
 - **Ref**: Supports `forwardRef`
 
+## FileUpload
+
+A component that allows users to select and upload files directly to the form via an interactive drag-and-drop or click area.
+
+- `label`: string (required) — Label text
+- `subtitle`: string (optional) — Subtitle describing the file upload
+- `name`: string (optional) — Input name attribute
+- `accept`: string (optional) — Comma-separated list of accepted file types (e.g., `'image/*,.pdf'`)
+- `value`: string (optional) — Name or URL of the uploaded file
+- `onChange`: (e: React.ChangeEvent<HTMLInputElement>) => void (optional) — Change handler on file selection
+- `isUploading`: boolean (optional) — Displays a loading spinner when true
+- `disabled`: boolean (optional) — Disables interaction
+- `required`: boolean (optional) — Marks the field as required
+
 ## DatePicker
 
 A highly customizable dropdown calendar component replacing the native browser `<input type="date">`.

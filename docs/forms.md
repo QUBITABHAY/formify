@@ -112,9 +112,23 @@ interface FormField {
     }[];
   };
   name?: string;
-  required?: boolean;
+  /* Quiz Mode properties */
+  correctAnswer?: string | string[];
+  points?: number;
 }
 ```
+
+---
+
+## Quiz Mode (SinglePage Only)
+
+Single page layouts can behave as quizzes by enabling Quiz Mode.
+
+### Features
+- **Scoring:** Assign point values (`points`) and correct answers (`correctAnswer`) for supported fields (Radio, Select).
+- **Evaluation:** Submissions are automatically evaluated against correct answers.
+- **Score Results:** A separate view displays score cards, passing percentages, and incorrect/correct visual feedback.
+- **Grade Analytics:** Track individual responder's scores inside the dashboard responses table.
 
 ---
 
