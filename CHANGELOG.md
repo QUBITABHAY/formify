@@ -10,6 +10,13 @@ All notable changes to this project will be documented in this file.
 - **Quiz Engine**: Introduced a comprehensive Quiz Mode allowing creators to score forms, assign point values (0-100), and mark specific fields (Radio, Select) as correct/incorrect.
 - **Score Results Screen**: Added a dynamic thank-you screen for quizzes that breaks down attempts with a total score, passing percentage, and visual indications of correct vs. incorrect answers.
 - **Grade Analytics**: Enhanced the Form Responses table to automatically calculate, compute, and display respondent scores on their submissions.
+- **File Upload Functionality**: Implemented secure file attachment processing across multiple components within the form builder (#22, #24).
+- **Inline Title Editing**: Enabled direct, inline editing of form titles directly within the builder interface (#22).
+- **Google Data Policy**: Added comprehensive Google user data sharing policy documentation (#26).
+
+### Fixed
+
+- **Policy Timestamps**: Updated the "last updated" timestamps across the Privacy and Terms pages to ensure compliance (#23).
 
 ## [Release 0.0.3]
 
