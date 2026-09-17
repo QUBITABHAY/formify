@@ -48,7 +48,7 @@ export default function ShareModal({
 
           <div className="flex justify-end pt-4 border-t border-gray-100">
             <button
-              onClick={() => window.open(fullShareUrl, "_blank")}
+              onClick={() => window.open(fullShareUrl, "_blank", "noopener,noreferrer")}
               className="text-gray-600 hover:text-black font-medium"
             >
               Open in new tab &rarr;

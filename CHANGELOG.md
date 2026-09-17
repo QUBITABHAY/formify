@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Release 0.1.1]
+
+### Security
+
+- **CSV Formula Injection Sanitization**: Sanitized respondent answer values beginning with formula trigger characters (`=`, `+`, `-`, `@`, `\t`, `\r`) with a leading single quote `'` in `FormResponsesPage.tsx` before passing data to `Papa.unparse` for CSV export.
+- **Clickjacking & Security Headers**: Configured `vercel.json` with HTTP security headers, including `X-Frame-Options: DENY` and `Content-Security-Policy: frame-ancestors 'none'` for builder and dashboard routes, along with `X-Content-Type-Options: nosniff` and `Referrer-Policy: strict-origin-when-cross-origin`.
+- **Client-Side File Upload Validation**: Enforced a 10MB maximum file size limit in `FileUpload.tsx` and added an accessible error banner to reject oversized uploads before initiating network calls.
+- **Reverse Tabnabbing Protection**: Added `'noopener,noreferrer'` features to `window.open` in `ShareModal.tsx`.
+- **OAuth Callback URL Sanitization**: Added immediate `window.history.replaceState` in `AuthCallbackPage.tsx` on mount to strip sensitive OAuth parameters from the browser history and address bar.
+
+### Performance
+
+- **Pruned Unused Mapbox Dependencies**: Removed unused packages (`@mapbox/search-js-react`, `mapbox-gl`, and `react-map-gl`), eliminating 67 unused nested dependencies from `node_modules`.
+
 ## [Release 0.1.0]
 
 ### Added

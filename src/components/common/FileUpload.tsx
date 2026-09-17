@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 interface FileUploadProps {
   label: string;
@@ -10,7 +10,10 @@ interface FileUploadProps {
   isUploading?: boolean;
   subtitle?: string;
   value?: string;
+  maxSize?: number;
 }
+
+const DEFAULT_MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
 function FileUpload({
   label,
@@ -22,13 +25,28 @@ function FileUpload({
   isUploading = false,
   subtitle,
   value = "",
+  maxSize = DEFAULT_MAX_SIZE,
 }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleClick = () => {
     if (!disabled && inputRef.current) {
       inputRef.current.click();
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > maxSize) {
+        setValidationError(`File size exceeds ${(maxSize / (1024 * 1024)).toFixed(0)}MB limit.`);
+        if (inputRef.current) inputRef.current.value = "";
+        return;
+      }
+      setValidationError(null);
+    }
+    onChange?.(e);
   };
 
   return (
@@ -49,6 +67,7 @@ function FileUpload({
           transition-all duration-200 cursor-pointer
           ${disabled || isUploading ? "opacity-50 cursor-not-allowed hover:bg-gray-50 hover:border-gray-300" : ""}
           ${value ? "border-green-500 bg-green-50" : ""}
+          ${validationError ? "border-red-400 bg-red-50" : ""}
         `}
       >
         <input
@@ -57,7 +76,7 @@ function FileUpload({
           id={name}
           name={name}
           accept={accept}
-          onChange={onChange}
+          onChange={handleChange}
           disabled={disabled || isUploading}
           className="hidden"
         />
@@ -108,6 +127,11 @@ function FileUpload({
           </>
         )}
       </div>
+      {validationError && (
+        <p className="text-sm text-red-600 mt-1" role="alert">
+          {validationError}
+        </p>
+      )}
     </div>
   );
 }

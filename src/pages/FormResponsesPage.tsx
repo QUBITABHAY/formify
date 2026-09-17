@@ -77,7 +77,8 @@ export default function FormResponsesPage() {
 
       fields.forEach((field) => {
         const answer = response.data[field.title] ?? response.data[field.id];
-        row[field.title] = formatAnswer(answer, field.type);
+        const formatted = formatAnswer(answer, field.type);
+        row[field.title] = /^[=+\-@\t\r]/.test(formatted) ? `'${formatted}` : formatted;
       });
 
       const createdAt = new Date(response.created_at);
