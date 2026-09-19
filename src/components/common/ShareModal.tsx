@@ -1,6 +1,7 @@
 import Modal from "./Modal";
 import Button from "./Button";
 import { useState } from "react";
+import { useToast } from "./toastContext";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -14,11 +15,13 @@ export default function ShareModal({
   shareUrl,
 }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
+  const { showToast } = useToast();
   const fullShareUrl = `${window.location.origin}/forms/${shareUrl}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(fullShareUrl);
     setCopied(true);
+    showToast("Share link copied to clipboard!", "success");
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -48,7 +51,9 @@ export default function ShareModal({
 
           <div className="flex justify-end pt-4 border-t border-gray-100">
             <button
-              onClick={() => window.open(fullShareUrl, "_blank", "noopener,noreferrer")}
+              onClick={() =>
+                window.open(fullShareUrl, "_blank", "noopener,noreferrer")
+              }
               className="text-gray-600 hover:text-black font-medium"
             >
               Open in new tab &rarr;

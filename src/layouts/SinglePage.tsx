@@ -33,6 +33,46 @@ const normalizeFieldType = (type: unknown): string => {
   return normalized;
 };
 
+const getAutoComplete = (field: FormField): string | undefined => {
+  const title = (field.title || "").toLowerCase();
+  const type = field.type?.toLowerCase();
+
+  if (type === "email" || title.includes("email")) return "email";
+  if (type === "tel" || title.includes("phone") || title.includes("mobile"))
+    return "tel";
+  if (title.includes("first name") || title.includes("given name"))
+    return "given-name";
+  if (
+    title.includes("last name") ||
+    title.includes("surname") ||
+    title.includes("family name")
+  )
+    return "family-name";
+  if (title.includes("name") || title.includes("full name")) return "name";
+  if (title.includes("street") || title.includes("address"))
+    return "street-address";
+  if (title.includes("city")) return "address-level2";
+  if (
+    title.includes("zip") ||
+    title.includes("postal") ||
+    title.includes("pincode")
+  )
+    return "postal-code";
+  if (title.includes("country")) return "country-name";
+  if (title.includes("organization") || title.includes("company"))
+    return "organization";
+  return undefined;
+};
+
+const getInputMode = (
+  type: string,
+): "email" | "tel" | "numeric" | "text" | undefined => {
+  if (type === "email") return "email";
+  if (type === "tel") return "tel";
+  if (type === "number") return "numeric";
+  return undefined;
+};
+
 interface SinglePageProps {
   formId?: string | number;
   formTitle?: string;
@@ -40,7 +80,10 @@ interface SinglePageProps {
   formBanner?: string;
   fields?: FormField[];
   thankYouScreen?: ThankYouScreenConfig;
-  onSubmit?: (data: Record<string, unknown>) => void;
+  onSubmit?: (data: Record<string, unknown>) => Promise<{
+    quiz_result?: QuizResult;
+    quizResult?: QuizResult;
+  } | void> | void;
   isQuiz?: boolean;
 }
 
@@ -255,36 +298,63 @@ function SinglePage({
     if (uploadingFields.size > 0) return;
     if (validatePageFields(currentFields)) {
       try {
-        await onSubmit?.(formData);
+        const submitRes = await onSubmit?.(formData);
 
-        // Compute quiz score if quiz mode is enabled
+        // Receive server quiz score or compute fallback if quiz mode is enabled
         if (isQuiz) {
-          const scorableFields = fields.filter(
-            (f) => f.correctAnswer !== undefined && f.points !== undefined,
-          );
-          let totalScore = 0;
-          let maxScore = 0;
-          const fieldResults = scorableFields.map((f) => {
-            const pts = f.points ?? 1;
-            maxScore += pts;
-            const userAnswer = formData[f.id] as string | string[] | undefined;
-            const isCorrect = isAnswerCorrect(
-              userAnswer,
-              f.correctAnswer as string | string[] | undefined,
+          const serverResult =
+            (
+              submitRes as
+                | { quiz_result?: QuizResult; quizResult?: QuizResult }
+                | undefined
+            )?.quiz_result ||
+            (
+              submitRes as
+                | { quiz_result?: QuizResult; quizResult?: QuizResult }
+                | undefined
+            )?.quizResult;
+
+          if (serverResult && serverResult.maxScore > 0) {
+            setQuizResult(serverResult);
+          } else {
+            const scorableFields = fields.filter(
+              (f) =>
+                f.correctAnswer !== undefined &&
+                f.correctAnswer !== null &&
+                f.correctAnswer !== "",
             );
-            const earned = isCorrect ? pts : 0;
-            totalScore += earned;
-            return {
-              fieldId: f.id,
-              title: f.title,
-              correct: isCorrect,
-              earnedPoints: earned,
-              maxPoints: pts,
-              userAnswer,
-              correctAnswer: f.correctAnswer,
-            };
-          });
-          setQuizResult({ score: totalScore, maxScore, fieldResults });
+            let totalScore = 0;
+            let maxScore = 0;
+            const fieldResults = scorableFields.map((f) => {
+              const pts = f.points ?? 1;
+              maxScore += pts;
+              const userAnswer = formData[f.id] as
+                | string
+                | string[]
+                | undefined;
+              const isCorrect = isAnswerCorrect(
+                userAnswer,
+                f.correctAnswer as string | string[] | undefined,
+                f.options,
+              );
+              const earned = isCorrect ? pts : 0;
+              totalScore += earned;
+              return {
+                fieldId: f.id,
+                title: f.title,
+                correct: isCorrect,
+                earnedPoints: earned,
+                maxPoints: pts,
+                userAnswer,
+                correctAnswer: f.correctAnswer,
+              };
+            });
+            if (fieldResults.length > 0) {
+              setQuizResult({ score: totalScore, maxScore, fieldResults });
+            } else if (serverResult) {
+              setQuizResult(serverResult);
+            }
+          }
         }
 
         setIsSubmitted(true);
@@ -312,21 +382,31 @@ function SinglePage({
       case "number":
         return (
           <InputField
+            id={field.id}
+            name={field.name || field.id}
             title={field.title}
             type={fieldType}
             placeholder={field.placeholder}
             maxLength={field.maxLength}
+            required={field.required}
+            error={errors[field.id]}
             value={(formData[field.id] as string | number | undefined) || ""}
             subtitle={field.subtitle}
             onChange={(e) => handleFieldChange(field.id, e.target.value)}
+            autoComplete={getAutoComplete(field)}
+            inputMode={getInputMode(fieldType)}
           />
         );
       case "textarea":
         return (
           <TextArea
+            id={field.id}
+            name={field.name || field.id}
             title={field.title}
             placeholder={field.placeholder}
             maxLength={field.maxLength}
+            required={field.required}
+            error={errors[field.id]}
             value={(formData[field.id] as string) || ""}
             subtitle={field.subtitle}
             onChange={(e) => handleFieldChange(field.id, e.target.value)}
@@ -337,15 +417,19 @@ function SinglePage({
           const selectedValues = (formData[field.id] as string[]) || [];
           return (
             <div>
-              <label className="text-sm font-normal text-gray-700 mb-3 block">
-                {field.title}
-                {field.required && <span className="text-red-500 ml-1">*</span>}
+              <div className="text-sm font-normal text-gray-700 mb-3 block">
+                <span>
+                  {field.title}
+                  {field.required && (
+                    <span className="text-red-500 ml-1">*</span>
+                  )}
+                </span>
                 {field.subtitle && (
                   <p className="text-base text-gray-500 mt-1 mb-2">
                     {field.subtitle}
                   </p>
                 )}
-              </label>
+              </div>
               <div className="flex flex-col gap-3">
                 {field.options?.map((option) => (
                   <Checkbox
@@ -368,15 +452,17 @@ function SinglePage({
         }
         return (
           <div>
-            <label className="text-sm font-normal text-gray-700 mb-3 block">
-              {field.title}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
+            <div className="text-sm font-normal text-gray-700 mb-3 block">
+              <span>
+                {field.title}
+                {field.required && <span className="text-red-500 ml-1">*</span>}
+              </span>
               {field.subtitle && (
                 <p className="text-base text-gray-500 mt-1 mb-2">
                   {field.subtitle}
                 </p>
               )}
-            </label>
+            </div>
             <div className="flex flex-col gap-3">
               {field.options?.map((option) => (
                 <RadioButton
@@ -405,15 +491,17 @@ function SinglePage({
       case "date":
         return (
           <div>
-            <label className="text-sm font-normal text-gray-700 mb-2 block">
-              {field.title}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
+            <div className="text-sm font-normal text-gray-700 mb-2 block">
+              <span>
+                {field.title}
+                {field.required && <span className="text-red-500 ml-1">*</span>}
+              </span>
               {field.subtitle && (
                 <p className="text-base text-gray-500 mt-1 mb-2">
                   {field.subtitle}
                 </p>
               )}
-            </label>
+            </div>
             <DatePicker
               label=""
               name={field.id}
@@ -427,15 +515,17 @@ function SinglePage({
       case "time":
         return (
           <div>
-            <label className="text-sm font-normal text-gray-700 mb-2 block">
-              {field.title}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
+            <div className="text-sm font-normal text-gray-700 mb-2 block">
+              <span>
+                {field.title}
+                {field.required && <span className="text-red-500 ml-1">*</span>}
+              </span>
               {field.subtitle && (
                 <p className="text-base text-gray-500 mt-1 mb-2">
                   {field.subtitle}
                 </p>
               )}
-            </label>
+            </div>
             <TimePicker
               label=""
               name={field.id}
@@ -449,15 +539,17 @@ function SinglePage({
       case "file":
         return (
           <div>
-            <label className="text-sm font-normal text-gray-700 mb-2 block">
-              {field.title}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
+            <div className="text-sm font-normal text-gray-700 mb-2 block">
+              <span>
+                {field.title}
+                {field.required && <span className="text-red-500 ml-1">*</span>}
+              </span>
               {field.subtitle && (
                 <p className="text-base text-gray-500 mt-1 mb-2">
                   {field.subtitle}
                 </p>
               )}
-            </label>
+            </div>
             <FileUpload
               label=""
               name={field.id}
@@ -475,12 +567,16 @@ function SinglePage({
       case "select":
         return (
           <Select
+            id={field.id}
+            name={field.name || field.id}
             title={field.title}
             options={field.options || []}
             value={(formData[field.id] as string) || ""}
             onChange={(e) => handleFieldChange(field.id, e.target.value)}
             subtitle={field.subtitle}
             placeholder={field.placeholder || "Select an option"}
+            required={field.required}
+            error={errors[field.id]}
           />
         );
       case "rating":

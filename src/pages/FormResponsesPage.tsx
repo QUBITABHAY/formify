@@ -10,21 +10,42 @@ import Modal from "../components/common/Modal";
 import { formatAnswer, formatDate, formatTime } from "../utils/formatters";
 import FormattedAnswer from "../components/common/FormattedAnswer";
 import { isAnswerCorrect } from "../components/BuilderCore/shared/quizUtils";
+import { useToast } from "../components/common/toastContext";
 
 function computeQuizScore(
   fields: FormFieldConfig[],
   responseData: Record<string, unknown>,
+  quizResult?: { score: number; maxScore: number },
 ): { score: number; maxScore: number } {
+  if (
+    quizResult &&
+    typeof quizResult.score === "number" &&
+    typeof quizResult.maxScore === "number"
+  ) {
+    return { score: quizResult.score, maxScore: quizResult.maxScore };
+  }
   let score = 0;
   let maxScore = 0;
   fields.forEach((f) => {
-    if (f.correctAnswer === undefined || f.points === undefined) return;
-    maxScore += f.points;
-    const answer = responseData[f.title] ?? responseData[f.id];
     if (
-      isAnswerCorrect(answer, f.correctAnswer as string | string[] | undefined)
-    )
-      score += f.points;
+      f.correctAnswer === undefined ||
+      f.correctAnswer === null ||
+      f.correctAnswer === ""
+    ) {
+      return;
+    }
+    const pts = f.points ?? 1;
+    maxScore += pts;
+    const answer = responseData[f.id] ?? responseData[f.title];
+    if (
+      isAnswerCorrect(
+        answer,
+        f.correctAnswer as string | string[] | undefined,
+        f.options,
+      )
+    ) {
+      score += pts;
+    }
   });
   return { score, maxScore };
 }
@@ -32,6 +53,7 @@ function computeQuizScore(
 export default function FormResponsesPage() {
   const { formId } = useParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [form, setForm] = useState<FormResponse | null>(null);
   const [responsesData, setResponsesData] =
     useState<FormResponsesResult | null>(null);
@@ -78,7 +100,9 @@ export default function FormResponsesPage() {
       fields.forEach((field) => {
         const answer = response.data[field.title] ?? response.data[field.id];
         const formatted = formatAnswer(answer, field.type);
-        row[field.title] = /^[=+\-@\t\r]/.test(formatted) ? `'${formatted}` : formatted;
+        row[field.title] = /^[=+\-@\t\r]/.test(formatted)
+          ? `'${formatted}`
+          : formatted;
       });
 
       const createdAt = new Date(response.created_at);
@@ -97,12 +121,59 @@ export default function FormResponsesPage() {
     link.download = `${form?.name}_response.csv`;
     link.click();
     URL.revokeObjectURL(url);
-  }, [form, responsesData]);
+    showToast("Responses exported to CSV", "success");
+  }, [form, responsesData, showToast]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div
+        className="min-h-screen bg-gray-50 font-sans text-gray-900"
+        aria-busy="true"
+        aria-label="Loading responses"
+      >
+        <nav className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="max-w-full mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate(-1)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+              >
+                <Icons.ArrowLeft />
+              </button>
+              <div className="h-6 w-48 bg-gray-200 rounded animate-pulse" />
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-28 bg-gray-200 rounded-lg animate-pulse" />
+              <div className="h-9 w-28 bg-gray-200 rounded-lg animate-pulse" />
+            </div>
+          </div>
+        </nav>
+
+        <div className="max-w-full mx-auto px-6 py-8">
+          <div className="mb-6 flex justify-between items-center">
+            <div className="h-5 w-36 bg-gray-200 rounded animate-pulse" />
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-4 border-b border-gray-100 flex gap-4">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div
+                  key={i}
+                  className="h-4 bg-gray-200 rounded animate-pulse flex-1"
+                />
+              ))}
+            </div>
+            <div className="divide-y divide-gray-100">
+              {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                <div key={i} className="p-4 flex gap-4 animate-pulse">
+                  {[1, 2, 3, 4, 5].map((j) => (
+                    <div key={j} className="h-4 bg-gray-100 rounded flex-1" />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -117,7 +188,15 @@ export default function FormResponsesPage() {
 
   const fields = (form.schema as { fields?: FormFieldConfig[] }).fields || [];
   const responses = responsesData.responses;
-  const isQuiz = !!(form.schema as { isQuiz?: boolean }).isQuiz;
+  const isQuiz =
+    !!(form.schema as { isQuiz?: boolean; is_quiz?: boolean }).isQuiz ||
+    !!(form.schema as { isQuiz?: boolean; is_quiz?: boolean }).is_quiz ||
+    fields.some(
+      (f) =>
+        f.correctAnswer !== undefined &&
+        f.correctAnswer !== null &&
+        f.correctAnswer !== "",
+    );
 
   const handleDeleteResponse = async (responseId: number) => {
     setDeleteConfirmId(null);
@@ -129,8 +208,10 @@ export default function FormResponsesPage() {
         count: responsesData!.count - 1,
         responses: responsesData!.responses.filter((r) => r.id !== responseId),
       });
+      showToast("Response deleted", "info");
     } catch {
       setErrorMessage("Failed to delete response. Please try again.");
+      showToast("Failed to delete response. Please try again.", "error");
     } finally {
       setDeleting(null);
     }
@@ -248,9 +329,15 @@ export default function FormResponsesPage() {
                       })}
                       {isQuiz &&
                         (() => {
+                          const metaQuizResult = (
+                            response.meta as Record<string, unknown> | undefined
+                          )?.quiz_result as
+                            | { score: number; maxScore: number }
+                            | undefined;
                           const { score, maxScore } = computeQuizScore(
                             fields,
                             response.data,
+                            response.quiz_result || metaQuizResult,
                           );
                           return (
                             <td className="px-4 py-3 whitespace-nowrap text-sm">

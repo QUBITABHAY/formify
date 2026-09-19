@@ -2,7 +2,10 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { submitResponse, getPublicForm } from "../services/api";
 import type { FormResponse } from "../services/apiTypes";
-import type { FormFieldConfig, ThankYouScreenConfig } from "../components/BuilderCore/shared/types";
+import type {
+  FormFieldConfig,
+  ThankYouScreenConfig,
+} from "../components/BuilderCore/shared/types";
 import FlowPage from "../layouts/FlowPage";
 import SinglePage from "../layouts/SinglePage";
 import Modal from "../components/common/Modal";
@@ -66,17 +69,22 @@ export default function PublicFormPage() {
         {} as Record<string, string>,
       );
 
-      const structuredAnswers = Object.entries(answers).reduce(
-        (acc, [fieldId, value]) => {
-          const title = fieldIdToTitle[fieldId] || fieldId;
-          acc[title] = value;
-          return acc;
-        },
-        {} as Record<string, unknown>,
-      );
+      const structuredAnswers: Record<string, unknown> = {};
+      Object.entries(answers).forEach(([fieldId, value]) => {
+        structuredAnswers[fieldId] = value;
+        const title = fieldIdToTitle[fieldId];
+        if (title && title !== fieldId) {
+          structuredAnswers[title] = value;
+        }
+      });
 
       try {
-        await submitResponse(form.id, structuredAnswers as Record<string, string | string[]>, {});
+        const submission = await submitResponse(
+          form.id,
+          structuredAnswers as Record<string, string | string[]>,
+          {},
+        );
+        return submission;
       } catch (err) {
         setAlertMessage("Failed to submit form. Please try again.");
         throw err;
@@ -85,19 +93,32 @@ export default function PublicFormPage() {
     [form, formId],
   );
 
-  const { fields, type, schema } = useMemo(() => {
+  const { fields, type, schema, isQuiz } = useMemo(() => {
     if (!form || !form.schema) {
       return {
         fields: [],
         type: "single" as const,
         schema: {} as Record<string, unknown>,
+        isQuiz: false,
       };
     }
     const s = form.schema as Record<string, unknown>;
+    const formFields = (s.fields as FormFieldConfig[]) || [];
+    const quizFlag = Boolean(
+      s.isQuiz ||
+      s.is_quiz ||
+      formFields.some(
+        (field) =>
+          field.correctAnswer !== undefined &&
+          field.correctAnswer !== null &&
+          field.correctAnswer !== "",
+      ),
+    );
     return {
-      fields: (s.fields as FormFieldConfig[]) || [],
+      fields: formFields,
       type: (s.type as "single" | "flow") || "single",
       schema: s,
+      isQuiz: quizFlag,
     };
   }, [form]);
 
@@ -160,6 +181,7 @@ export default function PublicFormPage() {
           }
           onSubmit={handleSubmit}
           formId={form.id}
+          isQuiz={isQuiz}
         />
         <Modal
           isOpen={alertMessage !== null}
@@ -179,10 +201,12 @@ export default function PublicFormPage() {
         formDescription={form.description}
         formBanner={schema.formBanner as string | undefined}
         fields={fields}
-        thankYouScreen={schema.thankYouScreen as ThankYouScreenConfig | undefined}
+        thankYouScreen={
+          schema.thankYouScreen as ThankYouScreenConfig | undefined
+        }
         onSubmit={handleSubmit}
         formId={form.id}
-        isQuiz={(schema.isQuiz as boolean | undefined) ?? false}
+        isQuiz={isQuiz}
       />
       <Modal
         isOpen={alertMessage !== null}
