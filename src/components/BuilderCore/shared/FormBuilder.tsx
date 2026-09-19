@@ -55,6 +55,7 @@ export default function FormBuilder({ formId }: FormBuilderProps) {
             initialThankYou={formData?.schema?.thankYouScreen as ThankYouScreenConfig}
             initialIsPublished={formData?.status === "published"}
             initialShareUrl={formData?.share_url}
+            initialIsQuiz={formData?.schema?.isQuiz as boolean | undefined}
           />
         ) : (
           <SinglePageFormBuilder

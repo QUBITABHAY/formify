@@ -1,3 +1,5 @@
+import type { QuizResult } from "../components/BuilderCore/shared/types";
+
 export interface CreateFormRequest {
   name: string;
   description?: string;
@@ -36,6 +38,7 @@ export interface FormSubmission {
   data: Record<string, string | string[] | boolean>;
   meta: Record<string, unknown>;
   created_at: string;
+  quiz_result?: QuizResult;
 }
 
 export interface FormResponsesResult {

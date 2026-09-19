@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 ## [Release 0.1.1]
 
+### Added
+
+- **Server-Side Quiz Integration**: Connected form submissions to the backend quiz evaluation API, rendering instant scored breakdowns (`quiz_result`) upon completion.
+- **Flow Mode Quiz Support**: Enabled quiz mode configuration, points assignment, and question settings within `FlowFormBuilder` and `FlowPage`.
+- **Question Breakdown Result Screen**: Added itemized quiz question breakdown displaying earned vs. max points and correct/incorrect status in both Single Page and Flow layouts.
+- **Global Toast Notification System**: Added accessible, lightweight toast notifications (`Toast.tsx`, `toastContext.ts`) across dashboard actions and response deletions.
+
+### Changed
+
+- **UI Modernization**: Refreshed input controls, dropdowns, modals, and buttons across core builder and form layout components.
+
+### Fixed
+
+- **Duplicate Question Title Collision**: Keyed form submission answers by field ID in addition to titles, preventing answer overwrite when questions share identical titles.
+- **Quiz Points Default Value Handling**: Fixed score computation in `FormResponsesPage.tsx` and layouts to default unedited question point values to `1` point instead of dropping them from score calculation.
+- **Option Label & Case Normalization**: Enhanced `quizUtils.ts` to normalize option labels and values bidirectionally with case-insensitivity and array order invariance.
+- **Preview Modal Flow Quiz Support**: Passed `isQuiz` prop to `FlowPage` within `PreviewModal`, ensuring quiz scoring functions properly in preview mode.
+- **Removed Announcement Banner**: Removed the `"Question X of Y"` announcement container from `FlowPage.tsx` for a cleaner layout flow.
+
 ### Security
 
 - **CSV Formula Injection Sanitization**: Sanitized respondent answer values beginning with formula trigger characters (`=`, `+`, `-`, `@`, `\t`, `\r`) with a leading single quote `'` in `FormResponsesPage.tsx` before passing data to `Papa.unparse` for CSV export.
