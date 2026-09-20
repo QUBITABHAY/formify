@@ -26,6 +26,7 @@ interface FlowFormBuilderProps {
   initialThankYou?: ThankYouScreenConfig;
   initialIsPublished?: boolean;
   initialShareUrl?: string | null;
+  initialIsQuiz?: boolean;
 }
 
 export default function FlowFormBuilder({
@@ -45,6 +46,7 @@ export default function FlowFormBuilder({
   },
   initialIsPublished = false,
   initialShareUrl,
+  initialIsQuiz = false,
 }: FlowFormBuilderProps) {
   const navigate = useNavigate();
   const [welcomeScreen, setWelcomeScreen] =
@@ -52,6 +54,7 @@ export default function FlowFormBuilder({
 
   const [thankYouScreen, setThankYouScreen] =
     useState<ThankYouScreenConfig>(initialThankYou);
+  const [isQuiz, setIsQuiz] = useState(initialIsQuiz);
 
   const onSave = useCallback(
     async (fields: FormFieldConfig[]) => {
@@ -61,6 +64,7 @@ export default function FlowFormBuilder({
         fields,
         welcomeScreen,
         thankYouScreen,
+        isQuiz,
       };
       await updateForm(formId, {
         name: welcomeScreen.title,
@@ -69,7 +73,7 @@ export default function FlowFormBuilder({
       });
       return true;
     },
-    [formId, welcomeScreen, thankYouScreen],
+    [formId, welcomeScreen, thankYouScreen, isQuiz],
   );
 
   const {
@@ -255,6 +259,8 @@ export default function FlowFormBuilder({
           formMetadata={{ title: "", description: "", banner: "" }}
           onUpdateMetadata={() => {}}
           allFields={fields}
+          isQuiz={isQuiz}
+          onToggleQuiz={setIsQuiz}
         />
       </div>
 
@@ -268,6 +274,7 @@ export default function FlowFormBuilder({
         formTitle={welcomeScreen.title}
         formDescription={welcomeScreen.description}
         formBanner=""
+        isQuiz={isQuiz}
       />
       {formId && (
         <ShareModal

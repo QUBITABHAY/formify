@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Release 0.1.1]
+
+### Added
+
+- **Server-Side Quiz Integration**: Connected form submissions to the backend quiz evaluation API, rendering instant scored breakdowns (`quiz_result`) upon completion.
+- **Flow Mode Quiz Support**: Enabled quiz mode configuration, points assignment, and question settings within `FlowFormBuilder` and `FlowPage`.
+- **Question Breakdown Result Screen**: Added itemized quiz question breakdown displaying earned vs. max points and correct/incorrect status in both Single Page and Flow layouts.
+- **Global Toast Notification System**: Added accessible, lightweight toast notifications (`Toast.tsx`, `toastContext.ts`) across dashboard actions and response deletions.
+
+### Changed
+
+- **UI Modernization**: Refreshed input controls, dropdowns, modals, and buttons across core builder and form layout components.
+
+### Fixed
+
+- **Duplicate Question Title Collision**: Keyed form submission answers by field ID in addition to titles, preventing answer overwrite when questions share identical titles.
+- **Quiz Points Default Value Handling**: Fixed score computation in `FormResponsesPage.tsx` and layouts to default unedited question point values to `1` point instead of dropping them from score calculation.
+- **Option Label & Case Normalization**: Enhanced `quizUtils.ts` to normalize option labels and values bidirectionally with case-insensitivity and array order invariance.
+- **Preview Modal Flow Quiz Support**: Passed `isQuiz` prop to `FlowPage` within `PreviewModal`, ensuring quiz scoring functions properly in preview mode.
+- **Removed Announcement Banner**: Removed the `"Question X of Y"` announcement container from `FlowPage.tsx` for a cleaner layout flow.
+
+### Security
+
+- **CSV Formula Injection Sanitization**: Sanitized respondent answer values beginning with formula trigger characters (`=`, `+`, `-`, `@`, `\t`, `\r`) with a leading single quote `'` in `FormResponsesPage.tsx` before passing data to `Papa.unparse` for CSV export.
+- **Clickjacking & Security Headers**: Configured `vercel.json` with HTTP security headers, including `X-Frame-Options: DENY` and `Content-Security-Policy: frame-ancestors 'none'` for builder and dashboard routes, along with `X-Content-Type-Options: nosniff` and `Referrer-Policy: strict-origin-when-cross-origin`.
+- **Client-Side File Upload Validation**: Enforced a 10MB maximum file size limit in `FileUpload.tsx` and added an accessible error banner to reject oversized uploads before initiating network calls.
+- **Reverse Tabnabbing Protection**: Added `'noopener,noreferrer'` features to `window.open` in `ShareModal.tsx`.
+- **OAuth Callback URL Sanitization**: Added immediate `window.history.replaceState` in `AuthCallbackPage.tsx` on mount to strip sensitive OAuth parameters from the browser history and address bar.
+
+### Performance
+
+- **Pruned Unused Mapbox Dependencies**: Removed unused packages (`@mapbox/search-js-react`, `mapbox-gl`, and `react-map-gl`), eliminating 67 unused nested dependencies from `node_modules`.
+
 ## [Release 0.1.0]
 
 ### Added

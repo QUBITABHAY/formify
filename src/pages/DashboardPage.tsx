@@ -9,10 +9,12 @@ import type { FormResponse } from "../services/apiTypes";
 import type { RootState } from "../store/store";
 import logo from "../assets/logo.svg";
 import { formatDate } from "../utils/formatters";
+import { useToast } from "../components/common/toastContext";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
+  const { showToast } = useToast();
   const [forms, setForms] = useState<FormResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,12 +82,14 @@ export default function DashboardPage() {
       setForms((prev) => prev.filter((f) => f.id !== formToDelete));
       setIsDeleteModalOpen(false);
       setFormToDelete(null);
+      showToast("Form deleted successfully", "info");
     } catch {
       setDeleteError("Failed to delete form. Please try again.");
+      showToast("Failed to delete form. Please try again.", "error");
     } finally {
       setDeleting(null);
     }
-  }, [formToDelete]);
+  }, [formToDelete, showToast]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
@@ -118,8 +122,31 @@ export default function DashboardPage() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            aria-busy="true"
+            aria-label="Loading forms"
+          >
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-pulse"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-10 h-10 bg-gray-200 rounded-lg" />
+                  <div className="w-14 h-6 bg-gray-200 rounded-full" />
+                </div>
+                <div className="h-5 bg-gray-200 rounded w-3/4 mb-3" />
+                <div className="space-y-2 mb-4">
+                  <div className="h-3 bg-gray-100 rounded w-full" />
+                  <div className="h-3 bg-gray-100 rounded w-2/3" />
+                </div>
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                  <div className="h-4 bg-gray-100 rounded w-20" />
+                  <div className="h-4 bg-gray-200 rounded w-28" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : forms.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-200">
@@ -164,9 +191,7 @@ export default function DashboardPage() {
                   {form.description || "No description provided."}
                 </p>
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100 text-sm text-gray-500">
-                  <span>
-                    {formatDate(form.created_at)}
-                  </span>
+                  <span>{formatDate(form.created_at)}</span>
                   <div className="flex items-center gap-4">
                     <span
                       className="flex items-center text-gray-900 font-medium hover:underline z-10"

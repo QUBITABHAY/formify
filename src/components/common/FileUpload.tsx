@@ -1,6 +1,7 @@
-import { useRef } from "react";
+import { useRef, useState, useId } from "react";
 
 interface FileUploadProps {
+  id?: string;
   label: string;
   name?: string;
   accept?: string;
@@ -10,9 +11,11 @@ interface FileUploadProps {
   isUploading?: boolean;
   subtitle?: string;
   value?: string;
+  maxSize?: number;
 }
 
 function FileUpload({
+  id,
   label,
   name,
   accept,
@@ -22,8 +25,13 @@ function FileUpload({
   isUploading = false,
   subtitle,
   value = "",
+  maxSize = 10 * 1024 * 1024,
 }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const generatedId = useId();
+  const inputId = id || (name ? `field-${name}` : generatedId);
+  const errorId = `${inputId}-error`;
 
   const handleClick = () => {
     if (!disabled && inputRef.current) {
@@ -31,10 +39,28 @@ function FileUpload({
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > maxSize) {
+        setValidationError(
+          `File size exceeds ${(maxSize / (1024 * 1024)).toFixed(0)}MB limit.`,
+        );
+        if (inputRef.current) inputRef.current.value = "";
+        return;
+      }
+      setValidationError(null);
+    }
+    onChange?.(e);
+  };
+
   return (
     <div className="flex flex-col w-full">
       {label && (
-        <label className="text-sm font-normal text-gray-700 mb-2 block">
+        <label
+          htmlFor={inputId}
+          className="text-sm font-normal text-gray-700 mb-2 block"
+        >
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -47,19 +73,23 @@ function FileUpload({
           p-6 border-2 border-dashed border-gray-300 rounded-lg
           bg-gray-50 hover:bg-gray-100 hover:border-gray-900
           transition-all duration-200 cursor-pointer
+          focus-within:ring-2 focus-within:ring-gray-900 focus-within:ring-offset-2
           ${disabled || isUploading ? "opacity-50 cursor-not-allowed hover:bg-gray-50 hover:border-gray-300" : ""}
           ${value ? "border-green-500 bg-green-50" : ""}
+          ${validationError ? "border-red-400 bg-red-50" : ""}
         `}
       >
         <input
           ref={inputRef}
           type="file"
-          id={name}
+          id={inputId}
           name={name}
           accept={accept}
-          onChange={onChange}
+          onChange={handleChange}
           disabled={disabled || isUploading}
-          className="hidden"
+          aria-invalid={validationError ? "true" : undefined}
+          aria-describedby={validationError ? errorId : undefined}
+          className="sr-only"
         />
         {isUploading ? (
           <div className="flex flex-col items-center">
@@ -108,6 +138,11 @@ function FileUpload({
           </>
         )}
       </div>
+      {validationError && (
+        <p id={errorId} className="text-sm text-red-600 mt-1" role="alert">
+          {validationError}
+        </p>
+      )}
     </div>
   );
 }

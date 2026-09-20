@@ -1,5 +1,4 @@
-import React from "react";
-import { createPortal } from "react-dom";
+import React, { useEffect, useRef, useId } from "react";
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,20 +8,65 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
-  if (!isOpen) return null;
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
-  return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-      <div
-        className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      />
-      <div className="relative bg-white rounded-xl shadow-xl w-full max-w-lg transform transition-all flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen) {
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    } else {
+      if (dialog.open) {
+        dialog.close();
+      }
+    }
+  }, [isOpen]);
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    const dialog = dialogRef.current;
+    if (!dialog || e.target !== dialog) return;
+
+    const rect = dialog.getBoundingClientRect();
+    const isInside =
+      rect.top <= e.clientY &&
+      e.clientY <= rect.top + rect.height &&
+      rect.left <= e.clientX &&
+      e.clientX <= rect.left + rect.width;
+
+    if (!isInside) {
+      onClose();
+    }
+  };
+
+  const handleCancel = (e: React.SyntheticEvent<HTMLDialogElement, Event>) => {
+    e.preventDefault();
+    onClose();
+  };
+
+  return (
+    <dialog
+      ref={dialogRef}
+      onCancel={handleCancel}
+      onClick={handleBackdropClick}
+      aria-labelledby={title ? titleId : undefined}
+      className="fixed inset-0 m-auto z-50 p-0 rounded-xl bg-transparent max-w-lg w-full max-h-[90vh] overflow-visible outline-none backdrop:bg-gray-900/50 backdrop:backdrop-blur-sm shadow-2xl"
+    >
+      <div className="relative bg-white rounded-xl shadow-2xl border border-gray-100 flex flex-col max-h-[90vh] overflow-hidden text-gray-900">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white">
+          {title && (
+            <h3 id={titleId} className="text-lg font-semibold text-gray-900">
+              {title}
+            </h3>
+          )}
           <button
+            type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-500 transition-colors p-1 rounded-md hover:bg-gray-100"
+            aria-label="Close dialog"
+            className="text-gray-400 hover:text-gray-500 transition-colors p-1.5 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
           >
             <svg
               className="w-5 h-5"
@@ -42,8 +86,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
 
         <div className="p-6 overflow-y-auto">{children}</div>
       </div>
-    </div>,
-    document.body,
+    </dialog>
   );
 };
 

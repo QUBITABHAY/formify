@@ -67,8 +67,12 @@ export const submitResponse = async (
   formId: number,
   answers: Record<string, string | string[]>,
   meta: Record<string, unknown> = {},
-): Promise<void> => {
-  await api.post(`/forms/${formId}/responses`, { data: answers, meta });
+): Promise<FormSubmission> => {
+  const response = await api.post<FormSubmission>(
+    `/forms/${formId}/responses`,
+    { data: answers, meta },
+  );
+  return response.data;
 };
 
 export const uploadFile = async (

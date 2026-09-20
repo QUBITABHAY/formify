@@ -20,15 +20,19 @@ import Rating from "../components/common/Rating";
 import type {
   FormFieldConfig as FormField,
   ConditionalRule,
+  QuizResult,
 } from "../components/BuilderCore/shared/types";
 import { uploadFile } from "../services/api";
 import { validateField } from "../utils/validation";
+import { isAnswerCorrect } from "../components/BuilderCore/shared/quizUtils";
 
 const normalizeFieldType = (type: unknown): string => {
   if (typeof type !== "string") return "text";
 
   const normalized = type.trim().toLowerCase();
-  if (["long text", "longtext", "long-text", "long_text"].includes(normalized)) {
+  if (
+    ["long text", "longtext", "long-text", "long_text"].includes(normalized)
+  ) {
     return "textarea";
   }
   if (normalized === "dropdown") {
@@ -56,6 +60,46 @@ const evaluateRule = (rule: ConditionalRule, value: unknown): boolean => {
   }
 };
 
+const getAutoComplete = (field: FormField): string | undefined => {
+  const title = (field.title || "").toLowerCase();
+  const type = field.type?.toLowerCase();
+
+  if (type === "email" || title.includes("email")) return "email";
+  if (type === "tel" || title.includes("phone") || title.includes("mobile"))
+    return "tel";
+  if (title.includes("first name") || title.includes("given name"))
+    return "given-name";
+  if (
+    title.includes("last name") ||
+    title.includes("surname") ||
+    title.includes("family name")
+  )
+    return "family-name";
+  if (title.includes("name") || title.includes("full name")) return "name";
+  if (title.includes("street") || title.includes("address"))
+    return "street-address";
+  if (title.includes("city")) return "address-level2";
+  if (
+    title.includes("zip") ||
+    title.includes("postal") ||
+    title.includes("pincode")
+  )
+    return "postal-code";
+  if (title.includes("country")) return "country-name";
+  if (title.includes("organization") || title.includes("company"))
+    return "organization";
+  return undefined;
+};
+
+const getInputMode = (
+  type: string,
+): "email" | "tel" | "numeric" | "text" | undefined => {
+  if (type === "email") return "email";
+  if (type === "tel") return "tel";
+  if (type === "number") return "numeric";
+  return undefined;
+};
+
 interface WelcomeScreenProps {
   title?: string;
   description?: string;
@@ -73,10 +117,14 @@ interface FlowPageProps {
   formTitle?: string;
   formDescription?: string;
   fields?: FormField[];
-  onSubmit?: (data: Record<string, unknown>) => void;
+  onSubmit?: (data: Record<string, unknown>) => Promise<{
+    quiz_result?: QuizResult;
+    quizResult?: QuizResult;
+  } | void> | void;
   accentColor?: string;
   welcomeScreen?: WelcomeScreenProps;
   thankYouScreen?: ThankYouScreenProps;
+  isQuiz?: boolean;
 }
 
 const defaultFields: FormField[] = [
@@ -146,6 +194,7 @@ function FlowPage({
   welcomeScreen = {},
   thankYouScreen = {},
   formId,
+  isQuiz = false,
 }: FlowPageProps) {
   const {
     welcomeTitle,
@@ -168,6 +217,7 @@ function FlowPage({
     [welcomeScreen, thankYouScreen, formTitle, formDescription],
   );
   const [currentStep, setCurrentStep] = useState(0);
+  const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
   const [formData, setFormData] = useState<Record<string, unknown>>(() => {
     const initialData: Record<string, unknown> = {};
     fields.forEach((field) => {
@@ -226,7 +276,9 @@ function FlowPage({
     const timer = setTimeout(() => {
       if (
         currentField &&
-        ["text", "email", "tel", "number", "textarea"].includes(currentField.type)
+        ["text", "email", "tel", "number", "textarea"].includes(
+          currentField.type,
+        )
       ) {
         inputRef.current?.focus();
       }
@@ -254,7 +306,9 @@ function FlowPage({
         const response = await uploadFile(formId, file);
         handleFieldChange(fieldId, response.url);
       } catch (err) {
-        const errorData = err as { response?: { data?: { error?: string; message?: string } } };
+        const errorData = err as {
+          response?: { data?: { error?: string; message?: string } };
+        };
         setUploadError(
           errorData.response?.data?.error ||
             errorData.response?.data?.message ||
@@ -278,18 +332,75 @@ function FlowPage({
     return validateField(currentField, formData[currentField.id]) === null;
   }, [isIntroScreen, currentField, uploadingFields, formData]);
 
-  const handleSubmit = useCallback(() => {
-    setIsSubmitted(true);
-    onSubmit?.(formData);
-  }, [onSubmit, formData]);
+  const handleSubmit = useCallback(async () => {
+    try {
+      const submitRes = await onSubmit?.(formData);
+      if (isQuiz) {
+        const serverResult =
+          (
+            submitRes as
+              | { quiz_result?: QuizResult; quizResult?: QuizResult }
+              | undefined
+          )?.quiz_result ||
+          (
+            submitRes as
+              | { quiz_result?: QuizResult; quizResult?: QuizResult }
+              | undefined
+          )?.quizResult;
+
+        if (serverResult && serverResult.maxScore > 0) {
+          setQuizResult(serverResult);
+        } else {
+          const scorableFields = fields.filter(
+            (f) =>
+              f.correctAnswer !== undefined &&
+              f.correctAnswer !== null &&
+              f.correctAnswer !== "",
+          );
+          let totalScore = 0;
+          let maxScore = 0;
+          const fieldResults = scorableFields.map((f) => {
+            const pts = f.points ?? 1;
+            maxScore += pts;
+            const userAnswer = formData[f.id] as string | string[] | undefined;
+            const isCorrect = isAnswerCorrect(
+              userAnswer,
+              f.correctAnswer as string | string[] | undefined,
+              f.options,
+            );
+            const earned = isCorrect ? pts : 0;
+            totalScore += earned;
+            return {
+              fieldId: f.id,
+              title: f.title,
+              correct: isCorrect,
+              earnedPoints: earned,
+              maxPoints: pts,
+              userAnswer,
+              correctAnswer: f.correctAnswer,
+            };
+          });
+          if (fieldResults.length > 0) {
+            setQuizResult({ score: totalScore, maxScore, fieldResults });
+          } else if (serverResult) {
+            setQuizResult(serverResult);
+          }
+        }
+      }
+      setIsSubmitted(true);
+    } catch {
+      // Error is handaled by parent
+    }
+  }, [onSubmit, formData, isQuiz, fields]);
 
   const goToNext = useCallback(() => {
     if (!canProceed() || isAnimating) return;
 
-    setDirection("down");
-    setIsAnimating(true);
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    setTimeout(() => {
+    const advanceStep = () => {
       if (isIntroScreen) {
         setNavigationHistory([]);
         setCurrentStep(0);
@@ -306,6 +417,18 @@ function FlowPage({
           setCurrentStep(nextStep as number);
         }
       }
+    };
+
+    if (prefersReducedMotion) {
+      advanceStep();
+      return;
+    }
+
+    setDirection("down");
+    setIsAnimating(true);
+
+    setTimeout(() => {
+      advanceStep();
       setIsAnimating(false);
     }, 300);
   }, [
@@ -322,13 +445,26 @@ function FlowPage({
     if (isAnimating) return;
     if (navigationHistory.length === 0) return;
 
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const stepBack = () => {
+      const prevStep = navigationHistory[navigationHistory.length - 1];
+      setNavigationHistory((prev) => prev.slice(0, -1));
+      setCurrentStep(prevStep);
+    };
+
+    if (prefersReducedMotion) {
+      stepBack();
+      return;
+    }
+
     setDirection("up");
     setIsAnimating(true);
 
     setTimeout(() => {
-      const prevStep = navigationHistory[navigationHistory.length - 1];
-      setNavigationHistory((prev) => prev.slice(0, -1));
-      setCurrentStep(prevStep);
+      stepBack();
       setIsAnimating(false);
     }, 300);
   }, [isAnimating, navigationHistory]);
@@ -361,11 +497,17 @@ function FlowPage({
             <InputField
               key={field.id}
               ref={inputRef as MutableRefObject<HTMLInputElement>}
+              id={`flow-field-${field.id}`}
+              name={field.name || field.id}
               title=""
               type={fieldType}
               placeholder={field.placeholder}
               value={(formData[field.id] as string | number | undefined) ?? ""}
               subtitle={field.subtitle}
+              autoComplete={getAutoComplete(field)}
+              inputMode={getInputMode(fieldType)}
+              required={field.required}
+              error={validationError || undefined}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
             />
           </div>
@@ -375,11 +517,15 @@ function FlowPage({
           <div className="w-full max-w-lg">
             <TextArea
               ref={inputRef as MutableRefObject<HTMLTextAreaElement>}
+              id={`flow-field-${field.id}`}
+              name={field.name || field.id}
               title=""
               placeholder={field.placeholder}
               value={(formData[field.id] as string) ?? ""}
               maxLength={field.maxLength}
               subtitle={field.subtitle}
+              required={field.required}
+              error={validationError || undefined}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
             />
           </div>
@@ -484,12 +630,16 @@ function FlowPage({
         return (
           <div className="w-full max-w-lg">
             <Select
+              id={`flow-field-${field.id}`}
+              name={field.name || field.id}
               title=""
               options={field.options || []}
               value={(formData[field.id] as string) || ""}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
               subtitle={field.subtitle}
               placeholder={field.placeholder || "Select an option"}
+              required={field.required}
+              error={validationError || undefined}
             />
           </div>
         );
@@ -511,6 +661,168 @@ function FlowPage({
   };
 
   if (isSubmitted) {
+    if (isQuiz && quizResult) {
+      const percentage =
+        quizResult.maxScore > 0
+          ? Math.round((quizResult.score / quizResult.maxScore) * 100)
+          : 0;
+      const passed = percentage >= 50;
+      return (
+        <div className="flex flex-col min-h-screen bg-gray-50 py-10 px-4 md:px-6">
+          <div className="w-full max-w-3xl mx-auto space-y-4">
+            <div className="bg-white shadow-xl rounded-lg overflow-hidden border border-gray-100">
+              <div className="h-2 bg-gray-900" />
+              <div className="p-8 text-center">
+                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-5">
+                  <span className="text-4xl">{passed ? "🎉" : "💪"}</span>
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                  {thankYouTitle ||
+                    (passed ? "Great job!" : "Keep practicing!")}
+                </h1>
+                <p className="text-gray-500 mb-6">
+                  {thankYouDescription ||
+                    (passed
+                      ? "You've successfully completed the quiz."
+                      : "Review your answers below to learn more.")}
+                </p>
+
+                <div className="flex items-center justify-center gap-6 mb-6">
+                  <div className="text-center">
+                    <p className="text-5xl font-black text-gray-900">
+                      {percentage}%
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {quizResult.score} / {quizResult.maxScore} points
+                    </p>
+                  </div>
+                </div>
+
+                <div className="w-full max-w-xs mx-auto h-2 bg-gray-100 rounded-full overflow-hidden mb-2">
+                  <div
+                    className="h-full bg-gray-900 rounded-full transition-all duration-700"
+                    style={{ width: `${percentage}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {quizResult.fieldResults.length > 0 && (
+              <div className="bg-white shadow-sm rounded-lg border border-gray-100 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-100">
+                  <h2 className="text-base font-semibold text-gray-800">
+                    Question Breakdown
+                  </h2>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  {quizResult.fieldResults.map((r) => {
+                    const qField = fields.find((f) => f.id === r.fieldId);
+                    const getLabel = (val: string | string[] | undefined) => {
+                      if (
+                        val === undefined ||
+                        val === null ||
+                        val === "" ||
+                        (Array.isArray(val) && val.length === 0)
+                      )
+                        return "-";
+                      if (!qField?.options) return String(val);
+
+                      const values = Array.isArray(val) ? val : [String(val)];
+                      const labels = values.map(
+                        (v) =>
+                          qField.options?.find((o) => o.value === v)?.label ??
+                          v,
+                      );
+                      return labels.join(", ");
+                    };
+                    return (
+                      <div
+                        key={r.fieldId}
+                        className="px-6 py-4 flex items-start gap-4"
+                      >
+                        <div
+                          className={`mt-0.5 w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+                            r.correct ? "bg-green-100" : "bg-red-100"
+                          }`}
+                        >
+                          {r.correct ? (
+                            <svg
+                              className="w-4 h-4 text-green-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2.5}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          ) : (
+                            <svg
+                              className="w-4 h-4 text-red-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2.5}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-800 mb-1">
+                            {r.title}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Your answer:{" "}
+                            <span
+                              className={
+                                r.correct
+                                  ? "text-green-700 font-medium"
+                                  : "text-red-600 font-medium"
+                              }
+                            >
+                              {getLabel(r.userAnswer)}
+                            </span>
+                          </p>
+                          {!r.correct && (
+                            <p className="text-xs text-gray-500">
+                              Correct answer:{" "}
+                              <span className="text-green-700 font-medium">
+                                {getLabel(r.correctAnswer)}
+                              </span>
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <span
+                            className={`text-sm font-semibold ${
+                              r.correct ? "text-gray-900" : "text-gray-400"
+                            }`}
+                          >
+                            {r.earnedPoints}/{r.maxPoints}
+                          </span>
+                          <p className="text-xs text-gray-400">pts</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
         <div className="text-center">
@@ -583,7 +895,7 @@ function FlowPage({
     >
       <div className="flex-1 flex items-center justify-center p-6 md:p-12">
         <div
-          className={`w-full max-w-2xl transition-all duration-300 ${
+          className={`w-full max-w-2xl motion-reduce:transition-none motion-reduce:transform-none motion-reduce:opacity-100 transition-all duration-300 ${
             isAnimating
               ? direction === "down"
                 ? "opacity-0 -translate-y-8"
@@ -609,10 +921,14 @@ function FlowPage({
           </div>
 
           {validationError && (
-            <p className="text-red-500 text-sm mb-4">{validationError}</p>
+            <p role="alert" className="text-red-500 text-sm mb-4">
+              {validationError}
+            </p>
           )}
           {uploadError && (
-            <p className="text-red-500 text-sm mb-4">{uploadError}</p>
+            <p role="alert" className="text-red-500 text-sm mb-4">
+              {uploadError}
+            </p>
           )}
 
           {currentStep === totalSteps - 1 ||

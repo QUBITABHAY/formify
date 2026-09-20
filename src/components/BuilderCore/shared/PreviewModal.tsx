@@ -106,6 +106,7 @@ export default function PreviewModal({
                 emoji: thankYouScreen.emoji,
               }}
               onSubmit={() => {}}
+              isQuiz={isQuiz}
             />
           ) : (
             <div className="h-full overflow-y-auto">

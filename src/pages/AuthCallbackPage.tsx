@@ -11,6 +11,10 @@ export default function AuthCallbackPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (window.location.search) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     const fetchUser = async () => {
       try {
         const response = await getCurrentUser();
